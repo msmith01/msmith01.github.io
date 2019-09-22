@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nohup | Matthew Smith R Shenanigans</title>
+    <link>http://lf0.com/tags/nohup/</link>
+      <atom:link href="http://lf0.com/tags/nohup/index.xml" rel="self" type="application/rss+xml" />
+    <description>nohup</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>http://lf0.com/img/icon-192.png</url>
+      <title>nohup</title>
+      <link>http://lf0.com/tags/nohup/</link>
+    </image>
+    
+    <item>
+      <title>Sending nohup commands to R scripts</title>
+      <link>http://lf0.com/post/nohup-r-connect/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/nohup-r-connect/</guid>
+      <description>
+
+
+&lt;p&gt;There are times when I am connected remotely to an RStudio server and I want to run a time-consuming script which might take a few hours or days. As part of my PhD I had to calculate a number of large distance matrices which took considerable time since the data was quite large. Another script I developed was to download and parse 150,000 documents. It took a week to download and parse them and during this time I lost connection to the server a few times causing the code to break.&lt;/p&gt;
+&lt;p&gt;The free version of RStudio only allows one session open at any time and leaving the script running for a week meant that I couldn’t keep coding in R! Many of the problems I faced actually didn’t require RStudio since the models were either downloading and storing data or calculating matrices so just an R connection would be sufficient. So, I wanted to find a way to run an R file without logging off or without any interruption. I come across the &lt;strong&gt;nohup&lt;/strong&gt; command in Unix operating systems.&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;nohup&lt;/strong&gt; or &lt;strong&gt;no hang-up&lt;/strong&gt; command can execute a script and tell the system to continue running it even if the session is disconnected.
+I use it in the following way, once I have developed a model &lt;em&gt;myRFile.R&lt;/em&gt; using RStudio, verified it works on a sample of the data etc. and saved it into a folder called &lt;em&gt;myFolder&lt;/em&gt;. I can go to the terminal (which I usually connect to using PuTTY) and run the following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nohup Rscript ./myFolder/myRFile.R &amp;lt;/dev/null&amp;gt;myRFile_Output.out 2&amp;gt;myRFile_ErrorMessages.err &amp;amp;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will run the .R file and store any output usually printed to the console to a text file &lt;em&gt;myRFile_Ouput.out&lt;/em&gt; and any error messages to another text file &lt;em&gt;myRFile_ErrorMessages.err&lt;/em&gt; where we can check on the progress whilst the script is running. I usually add progress messages in side the function such as:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;foo &amp;lt;- function(x){
+  print(paste(&amp;quot;Year&amp;quot;, x, &amp;quot;has started &amp;quot;, Sys.time()))
+  
+  do.something
+  
+  print(paste(&amp;quot;Year&amp;quot;, x, &amp;quot;has ended &amp;quot;, Sys.time()))
+  return(x)
+}
+
+years &amp;lt;- seq(from = &amp;quot;2005&amp;quot;, to = &amp;quot;2018&amp;quot;)
+sapply(years, foo)  &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Which prints out the progress of the function to &lt;em&gt;myRFile_Output.out&lt;/em&gt;, i.e. if I needed to apply a function across years.&lt;/p&gt;
+&lt;p&gt;By running &lt;em&gt;nohup&lt;/em&gt; commands from the terminal allows me to free up my RStudio for other tasks also.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

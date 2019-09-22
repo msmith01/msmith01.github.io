@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags | Matthew Smith R Shenanigans</title>
+    <link>http://lf0.com/tags/</link>
+      <atom:link href="http://lf0.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <description>Tags</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>http://lf0.com/img/icon-192.png</url>
+      <title>Tags</title>
+      <link>http://lf0.com/tags/</link>
+    </image>
+    
+    <item>
+      <title>AWS</title>
+      <link>http://lf0.com/tags/aws/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/aws/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>finance</title>
+      <link>http://lf0.com/tags/finance/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/finance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fundamentals</title>
+      <link>http://lf0.com/tags/fundamentals/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/fundamentals/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ipo</title>
+      <link>http://lf0.com/tags/ipo/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/ipo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nohup</title>
+      <link>http://lf0.com/tags/nohup/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/nohup/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>RStudio</title>
+      <link>http://lf0.com/tags/rstudio/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/rstudio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>time-series</title>
+      <link>http://lf0.com/tags/time-series/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/time-series/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>yahoo-finance</title>
+      <link>http://lf0.com/tags/yahoo-finance/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/yahoo-finance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Source Themes</title>
+      <link>http://lf0.com/tags/source-themes/</link>
+      <pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/source-themes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Deep Learning</title>
+      <link>http://lf0.com/tags/deep-learning/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/deep-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Demo</title>
+      <link>http://lf0.com/tags/demo/</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/tags/demo/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

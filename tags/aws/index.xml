@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AWS | Matthew Smith R Shenanigans</title>
+    <link>http://lf0.com/tags/aws/</link>
+      <atom:link href="http://lf0.com/tags/aws/index.xml" rel="self" type="application/rss+xml" />
+    <description>AWS</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>http://lf0.com/img/icon-192.png</url>
+      <title>AWS</title>
+      <link>http://lf0.com/tags/aws/</link>
+    </image>
+    
+    <item>
+      <title>RStudio Server on Amazon Web Services</title>
+      <link>http://lf0.com/post/rstudio-amazonaws/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/rstudio-amazonaws/</guid>
+      <description>
+
+
+&lt;p&gt;Note: Skip to &lt;strong&gt;Step 5&lt;/strong&gt; if you want the “quick fix”.&lt;/p&gt;
+&lt;p&gt;I will briefly document how I setup RStudio server on an Amazon AWS cloud instance. Once you have an AWS account you should be able to follow these instructions to set everything up. I suggest you follow some tutorial such as &lt;a href=&#34;https://www.guru99.com/creating-amazon-ec2-instance.html&#34;&gt;here&lt;/a&gt; in order to setup the Amazon ec2 instance, it’s not difficult but it is a separate topic. I am using the &lt;em&gt;“Ubuntu Server 18.04 LTS (HVM), SSD Volume Type”&lt;/em&gt; on a &lt;em&gt;“free eligible tier t2.micro”&lt;/em&gt; - The free version has 1GB of memory which is fine for getting to know the environment/Amazon AWS but I strongly recomend investing in a paid instance once your are familiar.&lt;/p&gt;
+&lt;p&gt;Once the instance is setup, you might want to follow these instructions &lt;a href=&#34;https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html&#34;&gt;here&lt;/a&gt; to set up PuTTY (for Windows users) and obtain a .pem key. Once we are logged into PuTTY we can run the following commands into the terminal:&lt;/p&gt;
+&lt;center&gt;
+&lt;img src=&#34;y_u_no_hurry_up.jpg&#34; alt=&#34;yunohurry&#34; /&gt;
+&lt;/center&gt;
+&lt;p&gt;&lt;strong&gt;Step 1:&lt;/strong&gt; Install R&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt update
+sudo apt-get install -y r-base r-base-dev&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 2:&lt;/strong&gt; Download and isntall RStudio&lt;/p&gt;
+&lt;p&gt;Find the latest RStudio version link from &lt;a href=&#34;https://www.rstudio.com/products/rstudio/download/#download&#34;&gt;here&lt;/a&gt; and replace the link below after the &lt;code&gt;wget&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt install gdebi-core
+wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.2.1335-amd64.deb
+sudo gdebi rstudio-server-1.2.1335-amd64.deb&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 3:&lt;/strong&gt; We can add a user to the system to log into RStudio server&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo chmod 777 -R /usr/local/lib/R/site-library
+sudo adduser YOURUSERNAME&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That should be it. I was using this code a little while back. I will update the post when I install an AWS instance again in the coming months.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 4:&lt;/strong&gt; Updating R to later versions&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo &amp;quot;deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/&amp;quot; | sudo tee -a /etc/apt/sources.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+sudo apt-get update
+sudo apt-get upgrade -y&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 5:&lt;/strong&gt; Quick version&lt;/p&gt;
+&lt;p&gt;You can install RStudio directly as an Amazon AWS instance by using Louis Aslett’s RStudio Amazon Machine Image (AMI) &lt;a href=&#34;http://www.louisaslett.com/RStudio_AMI/&#34;&gt;here&lt;/a&gt;. There is also a short video &lt;a href=&#34;http://www.louisaslett.com/RStudio_AMI/video_guide.html&#34;&gt;here&lt;/a&gt; on how you can set it up painlessly!&lt;/p&gt;
+&lt;p&gt;I recommend Louis Aslett’s AMI especially if you are not familiar with Bash or Shell commands however I was running into some compatibility problems with package versions and R versions which is why I sought a way to manually install R and have full control.&lt;/p&gt;
+&lt;p&gt;Below are a few additional commands, mostly for myself since I kept all these commands in a notepad and there was a reason they were kept!&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 6:&lt;/strong&gt; Upgrade R&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo &amp;quot;deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/&amp;quot; | sudo tee -a /etc/apt/sources.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get install -y r-base r-recommended r-base-dev&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 7:&lt;/strong&gt; Change password for the root user&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo passwd root
+su root&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 8:&lt;/strong&gt; Additional&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;apt-get -y build-dep libcurl4-gnutls-dev&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Sending nohup commands to R scripts</title>
+      <link>http://lf0.com/post/nohup-r-connect/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/nohup-r-connect/</guid>
+      <description>
+
+
+&lt;p&gt;There are times when I am connected remotely to an RStudio server and I want to run a time-consuming script which might take a few hours or days. As part of my PhD I had to calculate a number of large distance matrices which took considerable time since the data was quite large. Another script I developed was to download and parse 150,000 documents. It took a week to download and parse them and during this time I lost connection to the server a few times causing the code to break.&lt;/p&gt;
+&lt;p&gt;The free version of RStudio only allows one session open at any time and leaving the script running for a week meant that I couldn’t keep coding in R! Many of the problems I faced actually didn’t require RStudio since the models were either downloading and storing data or calculating matrices so just an R connection would be sufficient. So, I wanted to find a way to run an R file without logging off or without any interruption. I come across the &lt;strong&gt;nohup&lt;/strong&gt; command in Unix operating systems.&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;nohup&lt;/strong&gt; or &lt;strong&gt;no hang-up&lt;/strong&gt; command can execute a script and tell the system to continue running it even if the session is disconnected.
+I use it in the following way, once I have developed a model &lt;em&gt;myRFile.R&lt;/em&gt; using RStudio, verified it works on a sample of the data etc. and saved it into a folder called &lt;em&gt;myFolder&lt;/em&gt;. I can go to the terminal (which I usually connect to using PuTTY) and run the following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nohup Rscript ./myFolder/myRFile.R &amp;lt;/dev/null&amp;gt;myRFile_Output.out 2&amp;gt;myRFile_ErrorMessages.err &amp;amp;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will run the .R file and store any output usually printed to the console to a text file &lt;em&gt;myRFile_Ouput.out&lt;/em&gt; and any error messages to another text file &lt;em&gt;myRFile_ErrorMessages.err&lt;/em&gt; where we can check on the progress whilst the script is running. I usually add progress messages in side the function such as:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;foo &amp;lt;- function(x){
+  print(paste(&amp;quot;Year&amp;quot;, x, &amp;quot;has started &amp;quot;, Sys.time()))
+  
+  do.something
+  
+  print(paste(&amp;quot;Year&amp;quot;, x, &amp;quot;has ended &amp;quot;, Sys.time()))
+  return(x)
+}
+
+years &amp;lt;- seq(from = &amp;quot;2005&amp;quot;, to = &amp;quot;2018&amp;quot;)
+sapply(years, foo)  &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Which prints out the progress of the function to &lt;em&gt;myRFile_Output.out&lt;/em&gt;, i.e. if I needed to apply a function across years.&lt;/p&gt;
+&lt;p&gt;By running &lt;em&gt;nohup&lt;/em&gt; commands from the terminal allows me to free up my RStudio for other tasks also.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

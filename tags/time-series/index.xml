@@ -1,0 +1,972 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>time-series | Matthew Smith R Shenanigans</title>
+    <link>http://lf0.com/tags/time-series/</link>
+      <atom:link href="http://lf0.com/tags/time-series/index.xml" rel="self" type="application/rss+xml" />
+    <description>time-series</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>http://lf0.com/img/icon-192.png</url>
+      <title>time-series</title>
+      <link>http://lf0.com/tags/time-series/</link>
+    </image>
+    
+    <item>
+      <title>Scraping Yahoo Finance IPO Data</title>
+      <link>http://lf0.com/post/yahoo-finance-ipo/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/yahoo-finance-ipo/</guid>
+      <description>
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;I wrote a script a while back when I was working on a project which required the analysis of IPO data, of course I used the IPO data from the bloomberg terminal but I wanted a free source also. Yahoo Finance collects IPO data for a number of worldwide markets, its not clean data but it goes as far back as the year 2000.&lt;/p&gt;
+&lt;p&gt;I wanted to follow on from some research by J.R.Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/ritter/files/2019/08/Monnew.pdf&#34;&gt;here&lt;/a&gt;. The goal is to try and compute the &lt;em&gt;money left on the table&lt;/em&gt; from IPO’s and extend the research up until 2018.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quote:&lt;/strong&gt; &lt;em&gt;In the 1980s, the average first-day return on initial public offerings (IPOs) was 7%. The average first-day return doubled to almost 15% during 1990-1998, before jumping to 65% during the internet bubble years of 1999-2000 and then reverting to 12% during 2001-2003.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The code is not clean and if I had to re-write it today I would do so very differently but it works. I just re-download a small sample of the data as it takes some time to process all years but changing &lt;code&gt;from&lt;/code&gt; to the year 2000 should get you all the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rvest)
+library(naniar)
+library(tidyverse)
+library(tidyquant)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+from = &amp;quot;2019-09-01&amp;quot;
+to = &amp;quot;2019-09-19&amp;quot;
+s &amp;lt;- seq(as.Date(from), as.Date(to), &amp;quot;days&amp;quot;)
+url &amp;lt;- &amp;quot;https://finance.yahoo.com/calendar/ipo?from=&amp;quot;
+links &amp;lt;- gsub(&amp;quot; &amp;quot;, &amp;quot;&amp;quot;, paste(url,from,&amp;quot;&amp;amp;to=&amp;quot;,to,&amp;quot;&amp;amp;day=&amp;quot;,format(s, &amp;quot;%Y-%m-%d&amp;quot;)))
+store &amp;lt;- NULL
+tbl &amp;lt;- NULL
+for(i in links){
+  store[[i]] = read_html(i)
+  tbl[[i]] = html_table(store[[i]])
+}
+list &amp;lt;- unlist(tbl, recursive = FALSE)
+df &amp;lt;- do.call(&amp;quot;rbind&amp;quot;, list)
+df &amp;lt;- df %&amp;gt;%
+  replace_with_na_all(condition = ~.x == &amp;quot;-&amp;quot;)
+data &amp;lt;- df[!is.na(df$Price), ]&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I get a nice data frame which looks like:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data %&amp;gt;%
+  head() %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Symbol
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Company
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Exchange
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Price Range
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Price
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Currency
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Shares
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Actions
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VG8.AX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VGI Partners Asian Invests Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Aug 04, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AUD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VG8.AX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VGI Partners Asian Invests Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Aug 04, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AUD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VG8.AX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VGI Partners Asian Invests Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Aug 04, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AUD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+China Merchants Coml Reit
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Sep 02, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+USD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Immunotech Biopharm Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Sep 02, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+USD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Nusantara Almazia PT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Jakarta
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Aug 12, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IDR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+461530000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Theres lot of missing IPO price data and many duplicate results since this is just a calendar and thus reports on any news about an IPO.&lt;/p&gt;
+&lt;p&gt;I next get the stock price information: - which can take some time so I suggest saving the results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;symbols &amp;lt;- df$Symbol
+symbols &amp;lt;- symbols[symbols != &amp;quot;&amp;quot;] 
+stocks &amp;lt;- symbols %&amp;gt;%
+  tq_get(&amp;quot;stock.prices&amp;quot;,
+         from = from,
+         to = to)
+stocks %&amp;gt;%
+  head() %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+symbol
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+high
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+low
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+volume
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+adjusted
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-12
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+20.59
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+21.10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.28
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.67
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+55416800
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.67
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.71
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.68
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19119100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.68
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-16
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.46
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+17.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.90
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5573000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.90
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-17
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.30
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.65
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.07
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4415200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.07
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-18
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.17
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.70
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.90
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.48
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+10533900
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.48
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TXG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-12
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+54.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+58.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+51.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+52.75
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7326300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+52.75
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Next I join the daily stock price data with the IPO data, clean it up a little and compute the returns. I also split the data into different markets such as NYSE, LSE, Frankfurt etc. and compute the average daily returns. You can find everything along with the &lt;a href=&#34;https://github.com/msmith01/IPO_Web_Scraping_Yahoo/blob/master/yahoo_finance_IPOs_2000_2018.csv&#34;&gt;excel&lt;/a&gt; file collecting IPOs since 2000 &lt;a href=&#34;https://github.com/msmith01/IPO_Web_Scraping_Yahoo&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Heres how the final data looks with the calculated one day price returns:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;read.csv(&amp;quot;https://raw.githubusercontent.com/msmith01/IPO_Web_Scraping_Yahoo/master/yahoo_finance_IPOs_2000_2018.csv&amp;quot;, nrows = 10) %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+symbol
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+company
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+exchange
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date.x
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+price
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+currency
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+actions
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date.y
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+adjusted
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+returns
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+year
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EVD.F
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CTS Eventim AG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Frankfurt
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-01-31
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+21.50
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EUR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.37500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.30000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.990930
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.7069767
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SLAB
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Silicon Laboratories Inc
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NasdaqGM
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+31.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+USD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+63.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.37500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.375000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.2379032
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0764.HK
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Ocean Shores Group Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.33
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2005-09-29
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9984.20996
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9984.20996
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9946.558594
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7505.9247827
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MTB.V
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Mountain Boy Minerals Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TSXV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-07-12
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.35
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CAD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-07-12
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.35000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.35000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.350000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IAG.TO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Industrial-Alliance Life
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Toronto
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+15.75
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CAD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8.50000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8.70000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.096976
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.4476190
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2457.TW
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Phihong Enterprises Co Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Taiwan
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-15
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+111.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TWD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-16
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+55.19920
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+55.19920
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+28.781498
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.5027099
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IFX.F
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Infineon Technologies AG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Frankfurt
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EUR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.50000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+79.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.923615
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.2571429
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BRC.V
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BRC Development Corp
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TSXV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.50
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CAD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-07-20
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.35000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.40000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.400000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PTR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PetroChina Co Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NYSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-04-07
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.44
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+USD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-04-06
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.43750
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.43750
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.569896
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0001521
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0643.HK
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Carry Wealth Holdings Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-09
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.78389
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.70833
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.332258
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.2916700
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I try to recreate some of the plots on J.R.Ritters website for each of the countries.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(&amp;quot;Monthly_bloomberg_graphs.png&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Monthly_bloomberg_graphs.png&#34; width=&#34;1000&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(&amp;quot;Monthly_bloomberg_graphs2.png&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Monthly_bloomberg_graphs2.png&#34; width=&#34;1000&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(&amp;quot;Monthly_bloomberg_graphs3.png&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Monthly_bloomberg_graphs3.png&#34; width=&#34;1000&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The returns seem reasonable given some exchanges are growth exchanges and others are mature exchanges. I would take caution here however since Yahoo is somewhat unreliable (at least in my experience of getting stock prices and fundamental data).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;
+See J.R.Ritter for other &lt;a href=&#34;https://site.warrington.ufl.edu/ritter/ipo-data/&#34;&gt;IPO data.&lt;/a&gt;
+See Tim Loughran and Jay Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/ritter/files/2016/06/why-has-IPO-Underpricing-Increased-Over-Time.pdf&#34;&gt;IPO returns:&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

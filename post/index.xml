@@ -1,0 +1,2987 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts | Matthew Smith R Shenanigans</title>
+    <link>http://lf0.com/post/</link>
+      <atom:link href="http://lf0.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <description>Posts</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>http://lf0.com/img/icon-192.png</url>
+      <title>Posts</title>
+      <link>http://lf0.com/post/</link>
+    </image>
+    
+    <item>
+      <title>RStudio Server on Amazon Web Services</title>
+      <link>http://lf0.com/post/rstudio-amazonaws/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/rstudio-amazonaws/</guid>
+      <description>
+
+
+&lt;p&gt;Note: Skip to &lt;strong&gt;Step 5&lt;/strong&gt; if you want the “quick fix”.&lt;/p&gt;
+&lt;p&gt;I will briefly document how I setup RStudio server on an Amazon AWS cloud instance. Once you have an AWS account you should be able to follow these instructions to set everything up. I suggest you follow some tutorial such as &lt;a href=&#34;https://www.guru99.com/creating-amazon-ec2-instance.html&#34;&gt;here&lt;/a&gt; in order to setup the Amazon ec2 instance, it’s not difficult but it is a separate topic. I am using the &lt;em&gt;“Ubuntu Server 18.04 LTS (HVM), SSD Volume Type”&lt;/em&gt; on a &lt;em&gt;“free eligible tier t2.micro”&lt;/em&gt; - The free version has 1GB of memory which is fine for getting to know the environment/Amazon AWS but I strongly recomend investing in a paid instance once your are familiar.&lt;/p&gt;
+&lt;p&gt;Once the instance is setup, you might want to follow these instructions &lt;a href=&#34;https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/putty.html&#34;&gt;here&lt;/a&gt; to set up PuTTY (for Windows users) and obtain a .pem key. Once we are logged into PuTTY we can run the following commands into the terminal:&lt;/p&gt;
+&lt;center&gt;
+&lt;img src=&#34;y_u_no_hurry_up.jpg&#34; alt=&#34;yunohurry&#34; /&gt;
+&lt;/center&gt;
+&lt;p&gt;&lt;strong&gt;Step 1:&lt;/strong&gt; Install R&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt update
+sudo apt-get install -y r-base r-base-dev&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 2:&lt;/strong&gt; Download and isntall RStudio&lt;/p&gt;
+&lt;p&gt;Find the latest RStudio version link from &lt;a href=&#34;https://www.rstudio.com/products/rstudio/download/#download&#34;&gt;here&lt;/a&gt; and replace the link below after the &lt;code&gt;wget&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt install gdebi-core
+wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.2.1335-amd64.deb
+sudo gdebi rstudio-server-1.2.1335-amd64.deb&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 3:&lt;/strong&gt; We can add a user to the system to log into RStudio server&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo chmod 777 -R /usr/local/lib/R/site-library
+sudo adduser YOURUSERNAME&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That should be it. I was using this code a little while back. I will update the post when I install an AWS instance again in the coming months.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 4:&lt;/strong&gt; Updating R to later versions&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo &amp;quot;deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/&amp;quot; | sudo tee -a /etc/apt/sources.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+sudo apt-get update
+sudo apt-get upgrade -y&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 5:&lt;/strong&gt; Quick version&lt;/p&gt;
+&lt;p&gt;You can install RStudio directly as an Amazon AWS instance by using Louis Aslett’s RStudio Amazon Machine Image (AMI) &lt;a href=&#34;http://www.louisaslett.com/RStudio_AMI/&#34;&gt;here&lt;/a&gt;. There is also a short video &lt;a href=&#34;http://www.louisaslett.com/RStudio_AMI/video_guide.html&#34;&gt;here&lt;/a&gt; on how you can set it up painlessly!&lt;/p&gt;
+&lt;p&gt;I recommend Louis Aslett’s AMI especially if you are not familiar with Bash or Shell commands however I was running into some compatibility problems with package versions and R versions which is why I sought a way to manually install R and have full control.&lt;/p&gt;
+&lt;p&gt;Below are a few additional commands, mostly for myself since I kept all these commands in a notepad and there was a reason they were kept!&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Step 6:&lt;/strong&gt; Upgrade R&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo &amp;quot;deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/&amp;quot; | sudo tee -a /etc/apt/sources.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get install -y r-base r-recommended r-base-dev&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 7:&lt;/strong&gt; Change password for the root user&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo passwd root
+su root&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Step 8:&lt;/strong&gt; Additional&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;apt-get -y build-dep libcurl4-gnutls-dev&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Scraping Yahoo Finance IPO Data</title>
+      <link>http://lf0.com/post/yahoo-finance-ipo/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/yahoo-finance-ipo/</guid>
+      <description>
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;I wrote a script a while back when I was working on a project which required the analysis of IPO data, of course I used the IPO data from the bloomberg terminal but I wanted a free source also. Yahoo Finance collects IPO data for a number of worldwide markets, its not clean data but it goes as far back as the year 2000.&lt;/p&gt;
+&lt;p&gt;I wanted to follow on from some research by J.R.Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/ritter/files/2019/08/Monnew.pdf&#34;&gt;here&lt;/a&gt;. The goal is to try and compute the &lt;em&gt;money left on the table&lt;/em&gt; from IPO’s and extend the research up until 2018.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Quote:&lt;/strong&gt; &lt;em&gt;In the 1980s, the average first-day return on initial public offerings (IPOs) was 7%. The average first-day return doubled to almost 15% during 1990-1998, before jumping to 65% during the internet bubble years of 1999-2000 and then reverting to 12% during 2001-2003.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The code is not clean and if I had to re-write it today I would do so very differently but it works. I just re-download a small sample of the data as it takes some time to process all years but changing &lt;code&gt;from&lt;/code&gt; to the year 2000 should get you all the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rvest)
+library(naniar)
+library(tidyverse)
+library(tidyquant)
+library(lubridate)
+library(knitr)
+library(kableExtra)
+from = &amp;quot;2019-09-01&amp;quot;
+to = &amp;quot;2019-09-19&amp;quot;
+s &amp;lt;- seq(as.Date(from), as.Date(to), &amp;quot;days&amp;quot;)
+url &amp;lt;- &amp;quot;https://finance.yahoo.com/calendar/ipo?from=&amp;quot;
+links &amp;lt;- gsub(&amp;quot; &amp;quot;, &amp;quot;&amp;quot;, paste(url,from,&amp;quot;&amp;amp;to=&amp;quot;,to,&amp;quot;&amp;amp;day=&amp;quot;,format(s, &amp;quot;%Y-%m-%d&amp;quot;)))
+store &amp;lt;- NULL
+tbl &amp;lt;- NULL
+for(i in links){
+  store[[i]] = read_html(i)
+  tbl[[i]] = html_table(store[[i]])
+}
+list &amp;lt;- unlist(tbl, recursive = FALSE)
+df &amp;lt;- do.call(&amp;quot;rbind&amp;quot;, list)
+df &amp;lt;- df %&amp;gt;%
+  replace_with_na_all(condition = ~.x == &amp;quot;-&amp;quot;)
+data &amp;lt;- df[!is.na(df$Price), ]&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I get a nice data frame which looks like:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data %&amp;gt;%
+  head() %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Symbol
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Company
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Exchange
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Price Range
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Price
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Currency
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Shares
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Actions
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VG8.AX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VGI Partners Asian Invests Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Aug 04, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AUD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VG8.AX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VGI Partners Asian Invests Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Aug 04, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AUD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VG8.AX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+VGI Partners Asian Invests Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ASX
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Aug 04, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AUD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+China Merchants Coml Reit
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Sep 02, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+USD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Immunotech Biopharm Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Sep 02, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+USD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Nusantara Almazia PT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Jakarta
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Aug 12, 2019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+N/A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IDR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+461530000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Amended
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Theres lot of missing IPO price data and many duplicate results since this is just a calendar and thus reports on any news about an IPO.&lt;/p&gt;
+&lt;p&gt;I next get the stock price information: - which can take some time so I suggest saving the results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;symbols &amp;lt;- df$Symbol
+symbols &amp;lt;- symbols[symbols != &amp;quot;&amp;quot;] 
+stocks &amp;lt;- symbols %&amp;gt;%
+  tq_get(&amp;quot;stock.prices&amp;quot;,
+         from = from,
+         to = to)
+stocks %&amp;gt;%
+  head() %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+symbol
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+high
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+low
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+volume
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+adjusted
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-12
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+20.59
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+21.10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.28
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.67
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+55416800
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.67
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.71
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.68
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19119100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.68
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-16
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.46
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+17.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.90
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5573000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.90
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-17
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.30
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.65
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.07
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4415200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.07
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SDC
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-18
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.17
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.70
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18.90
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.48
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+10533900
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.48
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TXG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-12
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+54.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+58.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+51.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+52.75
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7326300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+52.75
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Next I join the daily stock price data with the IPO data, clean it up a little and compute the returns. I also split the data into different markets such as NYSE, LSE, Frankfurt etc. and compute the average daily returns. You can find everything along with the &lt;a href=&#34;https://github.com/msmith01/IPO_Web_Scraping_Yahoo/blob/master/yahoo_finance_IPOs_2000_2018.csv&#34;&gt;excel&lt;/a&gt; file collecting IPOs since 2000 &lt;a href=&#34;https://github.com/msmith01/IPO_Web_Scraping_Yahoo&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Heres how the final data looks with the calculated one day price returns:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;read.csv(&amp;quot;https://raw.githubusercontent.com/msmith01/IPO_Web_Scraping_Yahoo/master/yahoo_finance_IPOs_2000_2018.csv&amp;quot;, nrows = 10) %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+symbol
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+company
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+exchange
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date.x
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+price
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+currency
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+actions
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date.y
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+adjusted
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+returns
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+year
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EVD.F
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CTS Eventim AG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Frankfurt
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-01-31
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+21.50
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EUR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.37500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.30000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.990930
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.7069767
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+SLAB
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Silicon Laboratories Inc
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NasdaqGM
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+31.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+USD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+63.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.37500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.375000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.2379032
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0764.HK
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Ocean Shores Group Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.33
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2005-09-29
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9984.20996
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9984.20996
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9946.558594
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7505.9247827
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+MTB.V
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Mountain Boy Minerals Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TSXV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-07-12
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.35
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CAD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-07-12
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.35000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.35000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.350000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IAG.TO
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Industrial-Alliance Life
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Toronto
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+15.75
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CAD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8.50000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8.70000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.096976
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.4476190
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2457.TW
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Phihong Enterprises Co Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Taiwan
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-15
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+111.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TWD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-16
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+55.19920
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+55.19920
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+28.781498
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.5027099
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+IFX.F
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Infineon Technologies AG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Frankfurt
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+EUR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.50000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+79.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.923615
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.2571429
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BRC.V
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BRC Development Corp
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+TSXV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-02-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.50
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CAD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-07-20
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.35000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.40000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.400000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PTR
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+PetroChina Co Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NYSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-04-07
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.44
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+USD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-04-06
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.43750
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+16.43750
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.569896
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0001521
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0643.HK
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Carry Wealth Holdings Ltd
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKSE
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-09
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HKD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Priced
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2000-03-14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.78389
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.70833
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.332258
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.2916700
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I try to recreate some of the plots on J.R.Ritters website for each of the countries.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(&amp;quot;Monthly_bloomberg_graphs.png&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Monthly_bloomberg_graphs.png&#34; width=&#34;1000&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(&amp;quot;Monthly_bloomberg_graphs2.png&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Monthly_bloomberg_graphs2.png&#34; width=&#34;1000&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::include_graphics(&amp;quot;Monthly_bloomberg_graphs3.png&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Monthly_bloomberg_graphs3.png&#34; width=&#34;1000&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The returns seem reasonable given some exchanges are growth exchanges and others are mature exchanges. I would take caution here however since Yahoo is somewhat unreliable (at least in my experience of getting stock prices and fundamental data).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;
+See J.R.Ritter for other &lt;a href=&#34;https://site.warrington.ufl.edu/ritter/ipo-data/&#34;&gt;IPO data.&lt;/a&gt;
+See Tim Loughran and Jay Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/ritter/files/2016/06/why-has-IPO-Underpricing-Increased-Over-Time.pdf&#34;&gt;IPO returns:&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Sending nohup commands to R scripts</title>
+      <link>http://lf0.com/post/nohup-r-connect/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/nohup-r-connect/</guid>
+      <description>
+
+
+&lt;p&gt;There are times when I am connected remotely to an RStudio server and I want to run a time-consuming script which might take a few hours or days. As part of my PhD I had to calculate a number of large distance matrices which took considerable time since the data was quite large. Another script I developed was to download and parse 150,000 documents. It took a week to download and parse them and during this time I lost connection to the server a few times causing the code to break.&lt;/p&gt;
+&lt;p&gt;The free version of RStudio only allows one session open at any time and leaving the script running for a week meant that I couldn’t keep coding in R! Many of the problems I faced actually didn’t require RStudio since the models were either downloading and storing data or calculating matrices so just an R connection would be sufficient. So, I wanted to find a way to run an R file without logging off or without any interruption. I come across the &lt;strong&gt;nohup&lt;/strong&gt; command in Unix operating systems.&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;nohup&lt;/strong&gt; or &lt;strong&gt;no hang-up&lt;/strong&gt; command can execute a script and tell the system to continue running it even if the session is disconnected.
+I use it in the following way, once I have developed a model &lt;em&gt;myRFile.R&lt;/em&gt; using RStudio, verified it works on a sample of the data etc. and saved it into a folder called &lt;em&gt;myFolder&lt;/em&gt;. I can go to the terminal (which I usually connect to using PuTTY) and run the following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nohup Rscript ./myFolder/myRFile.R &amp;lt;/dev/null&amp;gt;myRFile_Output.out 2&amp;gt;myRFile_ErrorMessages.err &amp;amp;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This will run the .R file and store any output usually printed to the console to a text file &lt;em&gt;myRFile_Ouput.out&lt;/em&gt; and any error messages to another text file &lt;em&gt;myRFile_ErrorMessages.err&lt;/em&gt; where we can check on the progress whilst the script is running. I usually add progress messages in side the function such as:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;foo &amp;lt;- function(x){
+  print(paste(&amp;quot;Year&amp;quot;, x, &amp;quot;has started &amp;quot;, Sys.time()))
+  
+  do.something
+  
+  print(paste(&amp;quot;Year&amp;quot;, x, &amp;quot;has ended &amp;quot;, Sys.time()))
+  return(x)
+}
+
+years &amp;lt;- seq(from = &amp;quot;2005&amp;quot;, to = &amp;quot;2018&amp;quot;)
+sapply(years, foo)  &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Which prints out the progress of the function to &lt;em&gt;myRFile_Output.out&lt;/em&gt;, i.e. if I needed to apply a function across years.&lt;/p&gt;
+&lt;p&gt;By running &lt;em&gt;nohup&lt;/em&gt; commands from the terminal allows me to free up my RStudio for other tasks also.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Tracking NVDA&#39;s share price</title>
+      <link>http://lf0.com/post/nvidia-share-price/</link>
+      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/nvidia-share-price/</guid>
+      <description>
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;I had been tracking the performance of Nvidia for a while since they were reporting impressive earnings and share price growth over recent years. I conducted a study (DCF analysis) to see if Nvidia was fairly priced at this time. I had it marked down as a $141 fair value per share based on the DCF I constructed, however it was trading between a high of $280 to a low of $130 from September and to December of 2018.&lt;/p&gt;
+&lt;p&gt;Let’s download some fundamental data for Nvida and compare it’s performance to it’s industry peers.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# A function to collect fundamental data from Yahoo finance (Income Statement, Balance Sheet and Cash Flow statements, just skip past this part.)
+
+getFin &amp;lt;- function(stock){
+  if (&amp;quot;rvest&amp;quot; %in% installed.packages()) {
+    library(rvest)
+    }else{
+      install.packages(&amp;quot;rvest&amp;quot;)
+      library(rvest)
+      }
+  for (i in 1:length(stock)) {
+    tryCatch(
+      {
+        # Collect the Income Statement data
+        link &amp;lt;- &amp;quot;https://finance.yahoo.com/quote/&amp;quot;
+        link &amp;lt;- paste0(link, stock[i], &amp;quot;/financials?p=&amp;quot;, stock[i])
+        wahis.session &amp;lt;- html_session(link)
+        p &amp;lt;- wahis.session %&amp;gt;%
+          html_nodes(xpath = &amp;#39;//*[@id=&amp;quot;Col1-1-Financials-Proxy&amp;quot;]/section/div[3]/table&amp;#39;)%&amp;gt;%
+          html_table(fill = TRUE)
+        IncomeStatement &amp;lt;- p[[1]]
+        colnames(IncomeStatement) &amp;lt;- paste(IncomeStatement[1,])
+        IncomeStatement &amp;lt;- IncomeStatement[-c(1,5,12,20,25),]
+        names_row &amp;lt;- paste(IncomeStatement[,1])
+        IncomeStatement &amp;lt;- IncomeStatement[,-1]
+        IncomeStatement &amp;lt;- apply(IncomeStatement, 2, function(x){gsub(&amp;quot;,&amp;quot;,&amp;quot;&amp;quot;,x)})
+        IncomeStatement &amp;lt;- as.data.frame(apply(IncomeStatement, 2, as.numeric))
+        rownames(IncomeStatement) &amp;lt;- paste(names_row)
+        temp1 &amp;lt;- IncomeStatement
+        
+        # Collect the Balance Sheet data
+        link &amp;lt;- &amp;quot;https://finance.yahoo.com/quote/&amp;quot;
+        link &amp;lt;- paste0(link, stock[i],&amp;quot;/balance-sheet?p=&amp;quot;, stock[i])
+        wahis.session &amp;lt;- html_session(link)
+        p &amp;lt;- wahis.session %&amp;gt;%
+          html_nodes(xpath = &amp;#39;//*[@id=&amp;quot;Col1-1-Financials-Proxy&amp;quot;]/section/div[3]/table&amp;#39;)%&amp;gt;%
+          html_table(fill = TRUE)
+        BalanceSheet &amp;lt;- p[[1]]
+        colnames(BalanceSheet) &amp;lt;- BalanceSheet[1,]
+        BalanceSheet &amp;lt;- BalanceSheet[-c(1,2,17,28),]
+        names_row &amp;lt;- BalanceSheet[,1]
+        BalanceSheet &amp;lt;- BalanceSheet[,-1]
+        BalanceSheet &amp;lt;- apply(BalanceSheet, 2, function(x){gsub(&amp;quot;,&amp;quot;,&amp;quot;&amp;quot;,x)})
+        BalanceSheet &amp;lt;- as.data.frame(apply(BalanceSheet, 2, as.numeric))
+        rownames(BalanceSheet) &amp;lt;- paste(names_row)
+        temp2 &amp;lt;- BalanceSheet
+        
+        # Collect the Cash Flow data
+        link &amp;lt;- &amp;quot;https://finance.yahoo.com/quote/&amp;quot;
+        link &amp;lt;- paste0(link, stock[i], &amp;quot;/cash-flow?p=&amp;quot;, stock[i])
+        wahis.session &amp;lt;- html_session(link)
+        p &amp;lt;- wahis.session %&amp;gt;%
+          html_nodes(xpath = &amp;#39;//*[@id=&amp;quot;Col1-1-Financials-Proxy&amp;quot;]/section/div[3]/table&amp;#39;)%&amp;gt;%
+          html_table(fill = TRUE)
+        CashFlow &amp;lt;- p[[1]]
+        colnames(CashFlow) &amp;lt;- CashFlow[1,]
+        CashFlow &amp;lt;- CashFlow[-c(1,3,11,16),]
+        names_row &amp;lt;- CashFlow[,1]
+        CashFlow &amp;lt;- CashFlow[,-1]
+        CashFlow &amp;lt;- apply(CashFlow, 2, function(x){gsub(&amp;quot;,&amp;quot;,&amp;quot;&amp;quot;,x)})
+        CashFlow &amp;lt;- as.data.frame(apply(CashFlow, 2, as.numeric))
+        rownames(CashFlow) &amp;lt;- paste(names_row)
+        temp3 &amp;lt;- CashFlow
+        
+        assign(paste0(stock[i],&amp;#39;.f&amp;#39;),value = list(IncomeStatement = temp1, BalanceSheet = temp2, CashFlow = temp3), envir = parent.frame())
+        },
+      error = function(cond){
+        message(stock[i], &amp;quot;Give error &amp;quot;,cond)
+        }
+      )
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can inspect Nvidia’s recent performance by scraping Yahoo finance. The original &lt;code&gt;getFinancials&lt;/code&gt; option from the package &lt;code&gt;quantmod&lt;/code&gt; became defunct a little while ago, however I have been using this function without problems ever since. You can just add tickers to the &lt;code&gt;symbols&lt;/code&gt; object to download more company financial accounts.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;symbols &amp;lt;- c(&amp;quot;NVDA&amp;quot;)
+getFin(symbols)
+symbols.f &amp;lt;- sapply(symbols, function(x) { paste0(x, &amp;quot;.f&amp;quot;) })
+tickers &amp;lt;- list2env(mget(symbols.f))
+
+IS &amp;lt;- lapply(tickers, &amp;quot;[[&amp;quot;, &amp;quot;IncomeStatement&amp;quot;)
+BS &amp;lt;- lapply(tickers, &amp;quot;[[&amp;quot;, &amp;quot;BalanceSheet&amp;quot;)
+CF &amp;lt;- lapply(tickers, &amp;quot;[[&amp;quot;, &amp;quot;CashFlow&amp;quot;)
+
+IS &amp;lt;- as.data.frame(IS)
+BS &amp;lt;- as.data.frame(BS)
+CF &amp;lt;- as.data.frame(CF)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;nvidias-income-statement-data.&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;strong&gt;Nvidia’s Income Statement data.&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;IS %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.27.2019
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.28.2018
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.29.2017
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.31.2016
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Revenue
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11716000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9714000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6910000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5010000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Cost of Revenue
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4545000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3892000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2847000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2199000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Gross Profit
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7171000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5822000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4063000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2811000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Research Development
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2376000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1797000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1463000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1331000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Selling General and Administrative
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+991000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+815000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+663000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+602000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Non Recurring
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Others
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Operating Expenses
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7912000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6504000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4973000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4132000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Operating Income or Loss
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3804000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3210000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1937000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+878000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Other Income/Expenses Net
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+92000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-14000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-32000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-135000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Earnings Before Interest and Taxes
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3804000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3210000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1937000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+878000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Interest Expense
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-58000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-61000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-58000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-47000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Income Before Tax
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3896000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3196000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1905000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+743000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Income Tax Expense
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-245000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+149000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+239000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+129000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Minority Interest
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Net Income From Continuing Ops
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4141000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3047000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1666000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+614000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Discontinued Operations
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Extraordinary Items
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Effect Of Accounting Changes
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Other Items
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Net Income
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4141000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3047000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1666000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+614000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Preferred Stock And Other Adjustments
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Net Income Applicable To Common Shares
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4141000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3047000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1666000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+614000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;nvidias-balance-sheet-information.&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;strong&gt;Nvidia’s Balance Sheet Information.&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BS %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.27.2019
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.28.2018
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.29.2017
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.31.2016
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Cash And Cash Equivalents
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+782000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4002000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1766000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+596000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Short Term Investments
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6640000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3106000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5032000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4441000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Net Receivables
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1424000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1265000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+826000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+505000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Inventory
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1575000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+796000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+794000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+418000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Other Current Assets
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Current Assets
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+10557000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9255000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8536000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6053000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Long Term Investments
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Property, plant and equipment
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1404000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+997000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+521000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+466000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Goodwill
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+618000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+618000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+618000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+618000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Intangible Assets
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+45000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+52000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+104000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+166000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Accumulated Amortization
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Other Assets
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+668000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+319000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+62000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+67000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Deferred Long Term Asset Charges
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+560000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+245000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Assets
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+13292000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11241000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9841000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7370000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Accounts Payable
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+511000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+596000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+485000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+296000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Short/Current Long Term Debt
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+15000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+796000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1413000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Other Current Liabilities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+588000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+318000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+325000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+532000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Current Liabilities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1329000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1153000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1788000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2351000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Long Term Debt
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1988000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1985000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1983000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Other Liabilities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+633000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+632000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+308000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+533000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Deferred Long Term Liability Charges
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Minority Interest
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Negative Goodwill
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Liabilities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3950000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3770000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4079000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2901000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Misc. Stocks Options Warrants
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Redeemable Preferred Stock
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Preferred Stock
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Common Stock
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Retained Earnings
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+12565000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8787000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6108000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4350000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Treasury Stock
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-9275000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-6668000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-5055000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-4052000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Capital Surplus
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6051000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5351000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4708000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4170000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Other Stockholder Equity
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-12000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-18000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-16000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-4000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total stockholders’ equity
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9342000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7471000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5762000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4469000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Net Tangible Assets
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8679000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6801000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5040000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3685000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;nvidias-cash-flow-statements&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;strong&gt;Nvidia’s Cash Flow Statements&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;CF %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.27.2019
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.28.2018
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.29.2017
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA.f.1.31.2016
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Net Income
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4141000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3047000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1666000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+614000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Depreciation
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+262000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+199000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+187000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+197000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Adjustments To Net Income
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+197000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+498000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+386000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Changes In Accounts Receivables
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-149000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-440000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-321000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-32000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Changes In Liabilities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-135000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+90000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+184000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-11000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Changes In Inventories
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-776000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-776000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-375000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+66000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Changes In Other Operating Activities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+203000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+535000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-167000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-74000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Cash Flow From Operating Activities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3743000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3502000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1672000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1175000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Capital Expenditure
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-600000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-593000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-176000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-86000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Investments
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-3497000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1869000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-624000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-345000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Other Cash flows from Investing Activities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-5000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+24000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Cash Flows From Investing Activities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-4097000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1278000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-793000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-400000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Dividends Paid
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-371000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-341000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-261000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-213000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Sale Purchase of Stock
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Net Borrowings
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-16000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-812000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1315000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1315000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Other Cash Flows from Financing Activities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-5000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-9000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-15000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Total Cash Flows From Financing Activities
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2866000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2544000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+291000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-676000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Effect Of Exchange Rate Changes
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Change In Cash and Cash Equivalents
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-3220000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2236000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1170000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Nvidia’s fundamentals looked solid after some analysis, but taking into account per share ratios, I changed my opinion. Their share price seemed overvalued compared to their business performance.&lt;/p&gt;
+&lt;p&gt;I wanted to track their performance and compare it to Nvidia’s competitors. I downloaded price data using the &lt;code&gt;tidyquant&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;############### Collect the stock price and benchmark data #############
+
+nvda &amp;lt;- &amp;quot;NVDA&amp;quot; %&amp;gt;%
+  tq_get(get = &amp;quot;stock.prices&amp;quot;,
+         from =  &amp;quot;2017-01-01&amp;quot;,
+         to = Sys.Date())
+
+amd &amp;lt;- &amp;quot;AMD&amp;quot; %&amp;gt;%
+  tq_get(get = &amp;quot;stock.prices&amp;quot;,
+         from =  &amp;quot;2017-01-01&amp;quot;,
+         to = Sys.Date())
+
+txn &amp;lt;- &amp;quot;TXN&amp;quot; %&amp;gt;%
+  tq_get(get = &amp;quot;stock.prices&amp;quot;,
+         from =  &amp;quot;2017-01-01&amp;quot;,
+         to = Sys.Date())
+
+intc &amp;lt;- &amp;quot;INTC&amp;quot; %&amp;gt;%
+  tq_get(get = &amp;quot;stock.prices&amp;quot;,
+         from =  &amp;quot;2017-01-01&amp;quot;,
+         to = Sys.Date())
+
+nasdaq &amp;lt;- &amp;quot;^IXIC&amp;quot; %&amp;gt;%
+  tq_get(get = &amp;quot;stock.prices&amp;quot;,
+         from = &amp;quot;2017-01-01&amp;quot;,
+         to = Sys.Date())&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Joining all the stock price data together along with a benchmark NASDAQ:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;stock-price-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;strong&gt;Stock Price Data&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;########## Join the data together ###########
+# Ra is the asset price
+# Rb is the benchmark price (NASDAQ)
+RaRb &amp;lt;- nvda %&amp;gt;%
+  full_join(., amd, by = &amp;quot;date&amp;quot;) %&amp;gt;%
+  full_join(., intc, by = &amp;quot;date&amp;quot;) %&amp;gt;%
+  full_join(., nasdaq, by = &amp;quot;date&amp;quot;) %&amp;gt;%
+  select(date, adjusted.x, adjusted.y, adjusted.x.x, adjusted.y.y) %&amp;gt;%
+  setNames(c(&amp;quot;date&amp;quot;, &amp;quot;NVDA&amp;quot;, &amp;quot;AMD&amp;quot;, &amp;quot;INTC&amp;quot;, &amp;quot;NASDAQ&amp;quot;))
+
+RaRb %&amp;gt;%
+  head(6) %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+INTC
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NASDAQ
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-03
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+101.0116
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11.43
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+34.06019
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5429.08
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+103.3683
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11.43
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+33.88338
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5477.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-05
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+100.7443
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11.24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+33.82755
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5487.94
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-06
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+102.0910
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11.32
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+33.94852
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5521.06
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-09
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+106.2301
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11.49
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+34.06950
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5531.82
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+105.4280
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11.44
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+34.00436
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5551.82
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;It’s still quite difficult to compare Nvidia’s performance based on the &lt;em&gt;raw&lt;/em&gt; stock price data, so I normalise the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;############# Normalise the data ################## 
+normalise_series &amp;lt;- function(xdat) xdat / coredata(xdat)[1]
+
+normalised_RaRb &amp;lt;- RaRb %&amp;gt;%
+  mutate(NVDA = normalise_series(NVDA),
+         AMD = normalise_series(AMD),
+         INTC = normalise_series(INTC),
+         NASDAQ = normalise_series(NASDAQ))&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;the-first-few-observations-normalised&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;&lt;strong&gt;The first few observations normalised&lt;/strong&gt;&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;normalised_RaRb %&amp;gt;%
+  head() %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+INTC
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NASDAQ
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-03
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.000000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0233309
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9948089
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.008827
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-05
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9973533
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9833771
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9931697
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.010842
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-06
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0106853
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9903762
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9967214
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.016942
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-09
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0516616
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0052493
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0002734
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.018924
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2017-01-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0437212
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0008749
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9983608
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.022608
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-last-few-observations-normalised&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;&lt;strong&gt;The last few observations normalised&lt;/strong&gt;&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;normalised_RaRb %&amp;gt;%
+  tail() %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+INTC
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NASDAQ
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.801179
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.685039
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.542563
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.506095
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-16
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.784052
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.697288
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.532581
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.501827
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-17
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.792566
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.711286
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.525241
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.507810
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-18
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.781775
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.661417
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.519076
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.506220
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-19
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.751679
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.650044
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.514084
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.507231
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-20
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.709605
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.629046
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.489129
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.495220
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The data looks a lot more comparable. I plot the results in &lt;code&gt;ggplot2&lt;/code&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;normalised_RaRb %&amp;gt;%
+  melt(id = &amp;quot;date&amp;quot;) %&amp;gt;%
+  ggplot(aes(x = date, y = value, color = variable)) +
+  geom_line(aes(linetype = variable)) +
+  #scale_color_manual(values=c(&amp;quot;red&amp;quot;, &amp;quot;black&amp;quot;, &amp;quot;darkblue&amp;quot;, &amp;quot;yellow&amp;quot;, &amp;quot;green&amp;quot;)) +
+  labs(title = &amp;quot;Normalised NVDA, AMD, INTC and NASDAQ Benchmark&amp;quot;,
+       x = &amp;quot;&amp;quot;, subtitle = &amp;quot;From January 2017 - to Sys.Date()&amp;quot;, y = &amp;quot;Normalised Price US$&amp;quot;, color = &amp;quot;&amp;quot;) +
+  scale_y_continuous(labels = scales::dollar) +
+  theme_tq(base_size = 8) +
+  geom_dl(aes(label = variable), method = list(dl.combine(&amp;quot;last.points&amp;quot;), cex = 1)) +
+  scale_color_manual(values = c(NASDAQ = &amp;#39;black&amp;#39;,
+                                NVDA = &amp;#39;darkgreen&amp;#39;,
+                                AMD = &amp;#39;red&amp;#39;,
+                                INTC = &amp;#39;blue&amp;#39;)) +
+  theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;So $1 invested in Nvidia back in Jan 2017 would have given you aprox $2.75 return if you sold at the back end of 2018, however the price today would be around $1.60. Compare that with AMD you would have got the same return of $2.75 if you sold at the same time as Nvidia but today your return would be more or less the same at aprox $2.75 despite a drop in AMD’s share price at the same time as NVDA.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
