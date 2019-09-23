@@ -2,21 +2,513 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Matthew Smith R Shenanigans</title>
-    <link>http://lf0.com/authors/admin/</link>
-      <atom:link href="http://lf0.com/authors/admin/index.xml" rel="self" type="application/rss+xml" />
+    <link>/authors/admin/</link>
+      <atom:link href="/authors/admin/index.xml" rel="self" type="application/rss+xml" />
     <description>Matthew Smith R Shenanigans</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>http://lf0.com/img/icon-192.png</url>
+      <url>/img/icon-192.png</url>
       <title>Matthew Smith R Shenanigans</title>
-      <link>http://lf0.com/authors/admin/</link>
+      <link>/authors/admin/</link>
     </image>
     
     <item>
+      <title>Kalman Smoothing for Time Series Missing Value Imputation</title>
+      <link>/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</link>
+      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;I was recently given a task to impute some time series missing values for a prediction problem. Python has the &lt;code&gt;TSFRESH&lt;/code&gt; package which is pretty well documented but I wanted to apply something using R. I opted for a model from statistics and control theory, called Kalman Smoothing which is available in the &lt;code&gt;imputeTS&lt;/code&gt; package in R.&lt;/p&gt;
+&lt;p&gt;I went with smoothing over filtering since the Kalman filter takes a forward pass through the data and uses all the data upto the current time point and can be done in real time. Kalman smoothing &lt;strong&gt;adds&lt;/strong&gt; a backward pass through the data and thus uses all the data. I guess it can be considered an extention to filtering.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I use stock prices here only for easy time series data collection and to just apply Kalman Smoothing to a time series problem, you cannot build a trading strategy using smoothing for the reason given. You can check out a Kalman Filtering Pairs Trading Strategy &lt;a href=&#34;https://www.quantstart.com/articles/kalman-filter-based-pairs-trading-strategy-in-qstrader&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;div id=&#34;download-some-data&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Download some data:&lt;/h4&gt;
+&lt;p&gt;I just collect some simple data for &lt;code&gt;Google&lt;/code&gt; and &lt;code&gt;Walmart&lt;/code&gt;. I end up with 3 parts, the actual observations, the predicted observation and the randomly generated &lt;em&gt;missing&lt;/em&gt; time series.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
+library(kableExtra)
+library(quantmod)
+library(imputeTS)
+library(Metrics)
+
+symbols &amp;lt;- c(&amp;quot;GOOG&amp;quot;, &amp;quot;WMT&amp;quot;)
+
+myenv &amp;lt;- new.env()
+symnames &amp;lt;- getSymbols(symbols, env = myenv)
+
+li &amp;lt;- eapply(myenv, function(x) x) 
+ts &amp;lt;- do.call(merge, eapply(myenv, Ad)[symnames])
+
+actual &amp;lt;-as.data.frame(ts)
+names(actual) &amp;lt;- paste(symbols, &amp;quot;actual&amp;quot;, sep = &amp;quot;_&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;actual-observations&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Actual observations:&lt;/h4&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;Actual Observations
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+GOOG_actual
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT_actual
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-01-03
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+232.9220
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.17886
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-01-04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+240.7277
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.34902
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-01-05
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+242.6853
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.06050
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-01-08
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+240.8871
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+34.77196
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-01-09
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+241.8435
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.06050
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-01-10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+243.8161
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+34.97911
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Here I create the 100 random missing values that we want to predcit /impute.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;create-some-na-values&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Create some NA values:&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ts[sample(nrow(ts), 100), ] &amp;lt;- NA
+names(ts) &amp;lt;- paste(symbols, &amp;quot;missing&amp;quot;, sep = &amp;quot;_&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-4&#34;&gt;Table 2: &lt;/span&gt;Data with random missing observations
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+GOOG_missing
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT_missing
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+232.9220
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.17886
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+240.7277
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.34902
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+242.6853
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.06050
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+240.8871
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+34.77196
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+241.8435
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.06050
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+243.8161
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+34.97911
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I wrap the &lt;code&gt;na_kalman&lt;/code&gt; into a function to apply &lt;code&gt;lapply&lt;/code&gt; which is useful should I want to apply the model to multivariate time series data. That is you might have a data set with many explanatory variables for each time stamp and one or more variables will have missing values. The function should impute across the columns of your data frame.&lt;/p&gt;
+&lt;p&gt;I use a state space representation of an ARIMA model here but I suggest taking a look at the &lt;code&gt;auto.arima&lt;/code&gt; model from the &lt;code&gt;forecast&lt;/code&gt; package for the best model.There is also a model available for a strucutred model fitted by maximum likelihood. I just use a simple ARIMA model for this example.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;run-the-model&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Run the model&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Model 1:
+# Kalman Smoothing missing value imputation in a state space representation of an ARIMA model
+KalmanSmoothing &amp;lt;- function(data){
+  df &amp;lt;- data
+  arima_model &amp;lt;- arima(df[, ], order = c(1, 0, 1))$model
+  KalmanImputation &amp;lt;- na_kalman(df[, ], model = arima_model)
+  return(KalmanImputation)
+}
+
+results &amp;lt;- lapply(ts, KalmanSmoothing)
+results &amp;lt;- as.data.frame(results)
+names(results) &amp;lt;- paste(symbols, &amp;quot;predictions&amp;quot;, sep = &amp;quot;_&amp;quot;)
+
+ts &amp;lt;- as.data.frame(ts)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;compute-the-rmse-for-both-time-series&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Compute the RMSE for both time series:&lt;/h4&gt;
+&lt;p&gt;I subset the first 10 predictions for each observation but we will have &lt;code&gt;100&lt;/code&gt; predictions (one for each NA value we randomly generated earlier).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;final &amp;lt;- cbind(ts, results, actual)
+
+GOOG_error &amp;lt;- subset(final, is.na(GOOG_missing), select = c(&amp;quot;GOOG_predictions&amp;quot;, &amp;quot;GOOG_actual&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-7&#34;&gt;Table 3: &lt;/span&gt;Predictions vs Observed
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+GOOG_predictions
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+GOOG_actual
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-02-07
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+234.7555
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+234.1274
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-02-13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+230.1927
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+228.6928
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-04-19
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+238.7316
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+234.9444
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-05-31
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+248.8202
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+248.0253
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-08-13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+255.1383
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+256.7875
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-08-28
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+255.5769
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+252.2545
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-09-04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+259.7935
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+261.5945
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-11-02
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+355.8694
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+354.2970
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2008-04-02
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+229.3533
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+231.9805
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2008-04-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+271.6097
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+270.5061
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;print-the-rmse-for-google&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Print the RMSE for Google&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rmse(GOOG_error$GOOG_actual, GOOG_error$GOOG_predictions)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 4.99637&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;apply-the-same-to-the-walmart-predictions&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Apply the same to the Walmart predictions:&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;WMT_error &amp;lt;- subset(final, is.na(WMT_missing), select = c(&amp;quot;WMT_predictions&amp;quot;, &amp;quot;WMT_actual&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-10&#34;&gt;Table 4: &lt;/span&gt;Predictions vs Observed
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT_predictions
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT_actual
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-02-07
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.83123
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.94089
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-02-13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.38426
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.49700
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-04-19
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+36.31024
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.93453
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-05-31
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+36.10167
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.54866
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-08-13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+33.56999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+34.48070
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-08-28
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+33.00792
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+32.57556
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-09-04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+32.30600
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+32.50051
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2007-11-02
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+33.08051
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+33.16853
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2008-04-02
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+41.24560
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+41.25630
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2008-04-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+43.38140
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+43.52140
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;print-the-rmse-for-walmart&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Print the RMSE for Walmart&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rmse(WMT_error$WMT_actual, WMT_error$WMT_predictions)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.5270424&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>RStudio Server on Amazon Web Services</title>
-      <link>http://lf0.com/post/rstudio-amazonaws/</link>
+      <link>/post/rstudio-amazonaws/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/rstudio-amazonaws/</guid>
+      <guid>/post/rstudio-amazonaws/</guid>
       <description>
 
 
@@ -63,11 +555,11 @@ su root&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Scraping Yahoo Finance IPO Data</title>
-      <link>http://lf0.com/post/yahoo-finance-ipo/</link>
+      <link>/post/yahoo-finance-ipo/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/yahoo-finance-ipo/</guid>
+      <guid>/post/yahoo-finance-ipo/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I wrote a script a while back when I was working on a project which required the analysis of IPO data, of course I used the IPO data from the bloomberg terminal but I wanted a free source also. Yahoo Finance collects IPO data for a number of worldwide markets, its not clean data but it goes as far back as the year 2000.&lt;/p&gt;
@@ -1019,9 +1511,9 @@ See Tim Loughran and Jay Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/
     
     <item>
       <title>Sending nohup commands to R scripts</title>
-      <link>http://lf0.com/post/nohup-r-connect/</link>
+      <link>/post/nohup-r-connect/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/nohup-r-connect/</guid>
+      <guid>/post/nohup-r-connect/</guid>
       <description>
 
 
@@ -1049,11 +1541,11 @@ sapply(years, foo)  &lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Tracking NVDA&#39;s share price</title>
-      <link>http://lf0.com/post/nvidia-share-price/</link>
+      <link>/post/nvidia-share-price/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/nvidia-share-price/</guid>
+      <guid>/post/nvidia-share-price/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I had been tracking the performance of Nvidia for a while since they were reporting impressive earnings and share price growth over recent years. I conducted a study (DCF analysis) to see if Nvidia was fairly priced at this time. I had it marked down as a $141 fair value per share based on the DCF I constructed, however it was trading between a high of $280 to a low of $130 from September and to December of 2018.&lt;/p&gt;
@@ -2976,7 +3468,7 @@ NASDAQ
                                 AMD = &amp;#39;red&amp;#39;,
                                 INTC = &amp;#39;blue&amp;#39;)) +
   theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;So $1 invested in Nvidia back in Jan 2017 would have given you aprox $2.75 return if you sold at the back end of 2018, however the price today would be around $1.60. Compare that with AMD you would have got the same return of $2.75 if you sold at the same time as Nvidia but today your return would be more or less the same at aprox $2.75 despite a drop in AMD’s share price at the same time as NVDA.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -2985,9 +3477,9 @@ NASDAQ
     
     <item>
       <title>An example preprint / working paper</title>
-      <link>http://lf0.com/publication/preprint/</link>
+      <link>/publication/preprint/</link>
       <pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/publication/preprint/</guid>
+      <guid>/publication/preprint/</guid>
       <description>&lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
     Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
@@ -3000,9 +3492,9 @@ NASDAQ
     
     <item>
       <title>An example journal article</title>
-      <link>http://lf0.com/publication/journal-article/</link>
+      <link>/publication/journal-article/</link>
       <pubDate>Tue, 01 Sep 2015 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/publication/journal-article/</guid>
+      <guid>/publication/journal-article/</guid>
       <description>&lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
     Click the &lt;em&gt;Cite&lt;/em&gt; button above to demo the feature to enable visitors to import publication metadata into their reference management software.
@@ -3021,9 +3513,9 @@ NASDAQ
     
     <item>
       <title>An example conference paper</title>
-      <link>http://lf0.com/publication/conference-paper/</link>
+      <link>/publication/conference-paper/</link>
       <pubDate>Mon, 01 Jul 2013 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/publication/conference-paper/</guid>
+      <guid>/publication/conference-paper/</guid>
       <description>&lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
     Click the &lt;em&gt;Cite&lt;/em&gt; button above to demo the feature to enable visitors to import publication metadata into their reference management software.

@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>finance | Matthew Smith R Shenanigans</title>
-    <link>http://lf0.com/tags/finance/</link>
-      <atom:link href="http://lf0.com/tags/finance/index.xml" rel="self" type="application/rss+xml" />
+    <link>/tags/finance/</link>
+      <atom:link href="/tags/finance/index.xml" rel="self" type="application/rss+xml" />
     <description>finance</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>http://lf0.com/img/icon-192.png</url>
+      <url>/img/icon-192.png</url>
       <title>finance</title>
-      <link>http://lf0.com/tags/finance/</link>
+      <link>/tags/finance/</link>
     </image>
     
     <item>
       <title>Scraping Yahoo Finance IPO Data</title>
-      <link>http://lf0.com/post/yahoo-finance-ipo/</link>
+      <link>/post/yahoo-finance-ipo/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/yahoo-finance-ipo/</guid>
+      <guid>/post/yahoo-finance-ipo/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I wrote a script a while back when I was working on a project which required the analysis of IPO data, of course I used the IPO data from the bloomberg terminal but I wanted a free source also. Yahoo Finance collects IPO data for a number of worldwide markets, its not clean data but it goes as far back as the year 2000.&lt;/p&gt;
@@ -970,11 +970,11 @@ See Tim Loughran and Jay Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/
     
     <item>
       <title>Tracking NVDA&#39;s share price</title>
-      <link>http://lf0.com/post/nvidia-share-price/</link>
+      <link>/post/nvidia-share-price/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/nvidia-share-price/</guid>
+      <guid>/post/nvidia-share-price/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I had been tracking the performance of Nvidia for a while since they were reporting impressive earnings and share price growth over recent years. I conducted a study (DCF analysis) to see if Nvidia was fairly priced at this time. I had it marked down as a $141 fair value per share based on the DCF I constructed, however it was trading between a high of $280 to a low of $130 from September and to December of 2018.&lt;/p&gt;
@@ -2897,7 +2897,7 @@ NASDAQ
                                 AMD = &amp;#39;red&amp;#39;,
                                 INTC = &amp;#39;blue&amp;#39;)) +
   theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;So $1 invested in Nvidia back in Jan 2017 would have given you aprox $2.75 return if you sold at the back end of 2018, however the price today would be around $1.60. Compare that with AMD you would have got the same return of $2.75 if you sold at the same time as Nvidia but today your return would be more or less the same at aprox $2.75 despite a drop in AMD’s share price at the same time as NVDA.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
