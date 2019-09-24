@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>backtesting | Matthew Smith R Shenanigans</title>
+    <link>/tags/backtesting/</link>
+      <atom:link href="/tags/backtesting/index.xml" rel="self" type="application/rss+xml" />
+    <description>backtesting</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 24 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/icon-192.png</url>
+      <title>backtesting</title>
+      <link>/tags/backtesting/</link>
+    </image>
+    
+    <item>
+      <title>Quantstrat logistic trading model</title>
+      <link>/post/logistic-trading-strategy/logistic-trading-strategy/</link>
+      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>/post/logistic-trading-strategy/logistic-trading-strategy/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;Over the past few months I have been taking a deeper look into the &lt;code&gt;quantstrat&lt;/code&gt; backtesting package in R. I have a few interesting time series ideas I wanted to test so I had to dig a little into this package. At first there is a bit of a learning curve but once I understood the syntax became much more intuitive.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Note&lt;/em&gt; This model is expected to perform badly (and it does!) but I used it as an example on how I could add my own indicators to a strategy and backtest the results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(quantstrat)
+library(PerformanceAnalytics)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(tibble)
+library(tidyquant)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The package expects some initialisation parameters which are used later when compiling the strategy. The &lt;code&gt;initDate&lt;/code&gt; has to be less than the &lt;code&gt;from&lt;/code&gt; date and &lt;code&gt;to&lt;/code&gt; where these two dates are the dates collect data from Yahoo Finance using &lt;code&gt;quantmod&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(1234)
+
+#setting up some initial parameters for the quantstrat trading model
+initDate = &amp;quot;2007-01-01&amp;quot;
+from &amp;lt;- &amp;quot;2017-01-01&amp;quot;
+to &amp;lt;- &amp;quot;2018-12-01&amp;quot;
+init_equity &amp;lt;- 1000
+adjustment &amp;lt;- TRUE
+
+.orderqty &amp;lt;- 10
+.txnfees &amp;lt;- -10
+
+currency(&amp;#39;USD&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;USD&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Sys.setenv(TZ = &amp;quot;UTC&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I use Yahoo Finance to collect the financial data for Google but we can import data directly from bloomberg terminal as well. I construct a very simplistic logistic strategy which can be switched out easily for a Machine Learning model.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Collect the data
+symbols &amp;lt;- c(&amp;#39;GOOG&amp;#39;)
+.data &amp;lt;- new.env()
+getSymbols(symbols, from=from, to=to, src=&amp;quot;yahoo&amp;quot;, adjust=TRUE, env = .data)  &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;GOOG&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;colnames(.data$GOOG) &amp;lt;- c(&amp;quot;open&amp;quot;, &amp;quot;high&amp;quot;, &amp;quot;low&amp;quot;, &amp;quot;close&amp;quot;, &amp;quot;volume&amp;quot;, &amp;quot;adjusted&amp;quot;)
+
+mdata &amp;lt;- .data$GOOG&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;take-a-look-at-the-data&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Take a look at the data:&lt;/h4&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-3&#34;&gt;Table 1: &lt;/span&gt;Stock Data
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+high
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+low
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+volume
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+adjusted
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+778.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+789.630
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+775.800
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+786.14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1657300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+786.14
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+788.36
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+791.340
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+783.160
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+786.90
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1073000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+786.90
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+786.08
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+794.480
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+785.020
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+794.02
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1335200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+794.02
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+795.26
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+807.900
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+792.204
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+806.15
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1640200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+806.15
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+806.40
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+809.966
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+802.830
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+806.65
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1274600
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+806.65
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+807.86
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+809.130
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+803.510
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+804.79
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1176800
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+804.79
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I create a naive binary variable which we will try to predict. The model is, if the closing price &lt;code&gt;today&lt;/code&gt; is greater or equal to the &lt;code&gt;opening&lt;/code&gt; price then the stock has gone up since (or matched) this mornings open price, therefore I assign a &lt;code&gt;1&lt;/code&gt; and if the closing price was less than the open then the stock price has gone down since the morning open price, which is assigned &lt;code&gt;0&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Now the problem is not a regression problem but a binary classification problem. I also create two base variables - a &lt;em&gt;Relative Strength Indicator&lt;/em&gt; and a &lt;em&gt;Momentum Indicator&lt;/em&gt; - feel free to add more technical indicators by looking at the &lt;code&gt;TTR&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# create the dependent variable for a logistic regression
+mdata$direction &amp;lt;- with(mdata, ifelse(close &amp;gt;= open, 1, 0))
+
+#create two basic input variables - lagged
+mdata$rsi &amp;lt;- RSI(mdata$close, nFast=14, nSlow = 26, nSig = 9, maType = SMA)
+mdata$momentum &amp;lt;- momentum(mdata$close, n = 12)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I lag the dependent variables to &lt;code&gt;t-1&lt;/code&gt; since we are trying to predct &lt;code&gt;Y&lt;/code&gt; at time &lt;code&gt;t&lt;/code&gt; using &lt;code&gt;t-1&lt;/code&gt; predictors. I split the data into a &lt;em&gt;naive&lt;/em&gt; train and test split - a rolling origin function would be better suited here, see &lt;a href=&#34;https://cran.r-project.org/web/ackages/greybox/vignettes/ro.html&#34;&gt;rolling origin&lt;/a&gt;. Moreover this strategy is just for learning the functionality of the &lt;code&gt;quantstrat&lt;/code&gt; package in R.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mdata &amp;lt;- mdata[complete.cases(mdata), ] 
+mdata$direction_fwd &amp;lt;- lag.xts(mdata$direction, k = -1)
+# create a training and test set
+train_date &amp;lt;- nrow(mdata) *0.8
+train &amp;lt;- mdata[1:train_date,]
+test &amp;lt;- mdata[-c(1:train_date),]&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Using the Generalise Linear Model in R we can fit a model on the training data, &lt;code&gt;family = binomial&lt;/code&gt; since we have a &lt;code&gt;0&lt;/code&gt; or &lt;code&gt;1&lt;/code&gt; binary classification problem now.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Run a simple logistic regression and obtain predicted probabilities
+lm.fit &amp;lt;- glm(direction_fwd ~ rsi + momentum, data = train, family = binomial)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;summary-statistics&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Summary Statistics&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(lm.fit)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## glm(formula = direction_fwd ~ rsi + momentum, family = binomial, 
+##     data = train)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.6726  -1.2559   0.9724   1.0865   1.3351  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&amp;gt;|z|)  
+## (Intercept) -0.415182   0.583453  -0.712   0.4767  
+## rsi          0.012826   0.010511   1.220   0.2224  
+## momentum    -0.008590   0.004133  -2.078   0.0377 *
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 514.92  on 374  degrees of freedom
+## Residual deviance: 509.71  on 372  degrees of freedom
+## AIC: 515.71
+## 
+## Number of Fisher Scoring iterations: 4&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;make-the-predictions-on-the-held-out-test-set&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Make the predictions on the held out test set:&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pr.lm &amp;lt;- predict(lm.fit, test, type = &amp;quot;response&amp;quot;)
+test$pred_prob &amp;lt;- pr.lm
+
+pr.lm %&amp;gt;%
+  data.frame() %&amp;gt;%
+  rownames_to_column(&amp;quot;dates&amp;quot;) %&amp;gt;%
+  rename(preds = &amp;quot;.&amp;quot;) %&amp;gt;%
+  ggplot(aes(x = preds)) +
+  geom_density() +
+  geom_vline(aes(xintercept = mean(preds)), color = &amp;quot;blue&amp;quot;, linetype = &amp;quot;dashed&amp;quot;, size = 1) +
+  theme_tq() +
+  ggtitle(&amp;quot;Probability predctions on the test set&amp;quot;) +
+  xlab(&amp;quot;Density&amp;quot;) +
+  ylab(&amp;quot;Predicted Probabilities&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/logistic-trading-strategy/logistic-trading-strategy_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Not great but we do only have two predictors. From here we can create a cut-off score and say that all probabilities greater than &lt;code&gt;0.6&lt;/code&gt; we assign a 1, else if they are less than or equal to &lt;code&gt;0.6&lt;/code&gt; we assign a &lt;code&gt;0&lt;/code&gt;. We can see how accurate the model is:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#Add our predictions to the TEST data if its greater than 0.6
+test$prediction &amp;lt;- ifelse(pr.lm &amp;gt; 0.6, 1, 0)
+
+paste0(&amp;quot;Accuracy: &amp;quot;, mean(test$direction_fwd == test$prediction, na.rm = T))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Accuracy: 0.602150537634409&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;applying-the-model-to-a-strategy&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Applying the model to a strategy&lt;/h4&gt;
+&lt;p&gt;check:&lt;a href=&#34;https://stackoverflow.com/questions/53713017/very-simple-quantstrat-trading-model-using-logistic-regression&#34; class=&#34;uri&#34;&gt;https://stackoverflow.com/questions/53713017/very-simple-quantstrat-trading-model-using-logistic-regression&lt;/a&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Simple way to run applyStrategy is to make sure the data for the symbol is in a variable with its name, like so:
+GOOG &amp;lt;- test
+
+
+stock(&amp;quot;GOOG&amp;quot;, currency=&amp;quot;USD&amp;quot;, multiplier=1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;GOOG&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;strategy.st &amp;lt;- portfolio.st &amp;lt;- account.st &amp;lt;- &amp;quot;LogisticRegressionStrategy&amp;quot;
+rm.strat(strategy.st)
+rm.strat(portfolio.st)
+rm.strat(account.st)
+
+
+
+initPortf(name = portfolio.st,
+          symbols = symbols, 
+          initDate = initDate, 
+          currency = &amp;#39;USD&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initAcct(name = account.st, 
+         portfolios = portfolio.st, 
+         initDate = initDate, 
+         currency = &amp;#39;USD&amp;#39;,
+         initEq = init_equity)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initOrders(portfolio.st,
+           symbols = symbols,
+           initDate = initDate)
+
+strategy(strategy.st, store = TRUE)
+
+nMult_orderqty &amp;lt;- 2
+addPosLimit(portfolio.st, symbol = &amp;quot;GOOG&amp;quot;, timestamp = initDate, maxpos = nMult_orderqty * .orderqty)
+
+# Buy when prob exceeds 0.6 for the first time, using cross= TRUE
+add.signal(strategy = strategy.st,
+         name = &amp;quot;sigThreshold&amp;quot;,
+         arguments = list(threshold=0.6, column=&amp;quot;pred_prob&amp;quot;, relationship=&amp;quot;gt&amp;quot;, cross= TRUE),
+         label = &amp;quot;longSig&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt; #exit when prob drops below 0.5 for the first time
+add.signal(strategy = strategy.st,
+           name = &amp;quot;sigThreshold&amp;quot;,
+           arguments = list(threshold=0.5, column=&amp;quot;pred_prob&amp;quot;, relationship=&amp;quot;lt&amp;quot;, cross= TRUE),
+           label = &amp;quot;exitLongSig&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Adding the rules, enter at the low price when &amp;quot;prediction&amp;quot; = 1, taking transaction fees into account
+add.rule(strategy = strategy.st,
+         name = &amp;quot;ruleSignal&amp;quot;,
+         arguments = list(sigcol = &amp;quot;longSig&amp;quot;,
+                          sigval = 1,
+                          orderqty = .orderqty,
+                          ordertype = &amp;quot;market&amp;quot;,
+                          orderside = &amp;quot;long&amp;quot;,
+                          osFUN = osMaxPos,
+                          prefer = &amp;quot;Open&amp;quot;,  #Never kknow the low in advance. Use the open, as it is for the next day (be aware that the open price for bar data has its own problems too)
+                          TxnFees = .txnfees, 
+                          replace = FALSE),
+         type = &amp;quot;enter&amp;quot;,
+         label = &amp;quot;EnterLONG&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# As soon as the Logistic regression predicts a &amp;quot;0&amp;quot; we dump all our shares in GOOG
+
+add.rule(strategy.st, 
+         name = &amp;quot;ruleSignal&amp;quot;, 
+         arguments = list(sigcol = &amp;quot;exitLongSig&amp;quot;, 
+                          sigval = 1, 
+                          ordertype = &amp;quot;market&amp;quot;, 
+                          orderside = &amp;quot;long&amp;quot;,
+                          orderqty = &amp;quot;all&amp;quot;, 
+                          TxnFees = .txnfees, 
+                          replace = TRUE), 
+         type = &amp;quot;exit&amp;quot;, 
+         label = &amp;quot;Exit2SHORT&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;applyStrategy(strategy.st, portfolios = portfolio.st)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;2018-08-10 00:00:00 GOOG 10 @ 1243&amp;quot;
+## [1] &amp;quot;2018-08-24 00:00:00 GOOG 10 @ 1208.819946&amp;quot;
+## [1] &amp;quot;2018-10-04 00:00:00 GOOG -20 @ 1168.189941&amp;quot;
+## [1] &amp;quot;2018-10-09 00:00:00 GOOG 10 @ 1146.150024&amp;quot;
+## [1] &amp;quot;2018-10-11 00:00:00 GOOG 10 @ 1072.939941&amp;quot;
+## [1] &amp;quot;2018-11-15 00:00:00 GOOG -20 @ 1064.709961&amp;quot;
+## [1] &amp;quot;2018-11-19 00:00:00 GOOG 10 @ 1057.199951&amp;quot;
+## [1] &amp;quot;2018-11-26 00:00:00 GOOG 10 @ 1038.349976&amp;quot;
+## [1] &amp;quot;2018-11-30 00:00:00 GOOG -20 @ 1094.430054&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;updatePortf(portfolio.st)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;updateAcct(account.st)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;updateEndEq(account.st)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;LogisticRegressionStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chart.Posn(portfolio.st, Symbol = &amp;quot;GOOG&amp;quot;, 
+           TA=&amp;quot;add_SMA(n = 10, col = 2); add_SMA(n = 30, col = 4)&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/logistic-trading-strategy/logistic-trading-strategy_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -2,25 +2,1103 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts | Matthew Smith R Shenanigans</title>
-    <link>/post/</link>
-      <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <link>http://lf0.com/post/</link>
+      <atom:link href="http://lf0.com/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 24 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>/img/icon-192.png</url>
+      <url>http://lf0.com/img/icon-192.png</url>
       <title>Posts</title>
-      <link>/post/</link>
+      <link>http://lf0.com/post/</link>
     </image>
     
     <item>
-      <title>Fundamental Financial Ratios in R</title>
-      <link>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</guid>
+      <title>Series of Hackerrank Competitions</title>
+      <link>http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions/</link>
+      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions/</guid>
       <description>
-&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(tidyquant)
+library(dplyr)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;problem-1-battery-life-prediction-problem&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Problem 1: Battery Life Prediction Problem&lt;/h4&gt;
+&lt;p&gt;The first problem was to predict how long a laptop would last given the number of hours it was charged. The problem is &lt;a href=&#34;https://www.hackerrank.com/challenges/battery/problem&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;We can read in the data directly from the hackerrank website using the following:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BatteryData &amp;lt;- read.table(file = url(&amp;quot;https://s3.amazonaws.com/hr-testcases/399/assets/trainingdata.txt&amp;quot;), strip.white = TRUE, sep = &amp;#39;,&amp;#39;, header = FALSE, skip = 0)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-3&#34;&gt;Table 1: &lt;/span&gt;Battery Life Data
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V1
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V2
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.62
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.72
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.44
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.87
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.74
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.90
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.80
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.82
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;At first thought I applied a simple time series model to the data and obtained poor predictions. I then took a closer look at the actual data by plotting it and it told a different story.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BatteryData %&amp;gt;%
+  ggplot(aes(x = V1, y = V2)) + 
+  geom_point() +
+  stat_smooth(method = &amp;quot;lm&amp;quot;, col = &amp;quot;red&amp;quot;) +
+  geom_vline(xintercept = 4) +
+  theme_tq()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;I drew a horizontal line at 4 hours of battery life and plotted a linear regression line - quite clearly it performs badely and I needed to find a different model or better yet set a threshold and predict all observations whose battery had been charging for 4 or more hours to be fully charged.&lt;/p&gt;
+&lt;p&gt;The model:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;LinearPredictionModel &amp;lt;- function(TestData){
+  TrainData &amp;lt;- read.table(file = url(&amp;quot;https://s3.amazonaws.com/hr-testcases/399/assets/trainingdata.txt&amp;quot;), strip.white = TRUE, sep = &amp;#39;,&amp;#39;, header = FALSE, skip = 0)
+  
+  TrainData$LessThanFour &amp;lt;- ifelse(TrainData[, 2] &amp;lt; 4, 1, 0)
+  
+  LMData &amp;lt;- TrainData %&amp;gt;%
+    filter(LessThanFour == 1)
+  
+  LinearModel &amp;lt;- lm(V1 ~ V2, data = LMData) 
+  
+  TestData &amp;lt;- data.frame(V2 = TestData)
+  
+  STDOUT &amp;lt;- ifelse(TestData &amp;lt; 4, predict(LinearModel, newdata = TestData), 8)
+  
+  return(cat(STDOUT))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The model basically tells us that if the data is less than 4, then fit a simple linear regression model if it is greater or equal to 4 then just apply an 8 prediction.&lt;/p&gt;
+&lt;p&gt;We can input some new data as follows:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;TestData &amp;lt;- c(5, 8, 1, 0.2, 3.5, 5.6, 4.32)
+LinearPredictionModel(TestData)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 8 8 0.5 0.1 1.75 8 8&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;problem-2-house-price-prediction-problem-using-xgboost&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Problem 2: House Price Prediction Problem using XGBoost&lt;/h4&gt;
+&lt;p&gt;In this problem I want to train an XGBoost (Extreme Gradient Boosting) model to predict what a house is going to be based on some characteristics. There is a house price prediction problem on Hackerrank &lt;a href=&#34;https://www.hackerrank.com/challenges/predicting-house-prices/problem&#34;&gt;here&lt;/a&gt; but I used the pre-installed base R house prices data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(AER)
+library(car)
+library(dplyr)
+library(xgboost)
+library(tidyquant)
+library(Metrics)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Load in the data and set factors to numeric for easier pre-processing.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data(&amp;quot;HousePrices&amp;quot;)
+
+data &amp;lt;- HousePrices %&amp;gt;%
+  mutate_if(is.factor, as.numeric)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-9&#34;&gt;Table 2: &lt;/span&gt;House Price Data
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+price
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+lotsize
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+bedrooms
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+bathrooms
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+stories
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+driveway
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+recreation
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+fullbase
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+gasheat
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+aircon
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+garage
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+prefer
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+42000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5850
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+38500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+49500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3060
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+60500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6650
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+61000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6360
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+66000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4160
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Split the data between 80% train and 20% testing.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+# For this example split between train and test
+smp_size &amp;lt;- floor(nrow(data) * 0.80)
+
+train_ind &amp;lt;- sample(seq_len(nrow(data)), size = smp_size)
+
+train &amp;lt;- data[train_ind, ]
+test &amp;lt;- data[-train_ind, ]
+
+paste(&amp;quot;Train Dimensions&amp;quot;); dim(train)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Train Dimensions&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 436  12&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;paste(&amp;quot;Test Dimensions&amp;quot;); dim(test)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Test Dimensions&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 110  12&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I create the function to take the training and testing data, train a model and output the predictions. I omit the cross-validation and hype-parameter tuning here but I will write a post detailing how I use a grid search to find the optimal parameters of an XGBoost model soon, (it takes some explaining of the functions I create).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+predictHouseSales &amp;lt;- function(train_data, test_data){
+  x_train &amp;lt;- subset(train_data, select = c(-price))
+  y_train &amp;lt;- subset(train_data, select = c(price)) %&amp;gt;% pull(price)
+  
+  x_test &amp;lt;- subset(test_data, select = c(-price))
+  y_test &amp;lt;- subset(test_data, select = c(price)) %&amp;gt;% pull(price)
+  
+  dtrain &amp;lt;- xgb.DMatrix(data = as.matrix(x_train), label = y_train, missing = &amp;quot;NaN&amp;quot;)
+  dtest &amp;lt;- xgb.DMatrix(data = as.matrix(x_test), missing = &amp;quot;NaN&amp;quot;)
+  
+  params &amp;lt;- list(
+    &amp;quot;eta&amp;quot; = 0.1, 
+    &amp;quot;max_depth&amp;quot; = 5, 
+    &amp;quot;objective&amp;quot; = &amp;quot;reg:linear&amp;quot;,
+    &amp;quot;eval_metric&amp;quot;= &amp;quot;rmse&amp;quot;
+    )
+  
+  xgb.model &amp;lt;- xgb.train(params, dtrain, nrounds = 100)
+  
+  return(predict(xgb.model, newdata = dtest))
+  
+}
+
+myPredictions &amp;lt;- predictHouseSales(train, test)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can inspect some of the predictions and compare them to the actual preditions below:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+myPredictions %&amp;gt;%
+  data.frame() %&amp;gt;%
+  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
+  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
+  bind_cols(test) %&amp;gt;%
+  select(myPreds, price) %&amp;gt;%
+  sample_n(5) %&amp;gt;%
+  kable(caption = &amp;quot;Compare predictions to the observed&amp;quot;) %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 12)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-12&#34;&gt;Table 3: &lt;/span&gt;Compare predictions to the observed
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+myPreds
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+price
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+60737
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+83000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69119
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+52000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+83527
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+62875
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+60000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+84798
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Compute the Root Mean Square Error:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+myPredictions %&amp;gt;%
+  data.frame() %&amp;gt;%
+  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
+  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
+  bind_cols(test) %&amp;gt;%
+  select(myPreds, price) %&amp;gt;%
+  summarise(rmse(myPreds, price)) %&amp;gt;%
+  kable(caption = &amp;quot;Compute the RMSE&amp;quot;) %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 12)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-13&#34;&gt;Table 4: &lt;/span&gt;Compute the RMSE
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+rmse(myPreds, price)
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+15209.84
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We can also plot the predictions against the observed using &lt;code&gt;ggplot2&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+myPredictions %&amp;gt;%
+  data.frame() %&amp;gt;%
+  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
+  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
+  bind_cols(test) %&amp;gt;%
+  select(myPreds, price) %&amp;gt;%
+  ggplot(aes(x = price, y = myPreds)) +
+  geom_point() +
+  geom_smooth(method = &amp;#39;lm&amp;#39;) +
+  ggtitle(&amp;quot;My predictions vs Actual Price&amp;quot;) +
+  theme_tq()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The model does &lt;em&gt;okay&lt;/em&gt; without any feature engineering or parameter optimisation using a grid search method.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;problem-3-imputing-missing-values---cross-section&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Problem 3: Imputing missing values - cross section&lt;/h4&gt;
+&lt;p&gt;For simplicity I load in the &lt;code&gt;iris&lt;/code&gt; dataset and I create some random missing values since the &lt;code&gt;iris&lt;/code&gt; data doesn’t have any.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Load in the data
+library(missForest)
+data(iris)
+data &amp;lt;- iris&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-16&#34;&gt;Table 5: &lt;/span&gt;Iris dataset
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Species
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I generate some random missing data, i.e. 20% of the data is missing at random (MaR) or Missing Completely at Random (MCaR). This is an important issue for economists since much of the data we collect contains missing values, due to surveys not being filled correctly, or simply data not being very well colelcted. The below model allows us to &lt;em&gt;impute&lt;/em&gt; the missing values using machine learning, avoiding simple averaging or simply removing the values all together.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Create some random missing data&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-17&#34;&gt;Table 6: &lt;/span&gt;Iris dataset with random missing values
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Species
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Okay now we can train a series of simple missing value imputation models on the data.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-1-randomforest-imputation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model 1: randomForest Imputation:&lt;/h1&gt;
+&lt;p&gt;I won’t discuss the models here but random forests uses a collection of decision trees and averages the results across all trees, which results it some powerful predictions.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;##   missForest iteration 1 in progress...done!
+##   missForest iteration 2 in progress...done!
+##   missForest iteration 3 in progress...done!
+##   missForest iteration 4 in progress...done!
+##   missForest iteration 5 in progress...done!
+##   missForest iteration 6 in progress...done!&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-19&#34;&gt;Table 7: &lt;/span&gt;Iris dataset
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Species
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.100000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.400000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2627262
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.900000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.460455
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.700000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.300000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.600000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.377753
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.125221
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.400000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.400000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.700000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3170000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Lets combine all the data together, filter it down to the actual data, the missing data and the predicted data.&lt;/p&gt;
+&lt;div id=&#34;for-the-sepal.length-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;For the Sepal.Length data&lt;/h3&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-20&#34;&gt;Table 8: &lt;/span&gt;Compare Sepal Observations
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Predicted_Sepal
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Actual_Sepal
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.3
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.2
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.9
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.3
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.8
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.7
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.9
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.7
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Which isn’t bad! given that we only had 436 observations to train on and only 110 observations to test on. Using &lt;code&gt;randomForest&lt;/code&gt; models to impute the data is better than averaging the data on some datasets, of course we have errors the actual observations are somewhat close to the predicted data. I only analyse the &lt;code&gt;Sepal.Length&lt;/code&gt; data but substitute the values to find the missing values for the &lt;code&gt;Sepal.Width&lt;/code&gt;, &lt;code&gt;Petal.Length&lt;/code&gt;, &lt;code&gt;Petal.Width&lt;/code&gt; and &lt;code&gt;Species&lt;/code&gt; values since &lt;code&gt;missorest&lt;/code&gt; imputes categorical variables as well.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Fundamental Financial Ratios in R</title>
+      <link>http://lf0.com/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</link>
+      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</guid>
+      <description>
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
+library(kableExtra)
+library(tidyquant)
+library(directlabels)
+library(tibble)
+library(tidyr)
+library(quantmod)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;I developed a model to collect financial information from Yahoo Finance, I wanted to use this model to understand a little better how to analyse comanies, what ratios are important and to see how companies performances differ from each other.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# A function to collect fundamental data from Yahoo finance (Income Statement, Balance Sheet and Cash Flow statements, just skip past this part.)
 
@@ -110,7 +1188,7 @@ CF &amp;lt;- as.data.frame(CF)&lt;/code&gt;&lt;/pre&gt;
 &lt;h4&gt;How the Income Statement looks:&lt;/h4&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-3&#34;&gt;Table 1: &lt;/span&gt;Income Statement
+&lt;span id=&#34;tab:unnamed-chunk-4&#34;&gt;Table 1: &lt;/span&gt;Income Statement
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -1681,7 +2759,7 @@ Net Income Applicable To Common Shares
 &lt;h4&gt;How the Balance Sheet looks:&lt;/h4&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-4&#34;&gt;Table 2: &lt;/span&gt;Balance Sheet
+&lt;span id=&#34;tab:unnamed-chunk-5&#34;&gt;Table 2: &lt;/span&gt;Balance Sheet
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -3967,7 +5045,7 @@ Net Tangible Assets
 &lt;h4&gt;How the Cash Flow Statement looks:&lt;/h4&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-5&#34;&gt;Table 3: &lt;/span&gt;Cash Flow Statements
+&lt;span id=&#34;tab:unnamed-chunk-6&#34;&gt;Table 3: &lt;/span&gt;Cash Flow Statements
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -5295,7 +6373,7 @@ ISBSCF$symbol &amp;lt;- gsub(&amp;#39;^X&amp;#39;, &amp;#39;&amp;#39;, ISBSCF$sy
 &lt;h4&gt;How all the fundamentals look now:&lt;/h4&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-7&#34;&gt;Table 4: &lt;/span&gt;Income Statement - Balance Sheet - Cash Flow
+&lt;span id=&#34;tab:unnamed-chunk-8&#34;&gt;Table 4: &lt;/span&gt;Income Statement - Balance Sheet - Cash Flow
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -10273,7 +11351,7 @@ colnames(stats) &amp;lt;- gsub(&amp;quot;/&amp;quot;, &amp;quot;.&amp;quot;, col
 &lt;h4&gt;How the company statistics look:&lt;/h4&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-9&#34;&gt;Table 5: &lt;/span&gt;Company Statistics
+&lt;span id=&#34;tab:unnamed-chunk-10&#34;&gt;Table 5: &lt;/span&gt;Company Statistics
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -10309,25 +11387,25 @@ Price.Book
 AAPL
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:13
+2019-09-24 16:00:02
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Apple Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16008143
+27756073
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-18.594719
+18.483484
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0135948
+0.0135333
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 4519179776
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.287983
+10.226439
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10335,16 +11413,16 @@ Apple Inc. 
 AMZN
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:12
+2019-09-24 16:00:02
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Amazon.com, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2550415
+4315284
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-74.096000
+72.253980
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -10353,7 +11431,7 @@ NA
 494656000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.627813
+16.214447
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10361,16 +11439,16 @@ NA
 GOOG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:11
+2019-09-24 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Alphabet Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-876374
+1372965
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-24.925660
+24.604017
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -10379,7 +11457,7 @@ NA
 347344992
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4.458758
+4.401222
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10387,25 +11465,25 @@ NA
 MSFT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:13
+2019-09-24 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Microsoft Corporation
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-12339857
+24602078
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27.515810
+27.150198
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0131956
+0.0132241
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 7635409920
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.398834
+10.260662
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10413,16 +11491,16 @@ Microsoft Corporation
 BIDU
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:11
+2019-09-24 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Baidu, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2583978
+6524817
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-7.974911
+7.605579
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -10431,7 +11509,7 @@ NA
 348540992
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.469765
+1.401697
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -10452,7 +11530,7 @@ stocks &amp;lt;- symbols %&amp;gt;%
 &lt;h4&gt;How the stock price data looks:&lt;/h4&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-11&#34;&gt;Table 6: &lt;/span&gt;Most Recent Stock Prices
+&lt;span id=&#34;tab:unnamed-chunk-12&#34;&gt;Table 6: &lt;/span&gt;Most Recent Stock Prices
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -10473,10 +11551,10 @@ adjusted
 AAPL
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-217.73
+217.68
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10484,10 +11562,10 @@ AAPL
 AMZN
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1794.16
+1741.61
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10495,10 +11573,10 @@ AMZN
 BIDU
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-105.16
+97.61
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10506,10 +11584,10 @@ BIDU
 GOOG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1229.93
+1218.76
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10517,10 +11595,10 @@ GOOG
 MSFT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-139.44
+137.38
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -10537,7 +11615,7 @@ financials &amp;lt;- ISBSCF %&amp;gt;%
 &lt;h4&gt;How all the data looks after joining the fundamentals, stats and latest share price data:&lt;/h4&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-13&#34;&gt;Table 7: &lt;/span&gt;All Data
+&lt;span id=&#34;tab:unnamed-chunk-14&#34;&gt;Table 7: &lt;/span&gt;All Data
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -11041,16 +12119,16 @@ NA
 18491000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:11
+2019-09-24 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Baidu, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2583978
+6524817
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-7.974911
+7.605579
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -11059,13 +12137,13 @@ NA
 348540992
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.469765
+1.401697
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-105.16
+97.61
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -11304,31 +12382,31 @@ NA
 4283000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:13
+2019-09-24 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Microsoft Corporation
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-12339857
+24602078
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27.515810
+27.150198
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0131956
+0.0132241
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 7635409920
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.398834
+10.260662
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-139.44
+137.38
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -11567,16 +12645,16 @@ NA
 5986000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:11
+2019-09-24 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Alphabet Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-876374
+1372965
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-24.925660
+24.604017
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -11585,13 +12663,13 @@ NA
 347344992
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4.458758
+4.401222
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1229.93
+1218.76
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -11830,16 +12908,16 @@ NA
 10317000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:12
+2019-09-24 16:00:02
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Amazon.com, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2550415
+4315284
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-74.096000
+72.253980
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -11848,13 +12926,13 @@ NA
 494656000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.627813
+16.214447
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1794.16
+1741.61
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -12093,31 +13171,31 @@ NA
 5624000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-23 15:57:13
+2019-09-24 16:00:02
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Apple Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16008143
+27756073
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-18.594719
+18.483484
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0135948
+0.0135333
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 4519179776
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.287983
+10.226439
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-217.73
+217.68
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -12134,7 +13212,7 @@ Apple Inc. 
   kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 12)&lt;/code&gt;&lt;/pre&gt;
 &lt;table class=&#34;kable_wrapper table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-14&#34;&gt;Table 8: &lt;/span&gt;Company Variables
+&lt;span id=&#34;tab:unnamed-chunk-15&#34;&gt;Table 8: &lt;/span&gt;Company Variables
 &lt;/caption&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
@@ -12923,7 +14001,7 @@ ratios &amp;lt;- financials %&amp;gt;%
          PE_Ratio, EV_EBITDA, NI_REV, Rev_TA, TA_BvE, ROE)&lt;/code&gt;&lt;/pre&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-16&#34;&gt;Table 9: &lt;/span&gt;Financial Ratios
+&lt;span id=&#34;tab:unnamed-chunk-17&#34;&gt;Table 9: &lt;/span&gt;Financial Ratios
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -12983,7 +14061,7 @@ ROE
 BIDU
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 175752000
@@ -12995,25 +14073,25 @@ BIDU
 33317000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-36652572
+34021087
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-130828572
+128197087
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.4846795
+0.4749307
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2250046
+0.2088503
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.3528459
+0.3275132
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.329292
+1.233855
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.926781
+3.847798
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2654389
@@ -13033,7 +14111,7 @@ BIDU
 MSFT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 82718000
@@ -13045,25 +14123,25 @@ MSFT
 44958000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1064681575
+1048952653
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1228865575
+1213136653
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4.9771390
+4.9134339
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-12.8712200
+12.6810688
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-9.6473503
+9.5048265
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-64.249688
+63.300504
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27.333635
+26.983777
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.1501540
@@ -13083,7 +14161,7 @@ MSFT
 GOOG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 177628000
@@ -13095,25 +14173,25 @@ GOOG
 40421000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-427210045
+423330186
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-465673045
+461793186
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2.1549858
+2.1370311
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2.4050828
+2.3832402
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.1224468
+3.0940892
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-13.899338
+13.773106
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-11.520572
+11.424586
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2246472
@@ -13133,7 +14211,7 @@ GOOG
 AMZN
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 43549000
@@ -13145,25 +14223,25 @@ AMZN
 27762000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-887492026
+861497829
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-974841026
+948846829
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-7.4473332
+7.2487496
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-20.3791597
+19.7822643
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.8108268
+3.6992096
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-88.106029
+85.525447
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.114222
+34.177899
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.0432527
@@ -13183,7 +14261,7 @@ AMZN
 AAPL
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-20
+2019-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 107147000
@@ -13195,25 +14273,25 @@ AAPL
 81801000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-983960995
+983735022
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1216625995
+1216400022
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.5802914
+3.5796264
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-9.1832809
+9.1811719
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.7047422
+3.7038913
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.528548
+16.524752
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-14.872997
+14.870234
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2241420
@@ -13238,7 +14316,7 @@ AAPL
   kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 12)&lt;/code&gt;&lt;/pre&gt;
 &lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-17&#34;&gt;Table 10: &lt;/span&gt;Price Earnings, Price Book ratios
+&lt;span id=&#34;tab:unnamed-chunk-18&#34;&gt;Table 10: &lt;/span&gt;Price Earnings, Price Book ratios
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -13271,16 +14349,16 @@ AAPL
 Apple Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-18.594719
+18.483484
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.528548
+16.524752
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.287983
+10.226439
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-9.1832809
+9.1811719
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -13291,16 +14369,16 @@ AMZN
 Amazon.com, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-74.096000
+72.253980
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-88.106029
+85.525447
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.627813
+16.214447
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-20.3791597
+19.7822643
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -13311,16 +14389,16 @@ GOOG
 Alphabet Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-24.925660
+24.604017
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-13.899338
+13.773106
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4.458758
+4.401222
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2.4050828
+2.3832402
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -13331,16 +14409,16 @@ MSFT
 Microsoft Corporation
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27.515810
+27.150198
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-64.249688
+63.300504
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.398834
+10.260662
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-12.8712200
+12.6810688
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -13351,16 +14429,16 @@ BIDU
 Baidu, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-7.974911
+7.605579
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.329292
+1.233855
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.469765
+1.401697
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2250046
+0.2088503
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -13384,7 +14462,20 @@ Baidu, Inc. 
   facet_wrap(~ symbol, ncol = 2, scales = &amp;quot;free&amp;quot;) +
   theme_tq() +
   ggtitle(&amp;quot;Stock Prices since December 2018&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/financial-ratios-in-r/2019-09-22-fundamental-financial-ratios-in-r_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/financial-ratios-in-r/2019-09-22-fundamental-financial-ratios-in-r_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;also-using-fundamental-data&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Also using fundamental data:&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;financials %&amp;gt;%
+  ggplot(aes(x = symbol)) +
+  geom_col(aes(y = Total.Assets, color = &amp;quot;blue&amp;quot;, fill = &amp;quot;blue&amp;quot;, alpha = 0.5)) +
+  geom_col(aes(y = Total.Liabilities, color = &amp;quot;red&amp;quot;, fill = &amp;quot;red&amp;quot;, alpha = 0.5)) +
+  ggtitle(&amp;quot;Total Assets &amp;amp; Total Liabilities&amp;quot;) +
+  xlab(&amp;quot;Symbols&amp;quot;) +
+  ylab(&amp;quot;Total Assets &amp;amp; Total Liabilities&amp;quot;) +
+  theme_tq() +
+  theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/financial-ratios-in-r/2019-09-22-fundamental-financial-ratios-in-r_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Any errors are my own, if you find any please let me know!&lt;/p&gt;
 &lt;/div&gt;
 </description>
@@ -13392,11 +14483,11 @@ Baidu, Inc. 
     
     <item>
       <title>Kalman Smoothing for Time Series Missing Value Imputation</title>
-      <link>/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</link>
+      <link>http://lf0.com/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</guid>
+      <guid>http://lf0.com/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</guid>
       <description>
-&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I was recently given a task to impute some time series missing values for a prediction problem. Python has the &lt;code&gt;TSFRESH&lt;/code&gt; package which is pretty well documented but I wanted to apply something using R. I opted for a model from statistics and control theory, called Kalman Smoothing which is available in the &lt;code&gt;imputeTS&lt;/code&gt; package in R.&lt;/p&gt;
@@ -13625,112 +14716,112 @@ GOOG_actual
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-02-07
+2007-04-18
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-234.7555
+235.1070
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-234.1274
+237.1162
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-02-13
+2007-06-13
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-230.1927
+250.8735
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-228.6928
+251.6767
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-04-19
+2007-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-238.7316
+281.2974
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-234.9444
+282.9494
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-05-31
+2007-10-31
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-248.8202
+348.2663
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-248.0253
+352.1799
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-08-13
+2007-11-30
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-255.1383
+343.3643
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-256.7875
+345.2061
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-08-28
+2007-12-20
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-255.5769
+342.2341
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-252.2545
+343.5573
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-09-04
+2008-01-14
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-259.7935
+317.9094
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-261.5945
+325.6892
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-11-02
+2008-03-11
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-355.8694
+212.4316
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-354.2970
+219.0988
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-04-02
+2008-04-03
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-229.3533
+233.2543
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-231.9805
+226.7102
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-04-24
+2008-06-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-271.6097
+273.2377
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-270.5061
+270.1375
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -13739,7 +14830,7 @@ GOOG_actual
 &lt;div id=&#34;print-the-rmse-for-google&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Print the RMSE for Google&lt;/h4&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rmse(GOOG_error$GOOG_actual, GOOG_error$GOOG_predictions)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] 4.99637&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 10.15679&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;apply-the-same-to-the-walmart-predictions&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Apply the same to the Walmart predictions:&lt;/h4&gt;
@@ -13763,112 +14854,112 @@ WMT_actual
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-02-07
+2007-04-18
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.83123
+35.90075
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.94089
+35.65949
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-02-13
+2007-06-13
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.38426
+36.68838
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.49700
+36.96761
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-04-19
+2007-09-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-36.31024
+32.80370
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.93453
+33.00339
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-05-31
+2007-10-31
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-36.10167
+33.54558
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.54866
+33.93412
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-08-13
+2007-11-30
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-33.56999
+35.80596
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-34.48070
+35.95321
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-08-28
+2007-12-20
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-33.00792
+36.31553
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-32.57556
+36.07756
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-09-04
+2008-01-14
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-32.30600
+35.73070
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-32.50051
+35.94184
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-11-02
+2008-03-11
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-33.08051
+37.49653
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-33.16853
+37.88709
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-04-02
+2008-04-03
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-41.24560
+41.21812
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-41.25630
+41.61236
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-04-24
+2008-06-24
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-43.38140
+43.61165
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-43.52140
+43.60572
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -13877,16 +14968,16 @@ WMT_actual
 &lt;div id=&#34;print-the-rmse-for-walmart&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Print the RMSE for Walmart&lt;/h4&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rmse(WMT_error$WMT_actual, WMT_error$WMT_predictions)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] 0.5270424&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.5358089&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 </description>
     </item>
     
     <item>
       <title>RStudio Server on Amazon Web Services</title>
-      <link>/post/rstudio-amazonaws/</link>
+      <link>http://lf0.com/post/rstudio-amazonaws/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/post/rstudio-amazonaws/</guid>
+      <guid>http://lf0.com/post/rstudio-amazonaws/</guid>
       <description>
 
 
@@ -13933,11 +15024,11 @@ su root&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Scraping Yahoo Finance IPO Data</title>
-      <link>/post/yahoo-finance-ipo/</link>
+      <link>http://lf0.com/post/yahoo-finance-ipo/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/post/yahoo-finance-ipo/</guid>
+      <guid>http://lf0.com/post/yahoo-finance-ipo/</guid>
       <description>
-&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I wrote a script a while back when I was working on a project which required the analysis of IPO data, of course I used the IPO data from the bloomberg terminal but I wanted a free source also. Yahoo Finance collects IPO data for a number of worldwide markets, its not clean data but it goes as far back as the year 2000.&lt;/p&gt;
@@ -14889,9 +15980,9 @@ See Tim Loughran and Jay Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/
     
     <item>
       <title>Sending nohup commands to R scripts</title>
-      <link>/post/nohup-r-connect/</link>
+      <link>http://lf0.com/post/nohup-r-connect/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/post/nohup-r-connect/</guid>
+      <guid>http://lf0.com/post/nohup-r-connect/</guid>
       <description>
 
 
@@ -14919,11 +16010,11 @@ sapply(years, foo)  &lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Tracking NVDA&#39;s share price</title>
-      <link>/post/nvidia-share-price/</link>
+      <link>http://lf0.com/post/nvidia-share-price/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/post/nvidia-share-price/</guid>
+      <guid>http://lf0.com/post/nvidia-share-price/</guid>
       <description>
-&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I had been tracking the performance of Nvidia for a while since they were reporting impressive earnings and share price growth over recent years. I conducted a study (DCF analysis) to see if Nvidia was fairly priced at this time. I had it marked down as a $141 fair value per share based on the DCF I constructed, however it was trading between a high of $280 to a low of $130 from September and to December of 2018.&lt;/p&gt;
@@ -16728,40 +17819,6 @@ NASDAQ
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-13
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.801179
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.685039
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.542563
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.506095
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-16
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.784052
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.697288
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.532581
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.501827
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
 2019-09-17
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
@@ -16828,6 +17885,40 @@ NASDAQ
 1.495220
 &lt;/td&gt;
 &lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-23
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.730890
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.680665
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.494413
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.494260
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-24
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.708021
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.582677
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.462705
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.472372
+&lt;/td&gt;
+&lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;The data looks a lot more comparable. I plot the results in &lt;code&gt;ggplot2&lt;/code&gt;&lt;/p&gt;
@@ -16846,7 +17937,7 @@ NASDAQ
                                 AMD = &amp;#39;red&amp;#39;,
                                 INTC = &amp;#39;blue&amp;#39;)) +
   theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;So $1 invested in Nvidia back in Jan 2017 would have given you aprox $2.75 return if you sold at the back end of 2018, however the price today would be around $1.60. Compare that with AMD you would have got the same return of $2.75 if you sold at the same time as Nvidia but today your return would be more or less the same at aprox $2.75 despite a drop in AMD’s share price at the same time as NVDA.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;

@@ -1,0 +1,1087 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hackerrank | Matthew Smith R Shenanigans</title>
+    <link>http://lf0.com/categories/hackerrank/</link>
+      <atom:link href="http://lf0.com/categories/hackerrank/index.xml" rel="self" type="application/rss+xml" />
+    <description>Hackerrank</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 24 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>http://lf0.com/img/icon-192.png</url>
+      <title>Hackerrank</title>
+      <link>http://lf0.com/categories/hackerrank/</link>
+    </image>
+    
+    <item>
+      <title>Series of Hackerrank Competitions</title>
+      <link>http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions/</link>
+      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions/</guid>
+      <description>
+&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(tidyquant)
+library(dplyr)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;problem-1-battery-life-prediction-problem&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Problem 1: Battery Life Prediction Problem&lt;/h4&gt;
+&lt;p&gt;The first problem was to predict how long a laptop would last given the number of hours it was charged. The problem is &lt;a href=&#34;https://www.hackerrank.com/challenges/battery/problem&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;We can read in the data directly from the hackerrank website using the following:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BatteryData &amp;lt;- read.table(file = url(&amp;quot;https://s3.amazonaws.com/hr-testcases/399/assets/trainingdata.txt&amp;quot;), strip.white = TRUE, sep = &amp;#39;,&amp;#39;, header = FALSE, skip = 0)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-3&#34;&gt;Table 1: &lt;/span&gt;Battery Life Data
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V1
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+V2
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.81
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.62
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.72
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.44
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.87
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.74
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.90
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.80
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.82
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;At first thought I applied a simple time series model to the data and obtained poor predictions. I then took a closer look at the actual data by plotting it and it told a different story.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BatteryData %&amp;gt;%
+  ggplot(aes(x = V1, y = V2)) + 
+  geom_point() +
+  stat_smooth(method = &amp;quot;lm&amp;quot;, col = &amp;quot;red&amp;quot;) +
+  geom_vline(xintercept = 4) +
+  theme_tq()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;I drew a horizontal line at 4 hours of battery life and plotted a linear regression line - quite clearly it performs badely and I needed to find a different model or better yet set a threshold and predict all observations whose battery had been charging for 4 or more hours to be fully charged.&lt;/p&gt;
+&lt;p&gt;The model:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;LinearPredictionModel &amp;lt;- function(TestData){
+  TrainData &amp;lt;- read.table(file = url(&amp;quot;https://s3.amazonaws.com/hr-testcases/399/assets/trainingdata.txt&amp;quot;), strip.white = TRUE, sep = &amp;#39;,&amp;#39;, header = FALSE, skip = 0)
+  
+  TrainData$LessThanFour &amp;lt;- ifelse(TrainData[, 2] &amp;lt; 4, 1, 0)
+  
+  LMData &amp;lt;- TrainData %&amp;gt;%
+    filter(LessThanFour == 1)
+  
+  LinearModel &amp;lt;- lm(V1 ~ V2, data = LMData) 
+  
+  TestData &amp;lt;- data.frame(V2 = TestData)
+  
+  STDOUT &amp;lt;- ifelse(TestData &amp;lt; 4, predict(LinearModel, newdata = TestData), 8)
+  
+  return(cat(STDOUT))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The model basically tells us that if the data is less than 4, then fit a simple linear regression model if it is greater or equal to 4 then just apply an 8 prediction.&lt;/p&gt;
+&lt;p&gt;We can input some new data as follows:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;TestData &amp;lt;- c(5, 8, 1, 0.2, 3.5, 5.6, 4.32)
+LinearPredictionModel(TestData)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 8 8 0.5 0.1 1.75 8 8&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;problem-2-house-price-prediction-problem-using-xgboost&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Problem 2: House Price Prediction Problem using XGBoost&lt;/h4&gt;
+&lt;p&gt;In this problem I want to train an XGBoost (Extreme Gradient Boosting) model to predict what a house is going to be based on some characteristics. There is a house price prediction problem on Hackerrank &lt;a href=&#34;https://www.hackerrank.com/challenges/predicting-house-prices/problem&#34;&gt;here&lt;/a&gt; but I used the pre-installed base R house prices data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(AER)
+library(car)
+library(dplyr)
+library(xgboost)
+library(tidyquant)
+library(Metrics)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Load in the data and set factors to numeric for easier pre-processing.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data(&amp;quot;HousePrices&amp;quot;)
+
+data &amp;lt;- HousePrices %&amp;gt;%
+  mutate_if(is.factor, as.numeric)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-9&#34;&gt;Table 2: &lt;/span&gt;House Price Data
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+price
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+lotsize
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+bedrooms
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+bathrooms
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+stories
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+driveway
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+recreation
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+fullbase
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+gasheat
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+aircon
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+garage
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+prefer
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+42000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5850
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+38500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+49500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3060
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+60500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6650
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+61000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6360
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+66000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4160
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Split the data between 80% train and 20% testing.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+# For this example split between train and test
+smp_size &amp;lt;- floor(nrow(data) * 0.80)
+
+train_ind &amp;lt;- sample(seq_len(nrow(data)), size = smp_size)
+
+train &amp;lt;- data[train_ind, ]
+test &amp;lt;- data[-train_ind, ]
+
+paste(&amp;quot;Train Dimensions&amp;quot;); dim(train)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Train Dimensions&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 436  12&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;paste(&amp;quot;Test Dimensions&amp;quot;); dim(test)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Test Dimensions&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 110  12&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I create the function to take the training and testing data, train a model and output the predictions. I omit the cross-validation and hype-parameter tuning here but I will write a post detailing how I use a grid search to find the optimal parameters of an XGBoost model soon, (it takes some explaining of the functions I create).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+predictHouseSales &amp;lt;- function(train_data, test_data){
+  x_train &amp;lt;- subset(train_data, select = c(-price))
+  y_train &amp;lt;- subset(train_data, select = c(price)) %&amp;gt;% pull(price)
+  
+  x_test &amp;lt;- subset(test_data, select = c(-price))
+  y_test &amp;lt;- subset(test_data, select = c(price)) %&amp;gt;% pull(price)
+  
+  dtrain &amp;lt;- xgb.DMatrix(data = as.matrix(x_train), label = y_train, missing = &amp;quot;NaN&amp;quot;)
+  dtest &amp;lt;- xgb.DMatrix(data = as.matrix(x_test), missing = &amp;quot;NaN&amp;quot;)
+  
+  params &amp;lt;- list(
+    &amp;quot;eta&amp;quot; = 0.1, 
+    &amp;quot;max_depth&amp;quot; = 5, 
+    &amp;quot;objective&amp;quot; = &amp;quot;reg:linear&amp;quot;,
+    &amp;quot;eval_metric&amp;quot;= &amp;quot;rmse&amp;quot;
+    )
+  
+  xgb.model &amp;lt;- xgb.train(params, dtrain, nrounds = 100)
+  
+  return(predict(xgb.model, newdata = dtest))
+  
+}
+
+myPredictions &amp;lt;- predictHouseSales(train, test)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can inspect some of the predictions and compare them to the actual preditions below:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+myPredictions %&amp;gt;%
+  data.frame() %&amp;gt;%
+  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
+  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
+  bind_cols(test) %&amp;gt;%
+  select(myPreds, price) %&amp;gt;%
+  sample_n(5) %&amp;gt;%
+  kable(caption = &amp;quot;Compare predictions to the observed&amp;quot;) %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 12)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-12&#34;&gt;Table 3: &lt;/span&gt;Compare predictions to the observed
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+myPreds
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+price
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+60737
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+83000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69119
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+52000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+83527
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+62875
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+60000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+84798
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Compute the Root Mean Square Error:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+myPredictions %&amp;gt;%
+  data.frame() %&amp;gt;%
+  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
+  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
+  bind_cols(test) %&amp;gt;%
+  select(myPreds, price) %&amp;gt;%
+  summarise(rmse(myPreds, price)) %&amp;gt;%
+  kable(caption = &amp;quot;Compute the RMSE&amp;quot;) %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 12)&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-13&#34;&gt;Table 4: &lt;/span&gt;Compute the RMSE
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+rmse(myPreds, price)
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+15209.84
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We can also plot the predictions against the observed using &lt;code&gt;ggplot2&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
+myPredictions %&amp;gt;%
+  data.frame() %&amp;gt;%
+  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
+  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
+  bind_cols(test) %&amp;gt;%
+  select(myPreds, price) %&amp;gt;%
+  ggplot(aes(x = price, y = myPreds)) +
+  geom_point() +
+  geom_smooth(method = &amp;#39;lm&amp;#39;) +
+  ggtitle(&amp;quot;My predictions vs Actual Price&amp;quot;) +
+  theme_tq()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The model does &lt;em&gt;okay&lt;/em&gt; without any feature engineering or parameter optimisation using a grid search method.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;problem-3-imputing-missing-values---cross-section&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Problem 3: Imputing missing values - cross section&lt;/h4&gt;
+&lt;p&gt;For simplicity I load in the &lt;code&gt;iris&lt;/code&gt; dataset and I create some random missing values since the &lt;code&gt;iris&lt;/code&gt; data doesn’t have any.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Load in the data
+library(missForest)
+data(iris)
+data &amp;lt;- iris&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-16&#34;&gt;Table 5: &lt;/span&gt;Iris dataset
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Species
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I generate some random missing data, i.e. 20% of the data is missing at random (MaR) or Missing Completely at Random (MCaR). This is an important issue for economists since much of the data we collect contains missing values, due to surveys not being filled correctly, or simply data not being very well colelcted. The below model allows us to &lt;em&gt;impute&lt;/em&gt; the missing values using machine learning, avoiding simple averaging or simply removing the values all together.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Create some random missing data&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-17&#34;&gt;Table 6: &lt;/span&gt;Iris dataset with random missing values
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Species
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.3
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.4
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Okay now we can train a series of simple missing value imputation models on the data.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;model-1-randomforest-imputation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Model 1: randomForest Imputation:&lt;/h1&gt;
+&lt;p&gt;I won’t discuss the models here but random forests uses a collection of decision trees and averages the results across all trees, which results it some powerful predictions.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;##   missForest iteration 1 in progress...done!
+##   missForest iteration 2 in progress...done!
+##   missForest iteration 3 in progress...done!
+##   missForest iteration 4 in progress...done!
+##   missForest iteration 5 in progress...done!
+##   missForest iteration 6 in progress...done!&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-19&#34;&gt;Table 7: &lt;/span&gt;Iris dataset
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Sepal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Length
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Petal.Width
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Species
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.100000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.5
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.400000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2627262
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.900000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.460455
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.700000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.300000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.600000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.377753
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.125221
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.6
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.400000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.400000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.700000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3170000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+setosa
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Lets combine all the data together, filter it down to the actual data, the missing data and the predicted data.&lt;/p&gt;
+&lt;div id=&#34;for-the-sepal.length-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;For the Sepal.Length data&lt;/h3&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-20&#34;&gt;Table 8: &lt;/span&gt;Compare Sepal Observations
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Predicted_Sepal
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Actual_Sepal
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7.1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.3
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.2
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.9
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.3
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.8
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.7
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+4.9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.7
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.9
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+5.7
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.2
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6.1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Which isn’t bad! given that we only had 436 observations to train on and only 110 observations to test on. Using &lt;code&gt;randomForest&lt;/code&gt; models to impute the data is better than averaging the data on some datasets, of course we have errors the actual observations are somewhat close to the predicted data. I only analyse the &lt;code&gt;Sepal.Length&lt;/code&gt; data but substitute the values to find the missing values for the &lt;code&gt;Sepal.Width&lt;/code&gt;, &lt;code&gt;Petal.Length&lt;/code&gt;, &lt;code&gt;Petal.Width&lt;/code&gt; and &lt;code&gt;Species&lt;/code&gt; values since &lt;code&gt;missorest&lt;/code&gt; imputes categorical variables as well.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

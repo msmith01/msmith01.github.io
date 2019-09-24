@@ -2,30 +2,34 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Authors | Matthew Smith R Shenanigans</title>
-    <link>/authors/</link>
-      <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+    <link>http://lf0.com/authors/</link>
+      <atom:link href="http://lf0.com/authors/index.xml" rel="self" type="application/rss+xml" />
     <description>Authors</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>/img/icon-192.png</url>
+      <url>http://lf0.com/img/icon-192.png</url>
       <title>Authors</title>
-      <link>/authors/</link>
+      <link>http://lf0.com/authors/</link>
     </image>
     
     <item>
       <title></title>
-      <link>/authors/admin/</link>
+      <link>http://lf0.com/authors/admin/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/authors/admin/</guid>
-      <description>&lt;p&gt;I focus my research on machine learning applications applied to economics but in my spare time I generally enjoy playing around with different R packages. I set up this blog as a way to highlight my research results, organise my code and publish it along with comments for others to use.&lt;/p&gt;
+      <guid>http://lf0.com/authors/admin/</guid>
+      <description>&lt;p&gt;I focus my research on machine learning applications applied to economics but in my spare time I generally enjoy playing around with different R packages. I set up this blog as a way to highlight my research results, organise my code and publish it along with comments for others.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;“Choose a job you love, and you will never have to work a day in your life.” ― Confucius&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
     <item>
       <title>Robert Ford</title>
-      <link>/authors/robert-ford/</link>
+      <link>http://lf0.com/authors/robert-ford/</link>
       <pubDate>Tue, 01 Sep 2015 00:00:00 +0000</pubDate>
-      <guid>/authors/robert-ford/</guid>
+      <guid>http://lf0.com/authors/robert-ford/</guid>
       <description></description>
     </item>
     
