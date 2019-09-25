@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>RStudio | Matthew Smith R Shenanigans</title>
-    <link>http://lf0.com/tags/rstudio/</link>
-      <atom:link href="http://lf0.com/tags/rstudio/index.xml" rel="self" type="application/rss+xml" />
+    <link>/tags/rstudio/</link>
+      <atom:link href="/tags/rstudio/index.xml" rel="self" type="application/rss+xml" />
     <description>RStudio</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>http://lf0.com/img/icon-192.png</url>
+      <url>/img/icon-192.png</url>
       <title>RStudio</title>
-      <link>http://lf0.com/tags/rstudio/</link>
+      <link>/tags/rstudio/</link>
     </image>
     
     <item>
       <title>RStudio Server on Amazon Web Services</title>
-      <link>http://lf0.com/post/rstudio-amazonaws/</link>
+      <link>/post/rstudio-amazonaws/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/rstudio-amazonaws/</guid>
+      <guid>/post/rstudio-amazonaws/</guid>
       <description>
 
 
@@ -63,9 +63,9 @@ su root&lt;/code&gt;&lt;/pre&gt;
     
     <item>
       <title>Sending nohup commands to R scripts</title>
-      <link>http://lf0.com/post/nohup-r-connect/</link>
+      <link>/post/nohup-r-connect/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/nohup-r-connect/</guid>
+      <guid>/post/nohup-r-connect/</guid>
       <description>
 
 

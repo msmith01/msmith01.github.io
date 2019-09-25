@@ -2,45 +2,53 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories | Matthew Smith R Shenanigans</title>
-    <link>http://lf0.com/categories/</link>
-      <atom:link href="http://lf0.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <link>/categories/</link>
+      <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 24 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Wed, 25 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>http://lf0.com/img/icon-192.png</url>
+      <url>/img/icon-192.png</url>
       <title>Categories</title>
-      <link>http://lf0.com/categories/</link>
+      <link>/categories/</link>
     </image>
     
     <item>
+      <title>Finance</title>
+      <link>/categories/finance/</link>
+      <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
+      <guid>/categories/finance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Hackerrank</title>
-      <link>http://lf0.com/categories/hackerrank/</link>
+      <link>/categories/hackerrank/</link>
       <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/categories/hackerrank/</guid>
+      <guid>/categories/hackerrank/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Statistics</title>
-      <link>http://lf0.com/categories/statistics/</link>
+      <link>/categories/statistics/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/categories/statistics/</guid>
+      <guid>/categories/statistics/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Yahoo Finance</title>
-      <link>http://lf0.com/categories/yahoo-finance/</link>
+      <link>/categories/yahoo-finance/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/categories/yahoo-finance/</guid>
+      <guid>/categories/yahoo-finance/</guid>
       <description></description>
     </item>
     
     <item>
       <title>AWS</title>
-      <link>http://lf0.com/categories/aws/</link>
+      <link>/categories/aws/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/categories/aws/</guid>
+      <guid>/categories/aws/</guid>
       <description></description>
     </item>
     

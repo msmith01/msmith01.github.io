@@ -1,0 +1,11082 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Matthew Smith">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="I use managerial finance and corporate finance methods to scape and analyse fundamental data from yhaoo and analyse companies DuPont, NFO and WC">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/nfo-wc-calculations/nfo-wc-calculations-plots/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#3f51b5">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.5ff542731a650dc259fe0480984e3969.css">
+
+  
+
+  
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/nfo-wc-calculations/nfo-wc-calculations-plots/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Matthew Smith R Shenanigans">
+  <meta property="og:url" content="/post/nfo-wc-calculations/nfo-wc-calculations-plots/">
+  <meta property="og:title" content="Need for Funds (NFO) and Working Capital (WC) Calculations | Matthew Smith R Shenanigans">
+  <meta property="og:description" content="I use managerial finance and corporate finance methods to scape and analyse fundamental data from yhaoo and analyse companies DuPont, NFO and WC"><meta property="og:image" content="/img/icon-192.png">
+  <meta property="twitter:image" content="/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-09-25T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2019-09-25T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/post/nfo-wc-calculations/nfo-wc-calculations-plots/"
+  },
+  "headline": "Need for Funds (NFO) and Working Capital (WC) Calculations",
+  
+  "datePublished": "2019-09-25T00:00:00Z",
+  "dateModified": "2019-09-25T00:00:00Z",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Matthew Smith"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Matthew Smith R Shenanigans",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/img/icon-512.png"
+    }
+  },
+  "description": "I use managerial finance and corporate finance methods to scape and analyse fundamental data from yhaoo and analyse companies DuPont, NFO and WC"
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Need for Funds (NFO) and Working Capital (WC) Calculations | Matthew Smith R Shenanigans</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Matthew Smith R Shenanigans</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/courses/"><span>Courses</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Need for Funds (NFO) and Working Capital (WC) Calculations</h1>
+
+  
+  <p class="page-subtitle">I calculate the Need for Funds and Working Capital for a number of companies and analyse the results</p>
+  
+
+  
+    
+
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Sep 25, 2019
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    22 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/finance/">Finance</a></span>
+  
+
+  
+    
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=/post/nfo-wc-calculations/nfo-wc-calculations-plots/&amp;text=Need%20for%20Funds%20%28NFO%29%20and%20Working%20Capital%20%28WC%29%20Calculations" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=/post/nfo-wc-calculations/nfo-wc-calculations-plots/&amp;t=Need%20for%20Funds%20%28NFO%29%20and%20Working%20Capital%20%28WC%29%20Calculations" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Need%20for%20Funds%20%28NFO%29%20and%20Working%20Capital%20%28WC%29%20Calculations&amp;body=/post/nfo-wc-calculations/nfo-wc-calculations-plots/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=/post/nfo-wc-calculations/nfo-wc-calculations-plots/&amp;title=Need%20for%20Funds%20%28NFO%29%20and%20Working%20Capital%20%28WC%29%20Calculations" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=Need%20for%20Funds%20%28NFO%29%20and%20Working%20Capital%20%28WC%29%20Calculations%20/post/nfo-wc-calculations/nfo-wc-calculations-plots/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=/post/nfo-wc-calculations/nfo-wc-calculations-plots/&amp;title=Need%20for%20Funds%20%28NFO%29%20and%20Working%20Capital%20%28WC%29%20Calculations" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="btn-links mb-3">
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<div id="corporate-finance-and-managerial-finance" class="section level4">
+<h4>Corporate Finance and Managerial Finance</h4>
+<p>I created a script to download any company from Yahoo Finance and compute the <em>DuPont</em>, <em>Need for Funds</em> and <em>Working Capital</em> based on companies fundamentals and plot these for each company. I suggest you first watch these two short videos from IESE Business School - part 1 <a href="https://www.coursera.org/lecture/operational-finance/4-need-of-funds-nfo-and-working-capital-wc-cRBRP">here</a> and part 2 <a href="https://www.coursera.org/lecture/operational-finance/5-need-of-funds-nfo-and-working-capital-wc-continued-hxJP6">here</a>.</p>
+<center>
+<img src="letsdoit.jpg" alt="Letsdoit!" />
+</center>
+<p>Firstly load in some packages:</p>
+<pre class="r"><code>library(knitr)
+library(kableExtra)
+library(tidyquant)
+library(quantmod)
+library(tibble)
+library(tidyr)
+library(reshape2)
+library(ggplot2)
+library(rvest)</code></pre>
+<p>I first define the function to scrape Yahoo Finance and collect the Balance Sheet, Income Statement and Cash Flows (it looks complicated but it works):</p>
+<pre class="r"><code>getFin &lt;- function(stock){
+  for (i in 1:length(stock)) {
+    tryCatch(
+      {
+        # Collect the Income Statement data
+        link &lt;- &quot;https://finance.yahoo.com/quote/&quot;
+        link &lt;- paste0(link, stock[i], &quot;/financials?p=&quot;, stock[i])
+        wahis.session &lt;- html_session(link)
+        p &lt;- wahis.session %&gt;%
+          html_nodes(xpath = &#39;//*[@id=&quot;Col1-1-Financials-Proxy&quot;]/section/div[3]/table&#39;)%&gt;%
+          html_table(fill = TRUE)
+        IncomeStatement &lt;- p[[1]]
+        colnames(IncomeStatement) &lt;- paste(IncomeStatement[1,])
+        IncomeStatement &lt;- IncomeStatement[-c(1,5,12,20,25),]
+        names_row &lt;- paste(IncomeStatement[,1])
+        IncomeStatement &lt;- IncomeStatement[,-1]
+        IncomeStatement &lt;- apply(IncomeStatement, 2, function(x){gsub(&quot;,&quot;,&quot;&quot;,x)})
+        IncomeStatement &lt;- as.data.frame(apply(IncomeStatement, 2, as.numeric))
+        rownames(IncomeStatement) &lt;- paste(names_row)
+        temp1 &lt;- IncomeStatement
+        
+        # Collect the Balance Sheet data
+        link &lt;- &quot;https://finance.yahoo.com/quote/&quot;
+        link &lt;- paste0(link, stock[i],&quot;/balance-sheet?p=&quot;, stock[i])
+        wahis.session &lt;- html_session(link)
+        p &lt;- wahis.session %&gt;%
+          html_nodes(xpath = &#39;//*[@id=&quot;Col1-1-Financials-Proxy&quot;]/section/div[3]/table&#39;)%&gt;%
+          html_table(fill = TRUE)
+        BalanceSheet &lt;- p[[1]]
+        colnames(BalanceSheet) &lt;- BalanceSheet[1,]
+        BalanceSheet &lt;- BalanceSheet[-c(1,2,17,28),]
+        names_row &lt;- BalanceSheet[,1]
+        BalanceSheet &lt;- BalanceSheet[,-1]
+        BalanceSheet &lt;- apply(BalanceSheet, 2, function(x){gsub(&quot;,&quot;,&quot;&quot;,x)})
+        BalanceSheet &lt;- as.data.frame(apply(BalanceSheet, 2, as.numeric))
+        rownames(BalanceSheet) &lt;- paste(names_row)
+        temp2 &lt;- BalanceSheet
+        
+        # Collect the Cash Flow data
+        link &lt;- &quot;https://finance.yahoo.com/quote/&quot;
+        link &lt;- paste0(link, stock[i], &quot;/cash-flow?p=&quot;, stock[i])
+        wahis.session &lt;- html_session(link)
+        p &lt;- wahis.session %&gt;%
+          html_nodes(xpath = &#39;//*[@id=&quot;Col1-1-Financials-Proxy&quot;]/section/div[3]/table&#39;)%&gt;%
+          html_table(fill = TRUE)
+        CashFlow &lt;- p[[1]]
+        colnames(CashFlow) &lt;- CashFlow[1,]
+        CashFlow &lt;- CashFlow[-c(1,3,11,16),]
+        names_row &lt;- CashFlow[,1]
+        CashFlow &lt;- CashFlow[,-1]
+        CashFlow &lt;- apply(CashFlow, 2, function(x){gsub(&quot;,&quot;,&quot;&quot;,x)})
+        CashFlow &lt;- as.data.frame(apply(CashFlow, 2, as.numeric))
+        rownames(CashFlow) &lt;- paste(names_row)
+        temp3 &lt;- CashFlow
+        
+        assign(paste0(stock[i],&#39;.f&#39;),value = list(IncomeStatement = temp1, BalanceSheet = temp2, CashFlow = temp3), envir = parent.frame())
+        },
+      error = function(cond){
+        message(stock[i], &quot;Give error &quot;,cond)
+        }
+      )
+  }
+}</code></pre>
+<p>Next I collect some tickers, I choose <code>Ford</code>, <code>General Electric</code>, <code>International Business Machine</code> and <code>Unilever</code> but feel free to add in more tickers - what ever financial data can be found on Yahoo Finance will work- just add to the <code>symbols</code> part of the code.</p>
+<pre class="r"><code>symbols &lt;- c(&quot;F&quot;, &quot;GE&quot;, &quot;IBM&quot;, &quot;UN&quot;)
+getFin(symbols)
+symbols.f &lt;- sapply(symbols, function(x) { paste0(x, &quot;.f&quot;) })
+
+tickers &lt;- list2env(mget(symbols.f))
+
+IS &lt;- lapply(tickers, &quot;[[&quot;, &quot;IncomeStatement&quot;)
+BS &lt;- lapply(tickers, &quot;[[&quot;, &quot;BalanceSheet&quot;)
+CF &lt;- lapply(tickers, &quot;[[&quot;, &quot;CashFlow&quot;)
+
+IS &lt;- as.data.frame(IS)
+BS &lt;- as.data.frame(BS)
+CF &lt;- as.data.frame(CF)</code></pre>
+<p>Where <code>IS</code> is Income Statement, <code>BS</code> is Balance Sheet<code>and</code>CF` is Cash Flow.</p>
+</div>
+<div id="how-the-income-statement-looks" class="section level4">
+<h4>How the Income Statement looks:</h4>
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-4">Table 1: </span>Income Statement
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2018
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2017
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2016
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2015
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2018
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2017
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2016
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2015
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2018
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2017
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2016
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2015
+</th>
+<th style="text-align:right;">
+F.f.12.31.2018
+</th>
+<th style="text-align:right;">
+F.f.12.31.2017
+</th>
+<th style="text-align:right;">
+F.f.12.31.2016
+</th>
+<th style="text-align:right;">
+F.f.12.31.2015
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Total Revenue
+</td>
+<td style="text-align:right;">
+50982000
+</td>
+<td style="text-align:right;">
+53715000
+</td>
+<td style="text-align:right;">
+52713000
+</td>
+<td style="text-align:right;">
+53272000
+</td>
+<td style="text-align:right;">
+79591000
+</td>
+<td style="text-align:right;">
+79139000
+</td>
+<td style="text-align:right;">
+79919000
+</td>
+<td style="text-align:right;">
+81741000
+</td>
+<td style="text-align:right;">
+121615000
+</td>
+<td style="text-align:right;">
+118243000
+</td>
+<td style="text-align:right;">
+119468000
+</td>
+<td style="text-align:right;">
+115834000
+</td>
+<td style="text-align:right;">
+160338000
+</td>
+<td style="text-align:right;">
+156776000
+</td>
+<td style="text-align:right;">
+151800000
+</td>
+<td style="text-align:right;">
+149558000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cost of Revenue
+</td>
+<td style="text-align:right;">
+28769000
+</td>
+<td style="text-align:right;">
+30547000
+</td>
+<td style="text-align:right;">
+30229000
+</td>
+<td style="text-align:right;">
+30808000
+</td>
+<td style="text-align:right;">
+42655000
+</td>
+<td style="text-align:right;">
+42196000
+</td>
+<td style="text-align:right;">
+41402000
+</td>
+<td style="text-align:right;">
+41057000
+</td>
+<td style="text-align:right;">
+98396000
+</td>
+<td style="text-align:right;">
+106858000
+</td>
+<td style="text-align:right;">
+94886000
+</td>
+<td style="text-align:right;">
+90111000
+</td>
+<td style="text-align:right;">
+145459000
+</td>
+<td style="text-align:right;">
+140218000
+</td>
+<td style="text-align:right;">
+134933000
+</td>
+<td style="text-align:right;">
+131410000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gross Profit
+</td>
+<td style="text-align:right;">
+22213000
+</td>
+<td style="text-align:right;">
+23168000
+</td>
+<td style="text-align:right;">
+22484000
+</td>
+<td style="text-align:right;">
+22464000
+</td>
+<td style="text-align:right;">
+36936000
+</td>
+<td style="text-align:right;">
+36943000
+</td>
+<td style="text-align:right;">
+38517000
+</td>
+<td style="text-align:right;">
+40684000
+</td>
+<td style="text-align:right;">
+23219000
+</td>
+<td style="text-align:right;">
+11385000
+</td>
+<td style="text-align:right;">
+24582000
+</td>
+<td style="text-align:right;">
+25723000
+</td>
+<td style="text-align:right;">
+14879000
+</td>
+<td style="text-align:right;">
+16558000
+</td>
+<td style="text-align:right;">
+16867000
+</td>
+<td style="text-align:right;">
+18148000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Research Development
+</td>
+<td style="text-align:right;">
+900000
+</td>
+<td style="text-align:right;">
+900000
+</td>
+<td style="text-align:right;">
+978000
+</td>
+<td style="text-align:right;">
+1005000
+</td>
+<td style="text-align:right;">
+5379000
+</td>
+<td style="text-align:right;">
+5590000
+</td>
+<td style="text-align:right;">
+5726000
+</td>
+<td style="text-align:right;">
+5247000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Selling General and Administrative
+</td>
+<td style="text-align:right;">
+8803000
+</td>
+<td style="text-align:right;">
+13507000
+</td>
+<td style="text-align:right;">
+13799000
+</td>
+<td style="text-align:right;">
+14065000
+</td>
+<td style="text-align:right;">
+20325000
+</td>
+<td style="text-align:right;">
+20900000
+</td>
+<td style="text-align:right;">
+20225000
+</td>
+<td style="text-align:right;">
+19589000
+</td>
+<td style="text-align:right;">
+15134000
+</td>
+<td style="text-align:right;">
+15389000
+</td>
+<td style="text-align:right;">
+14707000
+</td>
+<td style="text-align:right;">
+16327000
+</td>
+<td style="text-align:right;">
+10460000
+</td>
+<td style="text-align:right;">
+9676000
+</td>
+<td style="text-align:right;">
+12504000
+</td>
+<td style="text-align:right;">
+10097000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Non Recurring
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Others
+</td>
+<td style="text-align:right;">
+41427000
+</td>
+<td style="text-align:right;">
+44031000
+</td>
+<td style="text-align:right;">
+44031000
+</td>
+<td style="text-align:right;">
+44031000
+</td>
+<td style="text-align:right;">
+-998000
+</td>
+<td style="text-align:right;">
+-1445000
+</td>
+<td style="text-align:right;">
+-1604000
+</td>
+<td style="text-align:right;">
+-669000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Operating Expenses
+</td>
+<td style="text-align:right;">
+38472000
+</td>
+<td style="text-align:right;">
+44954000
+</td>
+<td style="text-align:right;">
+45006000
+</td>
+<td style="text-align:right;">
+45878000
+</td>
+<td style="text-align:right;">
+67361000
+</td>
+<td style="text-align:right;">
+67241000
+</td>
+<td style="text-align:right;">
+65749000
+</td>
+<td style="text-align:right;">
+65224000
+</td>
+<td style="text-align:right;">
+113530000
+</td>
+<td style="text-align:right;">
+122247000
+</td>
+<td style="text-align:right;">
+109593000
+</td>
+<td style="text-align:right;">
+106438000
+</td>
+<td style="text-align:right;">
+155919000
+</td>
+<td style="text-align:right;">
+149894000
+</td>
+<td style="text-align:right;">
+147437000
+</td>
+<td style="text-align:right;">
+141507000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Operating Income or Loss
+</td>
+<td style="text-align:right;">
+12510000
+</td>
+<td style="text-align:right;">
+8761000
+</td>
+<td style="text-align:right;">
+7707000
+</td>
+<td style="text-align:right;">
+7394000
+</td>
+<td style="text-align:right;">
+12230000
+</td>
+<td style="text-align:right;">
+11898000
+</td>
+<td style="text-align:right;">
+14170000
+</td>
+<td style="text-align:right;">
+16517000
+</td>
+<td style="text-align:right;">
+8085000
+</td>
+<td style="text-align:right;">
+-4004000
+</td>
+<td style="text-align:right;">
+9875000
+</td>
+<td style="text-align:right;">
+9396000
+</td>
+<td style="text-align:right;">
+4419000
+</td>
+<td style="text-align:right;">
+6882000
+</td>
+<td style="text-align:right;">
+4363000
+</td>
+<td style="text-align:right;">
+8051000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Other Income/Expenses Net
+</td>
+<td style="text-align:right;">
+-127000
+</td>
+<td style="text-align:right;">
+-608000
+</td>
+<td style="text-align:right;">
+-238000
+</td>
+<td style="text-align:right;">
+-174000
+</td>
+<td style="text-align:right;">
+-888000
+</td>
+<td style="text-align:right;">
+-498000
+</td>
+<td style="text-align:right;">
+-1840000
+</td>
+<td style="text-align:right;">
+-572000
+</td>
+<td style="text-align:right;">
+-28220000
+</td>
+<td style="text-align:right;">
+-7147000
+</td>
+<td style="text-align:right;">
+-2843000
+</td>
+<td style="text-align:right;">
+-1211000
+</td>
+<td style="text-align:right;">
+-74000
+</td>
+<td style="text-align:right;">
+1277000
+</td>
+<td style="text-align:right;">
+2421000
+</td>
+<td style="text-align:right;">
+2201000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Earnings Before Interest and Taxes
+</td>
+<td style="text-align:right;">
+12510000
+</td>
+<td style="text-align:right;">
+8761000
+</td>
+<td style="text-align:right;">
+7707000
+</td>
+<td style="text-align:right;">
+7394000
+</td>
+<td style="text-align:right;">
+12230000
+</td>
+<td style="text-align:right;">
+11898000
+</td>
+<td style="text-align:right;">
+14170000
+</td>
+<td style="text-align:right;">
+16517000
+</td>
+<td style="text-align:right;">
+8085000
+</td>
+<td style="text-align:right;">
+-4004000
+</td>
+<td style="text-align:right;">
+9875000
+</td>
+<td style="text-align:right;">
+9396000
+</td>
+<td style="text-align:right;">
+4419000
+</td>
+<td style="text-align:right;">
+6882000
+</td>
+<td style="text-align:right;">
+4363000
+</td>
+<td style="text-align:right;">
+8051000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Interest Expense
+</td>
+<td style="text-align:right;">
+-627000
+</td>
+<td style="text-align:right;">
+-608000
+</td>
+<td style="text-align:right;">
+-572000
+</td>
+<td style="text-align:right;">
+-552000
+</td>
+<td style="text-align:right;">
+-723000
+</td>
+<td style="text-align:right;">
+-615000
+</td>
+<td style="text-align:right;">
+-630000
+</td>
+<td style="text-align:right;">
+-468000
+</td>
+<td style="text-align:right;">
+-2708000
+</td>
+<td style="text-align:right;">
+-2753000
+</td>
+<td style="text-align:right;">
+-2026000
+</td>
+<td style="text-align:right;">
+-1706000
+</td>
+<td style="text-align:right;">
+-1228000
+</td>
+<td style="text-align:right;">
+-1190000
+</td>
+<td style="text-align:right;">
+-951000
+</td>
+<td style="text-align:right;">
+-773000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income Before Tax
+</td>
+<td style="text-align:right;">
+12383000
+</td>
+<td style="text-align:right;">
+8153000
+</td>
+<td style="text-align:right;">
+7469000
+</td>
+<td style="text-align:right;">
+7220000
+</td>
+<td style="text-align:right;">
+11342000
+</td>
+<td style="text-align:right;">
+11400000
+</td>
+<td style="text-align:right;">
+12330000
+</td>
+<td style="text-align:right;">
+15945000
+</td>
+<td style="text-align:right;">
+-20135000
+</td>
+<td style="text-align:right;">
+-11151000
+</td>
+<td style="text-align:right;">
+7032000
+</td>
+<td style="text-align:right;">
+8185000
+</td>
+<td style="text-align:right;">
+4345000
+</td>
+<td style="text-align:right;">
+8159000
+</td>
+<td style="text-align:right;">
+6784000
+</td>
+<td style="text-align:right;">
+10252000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income Tax Expense
+</td>
+<td style="text-align:right;">
+2575000
+</td>
+<td style="text-align:right;">
+1667000
+</td>
+<td style="text-align:right;">
+1922000
+</td>
+<td style="text-align:right;">
+1961000
+</td>
+<td style="text-align:right;">
+2619000
+</td>
+<td style="text-align:right;">
+5642000
+</td>
+<td style="text-align:right;">
+449000
+</td>
+<td style="text-align:right;">
+2581000
+</td>
+<td style="text-align:right;">
+583000
+</td>
+<td style="text-align:right;">
+-2611000
+</td>
+<td style="text-align:right;">
+-1133000
+</td>
+<td style="text-align:right;">
+6485000
+</td>
+<td style="text-align:right;">
+650000
+</td>
+<td style="text-align:right;">
+402000
+</td>
+<td style="text-align:right;">
+2184000
+</td>
+<td style="text-align:right;">
+2881000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Minority Interest
+</td>
+<td style="text-align:right;">
+720000
+</td>
+<td style="text-align:right;">
+758000
+</td>
+<td style="text-align:right;">
+626000
+</td>
+<td style="text-align:right;">
+643000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+131000
+</td>
+<td style="text-align:right;">
+146000
+</td>
+<td style="text-align:right;">
+162000
+</td>
+<td style="text-align:right;">
+20882000
+</td>
+<td style="text-align:right;">
+20859000
+</td>
+<td style="text-align:right;">
+4688000
+</td>
+<td style="text-align:right;">
+4836000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+126000
+</td>
+<td style="text-align:right;">
+113000
+</td>
+<td style="text-align:right;">
+109000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Net Income From Continuing Ops
+</td>
+<td style="text-align:right;">
+9808000
+</td>
+<td style="text-align:right;">
+6486000
+</td>
+<td style="text-align:right;">
+5547000
+</td>
+<td style="text-align:right;">
+5259000
+</td>
+<td style="text-align:right;">
+8723000
+</td>
+<td style="text-align:right;">
+5758000
+</td>
+<td style="text-align:right;">
+11881000
+</td>
+<td style="text-align:right;">
+13364000
+</td>
+<td style="text-align:right;">
+-20718000
+</td>
+<td style="text-align:right;">
+-8540000
+</td>
+<td style="text-align:right;">
+8165000
+</td>
+<td style="text-align:right;">
+1700000
+</td>
+<td style="text-align:right;">
+3695000
+</td>
+<td style="text-align:right;">
+7757000
+</td>
+<td style="text-align:right;">
+4600000
+</td>
+<td style="text-align:right;">
+7371000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Discontinued Operations
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+5000
+</td>
+<td style="text-align:right;">
+-5000
+</td>
+<td style="text-align:right;">
+-9000
+</td>
+<td style="text-align:right;">
+-174000
+</td>
+<td style="text-align:right;">
+-1726000
+</td>
+<td style="text-align:right;">
+-309000
+</td>
+<td style="text-align:right;">
+-954000
+</td>
+<td style="text-align:right;">
+-7807000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Extraordinary Items
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Effect Of Accounting Changes
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Items
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Net Income
+</td>
+<td style="text-align:right;">
+9389000
+</td>
+<td style="text-align:right;">
+6053000
+</td>
+<td style="text-align:right;">
+5184000
+</td>
+<td style="text-align:right;">
+4909000
+</td>
+<td style="text-align:right;">
+8728000
+</td>
+<td style="text-align:right;">
+5753000
+</td>
+<td style="text-align:right;">
+11872000
+</td>
+<td style="text-align:right;">
+13190000
+</td>
+<td style="text-align:right;">
+-22355000
+</td>
+<td style="text-align:right;">
+-8484000
+</td>
+<td style="text-align:right;">
+7500000
+</td>
+<td style="text-align:right;">
+-6126000
+</td>
+<td style="text-align:right;">
+3677000
+</td>
+<td style="text-align:right;">
+7731000
+</td>
+<td style="text-align:right;">
+4589000
+</td>
+<td style="text-align:right;">
+7373000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Preferred Stock And Other Adjustments
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Net Income Applicable To Common Shares
+</td>
+<td style="text-align:right;">
+9389000
+</td>
+<td style="text-align:right;">
+6053000
+</td>
+<td style="text-align:right;">
+5184000
+</td>
+<td style="text-align:right;">
+4909000
+</td>
+<td style="text-align:right;">
+8728000
+</td>
+<td style="text-align:right;">
+5753000
+</td>
+<td style="text-align:right;">
+11872000
+</td>
+<td style="text-align:right;">
+13190000
+</td>
+<td style="text-align:right;">
+-22809000
+</td>
+<td style="text-align:right;">
+-8944000
+</td>
+<td style="text-align:right;">
+6829000
+</td>
+<td style="text-align:right;">
+-6135000
+</td>
+<td style="text-align:right;">
+3677000
+</td>
+<td style="text-align:right;">
+7731000
+</td>
+<td style="text-align:right;">
+4589000
+</td>
+<td style="text-align:right;">
+7373000
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="how-the-balance-sheet-looks" class="section level4">
+<h4>How the Balance Sheet looks:</h4>
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-5">Table 2: </span>Balance Sheet
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2018
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2017
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2016
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2015
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2018
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2017
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2016
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2015
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2018
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2017
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2016
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2015
+</th>
+<th style="text-align:right;">
+F.f.12.31.2018
+</th>
+<th style="text-align:right;">
+F.f.12.31.2017
+</th>
+<th style="text-align:right;">
+F.f.12.31.2016
+</th>
+<th style="text-align:right;">
+F.f.12.31.2015
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Cash And Cash Equivalents
+</td>
+<td style="text-align:right;">
+3230000
+</td>
+<td style="text-align:right;">
+3317000
+</td>
+<td style="text-align:right;">
+3382000
+</td>
+<td style="text-align:right;">
+2302000
+</td>
+<td style="text-align:right;">
+11379000
+</td>
+<td style="text-align:right;">
+11972000
+</td>
+<td style="text-align:right;">
+7826000
+</td>
+<td style="text-align:right;">
+7686000
+</td>
+<td style="text-align:right;">
+16369000
+</td>
+<td style="text-align:right;">
+18211000
+</td>
+<td style="text-align:right;">
+10525000
+</td>
+<td style="text-align:right;">
+10372000
+</td>
+<td style="text-align:right;">
+7111000
+</td>
+<td style="text-align:right;">
+8934000
+</td>
+<td style="text-align:right;">
+7828000
+</td>
+<td style="text-align:right;">
+5386000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Short Term Investments
+</td>
+<td style="text-align:right;">
+681000
+</td>
+<td style="text-align:right;">
+521000
+</td>
+<td style="text-align:right;">
+565000
+</td>
+<td style="text-align:right;">
+596000
+</td>
+<td style="text-align:right;">
+618000
+</td>
+<td style="text-align:right;">
+608000
+</td>
+<td style="text-align:right;">
+701000
+</td>
+<td style="text-align:right;">
+508000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+15925000
+</td>
+<td style="text-align:right;">
+17554000
+</td>
+<td style="text-align:right;">
+19642000
+</td>
+<td style="text-align:right;">
+18181000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Net Receivables
+</td>
+<td style="text-align:right;">
+4822000
+</td>
+<td style="text-align:right;">
+4204000
+</td>
+<td style="text-align:right;">
+3854000
+</td>
+<td style="text-align:right;">
+3416000
+</td>
+<td style="text-align:right;">
+8596000
+</td>
+<td style="text-align:right;">
+10380000
+</td>
+<td style="text-align:right;">
+10239000
+</td>
+<td style="text-align:right;">
+9534000
+</td>
+<td style="text-align:right;">
+19874000
+</td>
+<td style="text-align:right;">
+24209000
+</td>
+<td style="text-align:right;">
+24076000
+</td>
+<td style="text-align:right;">
+43013000
+</td>
+<td style="text-align:right;">
+3698000
+</td>
+<td style="text-align:right;">
+10599000
+</td>
+<td style="text-align:right;">
+11102000
+</td>
+<td style="text-align:right;">
+11042000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Inventory
+</td>
+<td style="text-align:right;">
+4301000
+</td>
+<td style="text-align:right;">
+3962000
+</td>
+<td style="text-align:right;">
+4278000
+</td>
+<td style="text-align:right;">
+4335000
+</td>
+<td style="text-align:right;">
+1682000
+</td>
+<td style="text-align:right;">
+1583000
+</td>
+<td style="text-align:right;">
+1553000
+</td>
+<td style="text-align:right;">
+1551000
+</td>
+<td style="text-align:right;">
+19271000
+</td>
+<td style="text-align:right;">
+19419000
+</td>
+<td style="text-align:right;">
+22354000
+</td>
+<td style="text-align:right;">
+22515000
+</td>
+<td style="text-align:right;">
+11220000
+</td>
+<td style="text-align:right;">
+11176000
+</td>
+<td style="text-align:right;">
+8898000
+</td>
+<td style="text-align:right;">
+8319000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Current Assets
+</td>
+<td style="text-align:right;">
+1387000
+</td>
+<td style="text-align:right;">
+4356000
+</td>
+<td style="text-align:right;">
+1120000
+</td>
+<td style="text-align:right;">
+1352000
+</td>
+<td style="text-align:right;">
+2902000
+</td>
+<td style="text-align:right;">
+2266000
+</td>
+<td style="text-align:right;">
+532000
+</td>
+<td style="text-align:right;">
+293000
+</td>
+<td style="text-align:right;">
+7441000
+</td>
+<td style="text-align:right;">
+6720000
+</td>
+<td style="text-align:right;">
+3885000
+</td>
+<td style="text-align:right;">
+5109000
+</td>
+<td style="text-align:right;">
+2567000
+</td>
+<td style="text-align:right;">
+3649000
+</td>
+<td style="text-align:right;">
+3145000
+</td>
+<td style="text-align:right;">
+2704000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Current Assets
+</td>
+<td style="text-align:right;">
+15481000
+</td>
+<td style="text-align:right;">
+16983000
+</td>
+<td style="text-align:right;">
+13884000
+</td>
+<td style="text-align:right;">
+12686000
+</td>
+<td style="text-align:right;">
+49146000
+</td>
+<td style="text-align:right;">
+49735000
+</td>
+<td style="text-align:right;">
+43889000
+</td>
+<td style="text-align:right;">
+42504000
+</td>
+<td style="text-align:right;">
+95974000
+</td>
+<td style="text-align:right;">
+116253000
+</td>
+<td style="text-align:right;">
+131436000
+</td>
+<td style="text-align:right;">
+280896000
+</td>
+<td style="text-align:right;">
+114649000
+</td>
+<td style="text-align:right;">
+116801000
+</td>
+<td style="text-align:right;">
+108461000
+</td>
+<td style="text-align:right;">
+102587000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Long Term Investments
+</td>
+<td style="text-align:right;">
+637000
+</td>
+<td style="text-align:right;">
+565000
+</td>
+<td style="text-align:right;">
+491000
+</td>
+<td style="text-align:right;">
+592000
+</td>
+<td style="text-align:right;">
+439000
+</td>
+<td style="text-align:right;">
+581000
+</td>
+<td style="text-align:right;">
+659000
+</td>
+<td style="text-align:right;">
+1131000
+</td>
+<td style="text-align:right;">
+34920000
+</td>
+<td style="text-align:right;">
+38696000
+</td>
+<td style="text-align:right;">
+44313000
+</td>
+<td style="text-align:right;">
+31973000
+</td>
+<td style="text-align:right;">
+2595000
+</td>
+<td style="text-align:right;">
+3448000
+</td>
+<td style="text-align:right;">
+3523000
+</td>
+<td style="text-align:right;">
+3244000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Property, plant and equipment
+</td>
+<td style="text-align:right;">
+10347000
+</td>
+<td style="text-align:right;">
+10411000
+</td>
+<td style="text-align:right;">
+11673000
+</td>
+<td style="text-align:right;">
+11058000
+</td>
+<td style="text-align:right;">
+10792000
+</td>
+<td style="text-align:right;">
+11116000
+</td>
+<td style="text-align:right;">
+10830000
+</td>
+<td style="text-align:right;">
+10727000
+</td>
+<td style="text-align:right;">
+50749000
+</td>
+<td style="text-align:right;">
+53874000
+</td>
+<td style="text-align:right;">
+50518000
+</td>
+<td style="text-align:right;">
+54095000
+</td>
+<td style="text-align:right;">
+37883000
+</td>
+<td style="text-align:right;">
+36901000
+</td>
+<td style="text-align:right;">
+33692000
+</td>
+<td style="text-align:right;">
+32177000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Goodwill
+</td>
+<td style="text-align:right;">
+17341000
+</td>
+<td style="text-align:right;">
+16881000
+</td>
+<td style="text-align:right;">
+17624000
+</td>
+<td style="text-align:right;">
+16213000
+</td>
+<td style="text-align:right;">
+36265000
+</td>
+<td style="text-align:right;">
+36788000
+</td>
+<td style="text-align:right;">
+36199000
+</td>
+<td style="text-align:right;">
+32021000
+</td>
+<td style="text-align:right;">
+58710000
+</td>
+<td style="text-align:right;">
+83968000
+</td>
+<td style="text-align:right;">
+68070000
+</td>
+<td style="text-align:right;">
+65526000
+</td>
+<td style="text-align:right;">
+264000
+</td>
+<td style="text-align:right;">
+75000
+</td>
+<td style="text-align:right;">
+50000
+</td>
+<td style="text-align:right;">
+6000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Intangible Assets
+</td>
+<td style="text-align:right;">
+12152000
+</td>
+<td style="text-align:right;">
+11520000
+</td>
+<td style="text-align:right;">
+9809000
+</td>
+<td style="text-align:right;">
+8846000
+</td>
+<td style="text-align:right;">
+3087000
+</td>
+<td style="text-align:right;">
+3742000
+</td>
+<td style="text-align:right;">
+4688000
+</td>
+<td style="text-align:right;">
+3487000
+</td>
+<td style="text-align:right;">
+18159000
+</td>
+<td style="text-align:right;">
+20273000
+</td>
+<td style="text-align:right;">
+16436000
+</td>
+<td style="text-align:right;">
+17797000
+</td>
+<td style="text-align:right;">
+178000
+</td>
+<td style="text-align:right;">
+213000
+</td>
+<td style="text-align:right;">
+198000
+</td>
+<td style="text-align:right;">
+124000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Accumulated Amortization
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Assets
+</td>
+<td style="text-align:right;">
+3498000
+</td>
+<td style="text-align:right;">
+3925000
+</td>
+<td style="text-align:right;">
+2948000
+</td>
+<td style="text-align:right;">
+2903000
+</td>
+<td style="text-align:right;">
+14505000
+</td>
+<td style="text-align:right;">
+13844000
+</td>
+<td style="text-align:right;">
+12184000
+</td>
+<td style="text-align:right;">
+10612000
+</td>
+<td style="text-align:right;">
+49713000
+</td>
+<td style="text-align:right;">
+56181000
+</td>
+<td style="text-align:right;">
+52042000
+</td>
+<td style="text-align:right;">
+42784000
+</td>
+<td style="text-align:right;">
+16755000
+</td>
+<td style="text-align:right;">
+18215000
+</td>
+<td style="text-align:right;">
+14894000
+</td>
+<td style="text-align:right;">
+16154000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Deferred Long Term Asset Charges
+</td>
+<td style="text-align:right;">
+1117000
+</td>
+<td style="text-align:right;">
+1085000
+</td>
+<td style="text-align:right;">
+1354000
+</td>
+<td style="text-align:right;">
+1185000
+</td>
+<td style="text-align:right;">
+5216000
+</td>
+<td style="text-align:right;">
+4862000
+</td>
+<td style="text-align:right;">
+5224000
+</td>
+<td style="text-align:right;">
+4822000
+</td>
+<td style="text-align:right;">
+12432000
+</td>
+<td style="text-align:right;">
+8819000
+</td>
+<td style="text-align:right;">
+1833000
+</td>
+<td style="text-align:right;">
+3105000
+</td>
+<td style="text-align:right;">
+10412000
+</td>
+<td style="text-align:right;">
+10762000
+</td>
+<td style="text-align:right;">
+9705000
+</td>
+<td style="text-align:right;">
+11509000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Assets
+</td>
+<td style="text-align:right;">
+59456000
+</td>
+<td style="text-align:right;">
+60285000
+</td>
+<td style="text-align:right;">
+56429000
+</td>
+<td style="text-align:right;">
+52298000
+</td>
+<td style="text-align:right;">
+123382000
+</td>
+<td style="text-align:right;">
+125356000
+</td>
+<td style="text-align:right;">
+117470000
+</td>
+<td style="text-align:right;">
+110495000
+</td>
+<td style="text-align:right;">
+309129000
+</td>
+<td style="text-align:right;">
+369245000
+</td>
+<td style="text-align:right;">
+365183000
+</td>
+<td style="text-align:right;">
+493071000
+</td>
+<td style="text-align:right;">
+256540000
+</td>
+<td style="text-align:right;">
+258496000
+</td>
+<td style="text-align:right;">
+237951000
+</td>
+<td style="text-align:right;">
+224925000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Accounts Payable
+</td>
+<td style="text-align:right;">
+9121000
+</td>
+<td style="text-align:right;">
+8217000
+</td>
+<td style="text-align:right;">
+8591000
+</td>
+<td style="text-align:right;">
+8296000
+</td>
+<td style="text-align:right;">
+6558000
+</td>
+<td style="text-align:right;">
+6451000
+</td>
+<td style="text-align:right;">
+6209000
+</td>
+<td style="text-align:right;">
+6028000
+</td>
+<td style="text-align:right;">
+17153000
+</td>
+<td style="text-align:right;">
+15172000
+</td>
+<td style="text-align:right;">
+14435000
+</td>
+<td style="text-align:right;">
+13680000
+</td>
+<td style="text-align:right;">
+20426000
+</td>
+<td style="text-align:right;">
+23282000
+</td>
+<td style="text-align:right;">
+21296000
+</td>
+<td style="text-align:right;">
+20272000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Short/Current Long Term Debt
+</td>
+<td style="text-align:right;">
+2012000
+</td>
+<td style="text-align:right;">
+1537000
+</td>
+<td style="text-align:right;">
+2173000
+</td>
+<td style="text-align:right;">
+1495000
+</td>
+<td style="text-align:right;">
+7055000
+</td>
+<td style="text-align:right;">
+5215000
+</td>
+<td style="text-align:right;">
+6239000
+</td>
+<td style="text-align:right;">
+5271000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+1700000
+</td>
+<td style="text-align:right;">
+1960000
+</td>
+<td style="text-align:right;">
+1361000
+</td>
+<td style="text-align:right;">
+961000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Current Liabilities
+</td>
+<td style="text-align:right;">
+3194000
+</td>
+<td style="text-align:right;">
+2787000
+</td>
+<td style="text-align:right;">
+2392000
+</td>
+<td style="text-align:right;">
+2759000
+</td>
+<td style="text-align:right;">
+14680000
+</td>
+<td style="text-align:right;">
+16451000
+</td>
+<td style="text-align:right;">
+14693000
+</td>
+<td style="text-align:right;">
+14281000
+</td>
+<td style="text-align:right;">
+19710000
+</td>
+<td style="text-align:right;">
+19531000
+</td>
+<td style="text-align:right;">
+20772000
+</td>
+<td style="text-align:right;">
+27453000
+</td>
+<td style="text-align:right;">
+18868000
+</td>
+<td style="text-align:right;">
+16402000
+</td>
+<td style="text-align:right;">
+16277000
+</td>
+<td style="text-align:right;">
+16084000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Current Liabilities
+</td>
+<td style="text-align:right;">
+19772000
+</td>
+<td style="text-align:right;">
+23177000
+</td>
+<td style="text-align:right;">
+20556000
+</td>
+<td style="text-align:right;">
+20019000
+</td>
+<td style="text-align:right;">
+38227000
+</td>
+<td style="text-align:right;">
+37363000
+</td>
+<td style="text-align:right;">
+36275000
+</td>
+<td style="text-align:right;">
+34269000
+</td>
+<td style="text-align:right;">
+49937000
+</td>
+<td style="text-align:right;">
+60043000
+</td>
+<td style="text-align:right;">
+70364000
+</td>
+<td style="text-align:right;">
+138270000
+</td>
+<td style="text-align:right;">
+95569000
+</td>
+<td style="text-align:right;">
+94600000
+</td>
+<td style="text-align:right;">
+90281000
+</td>
+<td style="text-align:right;">
+82336000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Long Term Debt
+</td>
+<td style="text-align:right;">
+21535000
+</td>
+<td style="text-align:right;">
+16342000
+</td>
+<td style="text-align:right;">
+11011000
+</td>
+<td style="text-align:right;">
+9696000
+</td>
+<td style="text-align:right;">
+35681000
+</td>
+<td style="text-align:right;">
+39871000
+</td>
+<td style="text-align:right;">
+34663000
+</td>
+<td style="text-align:right;">
+33431000
+</td>
+<td style="text-align:right;">
+95234000
+</td>
+<td style="text-align:right;">
+108575000
+</td>
+<td style="text-align:right;">
+105080000
+</td>
+<td style="text-align:right;">
+144659000
+</td>
+<td style="text-align:right;">
+11833000
+</td>
+<td style="text-align:right;">
+13174000
+</td>
+<td style="text-align:right;">
+13222000
+</td>
+<td style="text-align:right;">
+11060000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Liabilities
+</td>
+<td style="text-align:right;">
+5742000
+</td>
+<td style="text-align:right;">
+6259000
+</td>
+<td style="text-align:right;">
+7748000
+</td>
+<td style="text-align:right;">
+6343000
+</td>
+<td style="text-align:right;">
+32544000
+</td>
+<td style="text-align:right;">
+30397000
+</td>
+<td style="text-align:right;">
+28140000
+</td>
+<td style="text-align:right;">
+28371000
+</td>
+<td style="text-align:right;">
+74883000
+</td>
+<td style="text-align:right;">
+84243000
+</td>
+<td style="text-align:right;">
+83040000
+</td>
+<td style="text-align:right;">
+79175000
+</td>
+<td style="text-align:right;">
+23088000
+</td>
+<td style="text-align:right;">
+25526000
+</td>
+<td style="text-align:right;">
+25086000
+</td>
+<td style="text-align:right;">
+23959000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Deferred Long Term Liability Charges
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+2676000
+</td>
+<td style="text-align:right;">
+2136000
+</td>
+<td style="text-align:right;">
+1496000
+</td>
+<td style="text-align:right;">
+1626000
+</td>
+<td style="text-align:right;">
+5739000
+</td>
+<td style="text-align:right;">
+5484000
+</td>
+<td style="text-align:right;">
+5534000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+232000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Minority Interest
+</td>
+<td style="text-align:right;">
+720000
+</td>
+<td style="text-align:right;">
+758000
+</td>
+<td style="text-align:right;">
+626000
+</td>
+<td style="text-align:right;">
+643000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+131000
+</td>
+<td style="text-align:right;">
+146000
+</td>
+<td style="text-align:right;">
+162000
+</td>
+<td style="text-align:right;">
+20882000
+</td>
+<td style="text-align:right;">
+20859000
+</td>
+<td style="text-align:right;">
+4688000
+</td>
+<td style="text-align:right;">
+4836000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+126000
+</td>
+<td style="text-align:right;">
+113000
+</td>
+<td style="text-align:right;">
+109000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Negative Goodwill
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Liabilities
+</td>
+<td style="text-align:right;">
+47164000
+</td>
+<td style="text-align:right;">
+45898000
+</td>
+<td style="text-align:right;">
+39449000
+</td>
+<td style="text-align:right;">
+36216000
+</td>
+<td style="text-align:right;">
+106452000
+</td>
+<td style="text-align:right;">
+107631000
+</td>
+<td style="text-align:right;">
+99078000
+</td>
+<td style="text-align:right;">
+96071000
+</td>
+<td style="text-align:right;">
+257266000
+</td>
+<td style="text-align:right;">
+292356000
+</td>
+<td style="text-align:right;">
+284667000
+</td>
+<td style="text-align:right;">
+389961000
+</td>
+<td style="text-align:right;">
+220474000
+</td>
+<td style="text-align:right;">
+222792000
+</td>
+<td style="text-align:right;">
+208668000
+</td>
+<td style="text-align:right;">
+196174000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Misc. Stocks Options Warrants
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Redeemable Preferred Stock
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Preferred Stock
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Common Stock
+</td>
+<td style="text-align:right;">
+464000
+</td>
+<td style="text-align:right;">
+484000
+</td>
+<td style="text-align:right;">
+484000
+</td>
+<td style="text-align:right;">
+484000
+</td>
+<td style="text-align:right;">
+55151000
+</td>
+<td style="text-align:right;">
+54566000
+</td>
+<td style="text-align:right;">
+53935000
+</td>
+<td style="text-align:right;">
+53262000
+</td>
+<td style="text-align:right;">
+702000
+</td>
+<td style="text-align:right;">
+702000
+</td>
+<td style="text-align:right;">
+702000
+</td>
+<td style="text-align:right;">
+702000
+</td>
+<td style="text-align:right;">
+41000
+</td>
+<td style="text-align:right;">
+41000
+</td>
+<td style="text-align:right;">
+41000
+</td>
+<td style="text-align:right;">
+41000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Retained Earnings
+</td>
+<td style="text-align:right;">
+26265000
+</td>
+<td style="text-align:right;">
+26648000
+</td>
+<td style="text-align:right;">
+23179000
+</td>
+<td style="text-align:right;">
+22619000
+</td>
+<td style="text-align:right;">
+159206000
+</td>
+<td style="text-align:right;">
+153126000
+</td>
+<td style="text-align:right;">
+152759000
+</td>
+<td style="text-align:right;">
+146124000
+</td>
+<td style="text-align:right;">
+93109000
+</td>
+<td style="text-align:right;">
+117245000
+</td>
+<td style="text-align:right;">
+139532000
+</td>
+<td style="text-align:right;">
+140020000
+</td>
+<td style="text-align:right;">
+22668000
+</td>
+<td style="text-align:right;">
+21906000
+</td>
+<td style="text-align:right;">
+15634000
+</td>
+<td style="text-align:right;">
+14414000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Treasury Stock
+</td>
+<td style="text-align:right;">
+-15286000
+</td>
+<td style="text-align:right;">
+-13633000
+</td>
+<td style="text-align:right;">
+-7443000
+</td>
+<td style="text-align:right;">
+-7816000
+</td>
+<td style="text-align:right;">
+-197561000
+</td>
+<td style="text-align:right;">
+-190098000
+</td>
+<td style="text-align:right;">
+-188448000
+</td>
+<td style="text-align:right;">
+-185124000
+</td>
+<td style="text-align:right;">
+-62836000
+</td>
+<td style="text-align:right;">
+-61923000
+</td>
+<td style="text-align:right;">
+-64412000
+</td>
+<td style="text-align:right;">
+-42454000
+</td>
+<td style="text-align:right;">
+-8783000
+</td>
+<td style="text-align:right;">
+-8212000
+</td>
+<td style="text-align:right;">
+-8135000
+</td>
+<td style="text-align:right;">
+-7234000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capital Surplus
+</td>
+<td style="text-align:right;">
+129000
+</td>
+<td style="text-align:right;">
+130000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+152000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+22006000
+</td>
+<td style="text-align:right;">
+21843000
+</td>
+<td style="text-align:right;">
+21630000
+</td>
+<td style="text-align:right;">
+21421000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Stockholder Equity
+</td>
+<td style="text-align:right;">
+-5105000
+</td>
+<td style="text-align:right;">
+-4425000
+</td>
+<td style="text-align:right;">
+-3279000
+</td>
+<td style="text-align:right;">
+-3697000
+</td>
+<td style="text-align:right;">
+-29490000
+</td>
+<td style="text-align:right;">
+-26591000
+</td>
+<td style="text-align:right;">
+-29398000
+</td>
+<td style="text-align:right;">
+-29606000
+</td>
+<td style="text-align:right;">
+21089000
+</td>
+<td style="text-align:right;">
+22979000
+</td>
+<td style="text-align:right;">
+18626000
+</td>
+<td style="text-align:right;">
+21085000
+</td>
+<td style="text-align:right;">
+-7366000
+</td>
+<td style="text-align:right;">
+-6959000
+</td>
+<td style="text-align:right;">
+-7013000
+</td>
+<td style="text-align:right;">
+-6257000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total stockholders’ equity
+</td>
+<td style="text-align:right;">
+11572000
+</td>
+<td style="text-align:right;">
+13629000
+</td>
+<td style="text-align:right;">
+16354000
+</td>
+<td style="text-align:right;">
+15439000
+</td>
+<td style="text-align:right;">
+16796000
+</td>
+<td style="text-align:right;">
+17594000
+</td>
+<td style="text-align:right;">
+18246000
+</td>
+<td style="text-align:right;">
+14262000
+</td>
+<td style="text-align:right;">
+30975000
+</td>
+<td style="text-align:right;">
+56024000
+</td>
+<td style="text-align:right;">
+75822000
+</td>
+<td style="text-align:right;">
+98268000
+</td>
+<td style="text-align:right;">
+35932000
+</td>
+<td style="text-align:right;">
+35578000
+</td>
+<td style="text-align:right;">
+29170000
+</td>
+<td style="text-align:right;">
+28642000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Net Tangible Assets
+</td>
+<td style="text-align:right;">
+-17921000
+</td>
+<td style="text-align:right;">
+-14772000
+</td>
+<td style="text-align:right;">
+-11079000
+</td>
+<td style="text-align:right;">
+-9620000
+</td>
+<td style="text-align:right;">
+-22556000
+</td>
+<td style="text-align:right;">
+-22936000
+</td>
+<td style="text-align:right;">
+-22641000
+</td>
+<td style="text-align:right;">
+-21246000
+</td>
+<td style="text-align:right;">
+-46798000
+</td>
+<td style="text-align:right;">
+-48217000
+</td>
+<td style="text-align:right;">
+-11052000
+</td>
+<td style="text-align:right;">
+14945000
+</td>
+<td style="text-align:right;">
+35932000
+</td>
+<td style="text-align:right;">
+35290000
+</td>
+<td style="text-align:right;">
+28922000
+</td>
+<td style="text-align:right;">
+28512000
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="how-the-cash-flow-statement-looks" class="section level4">
+<h4>How the Cash Flow Statement looks:</h4>
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-6">Table 3: </span>Cash Flow Statements
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2018
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2017
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2016
+</th>
+<th style="text-align:right;">
+UN.f.12.31.2015
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2018
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2017
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2016
+</th>
+<th style="text-align:right;">
+IBM.f.12.31.2015
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2018
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2017
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2016
+</th>
+<th style="text-align:right;">
+GE.f.12.31.2015
+</th>
+<th style="text-align:right;">
+F.f.12.31.2018
+</th>
+<th style="text-align:right;">
+F.f.12.31.2017
+</th>
+<th style="text-align:right;">
+F.f.12.31.2016
+</th>
+<th style="text-align:right;">
+F.f.12.31.2015
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Net Income
+</td>
+<td style="text-align:right;">
+9389000
+</td>
+<td style="text-align:right;">
+6053000
+</td>
+<td style="text-align:right;">
+5184000
+</td>
+<td style="text-align:right;">
+4909000
+</td>
+<td style="text-align:right;">
+8728000
+</td>
+<td style="text-align:right;">
+5753000
+</td>
+<td style="text-align:right;">
+11872000
+</td>
+<td style="text-align:right;">
+13190000
+</td>
+<td style="text-align:right;">
+-22355000
+</td>
+<td style="text-align:right;">
+-8484000
+</td>
+<td style="text-align:right;">
+7500000
+</td>
+<td style="text-align:right;">
+-6126000
+</td>
+<td style="text-align:right;">
+3677000
+</td>
+<td style="text-align:right;">
+7731000
+</td>
+<td style="text-align:right;">
+4589000
+</td>
+<td style="text-align:right;">
+7373000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Depreciation
+</td>
+<td style="text-align:right;">
+1450000
+</td>
+<td style="text-align:right;">
+1214000
+</td>
+<td style="text-align:right;">
+1464000
+</td>
+<td style="text-align:right;">
+1370000
+</td>
+<td style="text-align:right;">
+4480000
+</td>
+<td style="text-align:right;">
+4541000
+</td>
+<td style="text-align:right;">
+4381000
+</td>
+<td style="text-align:right;">
+3855000
+</td>
+<td style="text-align:right;">
+7796000
+</td>
+<td style="text-align:right;">
+7429000
+</td>
+<td style="text-align:right;">
+7070000
+</td>
+<td style="text-align:right;">
+6509000
+</td>
+<td style="text-align:right;">
+8308000
+</td>
+<td style="text-align:right;">
+8453000
+</td>
+<td style="text-align:right;">
+8717000
+</td>
+<td style="text-align:right;">
+7966000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Adjustments To Net Income
+</td>
+<td style="text-align:right;">
+-3590000
+</td>
+<td style="text-align:right;">
+-231000
+</td>
+<td style="text-align:right;">
+348000
+</td>
+<td style="text-align:right;">
+331000
+</td>
+<td style="text-align:right;">
+1485000
+</td>
+<td style="text-align:right;">
+-383000
+</td>
+<td style="text-align:right;">
+-526000
+</td>
+<td style="text-align:right;">
+2406000
+</td>
+<td style="text-align:right;">
+18532000
+</td>
+<td style="text-align:right;">
+9305000
+</td>
+<td style="text-align:right;">
+-14391000
+</td>
+<td style="text-align:right;">
+21411000
+</td>
+<td style="text-align:right;">
+-677000
+</td>
+<td style="text-align:right;">
+-910000
+</td>
+<td style="text-align:right;">
+3607000
+</td>
+<td style="text-align:right;">
+-2153000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Changes In Accounts Receivables
+</td>
+<td style="text-align:right;">
+-1298000
+</td>
+<td style="text-align:right;">
+-506000
+</td>
+<td style="text-align:right;">
+142000
+</td>
+<td style="text-align:right;">
+2000
+</td>
+<td style="text-align:right;">
+1006000
+</td>
+<td style="text-align:right;">
+1297000
+</td>
+<td style="text-align:right;">
+712000
+</td>
+<td style="text-align:right;">
+812000
+</td>
+<td style="text-align:right;">
+-430000
+</td>
+<td style="text-align:right;">
+-2846000
+</td>
+<td style="text-align:right;">
+1460000
+</td>
+<td style="text-align:right;">
+-52000
+</td>
+<td style="text-align:right;">
+-2239000
+</td>
+<td style="text-align:right;">
+-2297000
+</td>
+<td style="text-align:right;">
+-2855000
+</td>
+<td style="text-align:right;">
+-3563000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Changes In Liabilities
+</td>
+<td style="text-align:right;">
+976000
+</td>
+<td style="text-align:right;">
+542000
+</td>
+<td style="text-align:right;">
+-281000
+</td>
+<td style="text-align:right;">
+847000
+</td>
+<td style="text-align:right;">
+126000
+</td>
+<td style="text-align:right;">
+47000
+</td>
+<td style="text-align:right;">
+197000
+</td>
+<td style="text-align:right;">
+81000
+</td>
+<td style="text-align:right;">
+1697000
+</td>
+<td style="text-align:right;">
+1343000
+</td>
+<td style="text-align:right;">
+2953000
+</td>
+<td style="text-align:right;">
+-1537000
+</td>
+<td style="text-align:right;">
+6781000
+</td>
+<td style="text-align:right;">
+6089000
+</td>
+<td style="text-align:right;">
+6595000
+</td>
+<td style="text-align:right;">
+7758000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Changes In Inventories
+</td>
+<td style="text-align:right;">
+-471000
+</td>
+<td style="text-align:right;">
+-104000
+</td>
+<td style="text-align:right;">
+190000
+</td>
+<td style="text-align:right;">
+-129000
+</td>
+<td style="text-align:right;">
+-127000
+</td>
+<td style="text-align:right;">
+18000
+</td>
+<td style="text-align:right;">
+-14000
+</td>
+<td style="text-align:right;">
+133000
+</td>
+<td style="text-align:right;">
+-902000
+</td>
+<td style="text-align:right;">
+1183000
+</td>
+<td style="text-align:right;">
+-815000
+</td>
+<td style="text-align:right;">
+-314000
+</td>
+<td style="text-align:right;">
+-828000
+</td>
+<td style="text-align:right;">
+-970000
+</td>
+<td style="text-align:right;">
+-803000
+</td>
+<td style="text-align:right;">
+-1155000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Changes In Other Operating Activities
+</td>
+<td style="text-align:right;">
+-793000
+</td>
+<td style="text-align:right;">
+-68000
+</td>
+<td style="text-align:right;">
+-68000
+</td>
+<td style="text-align:right;">
+-68000
+</td>
+<td style="text-align:right;">
+-451000
+</td>
+<td style="text-align:right;">
+5451000
+</td>
+<td style="text-align:right;">
+462000
+</td>
+<td style="text-align:right;">
+-3222000
+</td>
+<td style="text-align:right;">
+-92000
+</td>
+<td style="text-align:right;">
+-1898000
+</td>
+<td style="text-align:right;">
+-2617000
+</td>
+<td style="text-align:right;">
+-2617000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Cash Flow From Operating Activities
+</td>
+<td style="text-align:right;">
+6753000
+</td>
+<td style="text-align:right;">
+7292000
+</td>
+<td style="text-align:right;">
+7047000
+</td>
+<td style="text-align:right;">
+7330000
+</td>
+<td style="text-align:right;">
+15247000
+</td>
+<td style="text-align:right;">
+16724000
+</td>
+<td style="text-align:right;">
+17084000
+</td>
+<td style="text-align:right;">
+17255000
+</td>
+<td style="text-align:right;">
+4246000
+</td>
+<td style="text-align:right;">
+6032000
+</td>
+<td style="text-align:right;">
+1160000
+</td>
+<td style="text-align:right;">
+19891000
+</td>
+<td style="text-align:right;">
+15022000
+</td>
+<td style="text-align:right;">
+18096000
+</td>
+<td style="text-align:right;">
+19850000
+</td>
+<td style="text-align:right;">
+16226000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capital Expenditure
+</td>
+<td style="text-align:right;">
+-1329000
+</td>
+<td style="text-align:right;">
+-1509000
+</td>
+<td style="text-align:right;">
+-1804000
+</td>
+<td style="text-align:right;">
+-1867000
+</td>
+<td style="text-align:right;">
+-3395000
+</td>
+<td style="text-align:right;">
+-3229000
+</td>
+<td style="text-align:right;">
+-3567000
+</td>
+<td style="text-align:right;">
+-3579000
+</td>
+<td style="text-align:right;">
+-7695000
+</td>
+<td style="text-align:right;">
+-7371000
+</td>
+<td style="text-align:right;">
+-7199000
+</td>
+<td style="text-align:right;">
+-7309000
+</td>
+<td style="text-align:right;">
+-7785000
+</td>
+<td style="text-align:right;">
+-7049000
+</td>
+<td style="text-align:right;">
+-6992000
+</td>
+<td style="text-align:right;">
+-7196000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Investments
+</td>
+<td style="text-align:right;">
+47000
+</td>
+<td style="text-align:right;">
+-215000
+</td>
+<td style="text-align:right;">
+100000
+</td>
+<td style="text-align:right;">
+-62000
+</td>
+<td style="text-align:right;">
+-554000
+</td>
+<td style="text-align:right;">
+-1039000
+</td>
+<td style="text-align:right;">
+-161000
+</td>
+<td style="text-align:right;">
+-231000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3387000
+</td>
+<td style="text-align:right;">
+2331000
+</td>
+<td style="text-align:right;">
+-2074000
+</td>
+<td style="text-align:right;">
+-513000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Cash flows from Investing Activities
+</td>
+<td style="text-align:right;">
+264000
+</td>
+<td style="text-align:right;">
+292000
+</td>
+<td style="text-align:right;">
+291000
+</td>
+<td style="text-align:right;">
+295000
+</td>
+<td style="text-align:right;">
+-1000
+</td>
+<td style="text-align:right;">
+-1000
+</td>
+<td style="text-align:right;">
+-1000
+</td>
+<td style="text-align:right;">
+1000
+</td>
+<td style="text-align:right;">
+12953000
+</td>
+<td style="text-align:right;">
+10133000
+</td>
+<td style="text-align:right;">
+-10317000
+</td>
+<td style="text-align:right;">
+-5316000
+</td>
+<td style="text-align:right;">
+181000
+</td>
+<td style="text-align:right;">
+71000
+</td>
+<td style="text-align:right;">
+937000
+</td>
+<td style="text-align:right;">
+634000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Cash Flows From Investing Activities
+</td>
+<td style="text-align:right;">
+4644000
+</td>
+<td style="text-align:right;">
+-5879000
+</td>
+<td style="text-align:right;">
+-3188000
+</td>
+<td style="text-align:right;">
+-3539000
+</td>
+<td style="text-align:right;">
+-4913000
+</td>
+<td style="text-align:right;">
+-7081000
+</td>
+<td style="text-align:right;">
+-10928000
+</td>
+<td style="text-align:right;">
+-8159000
+</td>
+<td style="text-align:right;">
+18239000
+</td>
+<td style="text-align:right;">
+6564000
+</td>
+<td style="text-align:right;">
+49135000
+</td>
+<td style="text-align:right;">
+59488000
+</td>
+<td style="text-align:right;">
+-16261000
+</td>
+<td style="text-align:right;">
+-19360000
+</td>
+<td style="text-align:right;">
+-25302000
+</td>
+<td style="text-align:right;">
+-26162000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dividends Paid
+</td>
+<td style="text-align:right;">
+-4066000
+</td>
+<td style="text-align:right;">
+-3916000
+</td>
+<td style="text-align:right;">
+-3609000
+</td>
+<td style="text-align:right;">
+-3331000
+</td>
+<td style="text-align:right;">
+-5666000
+</td>
+<td style="text-align:right;">
+-5506000
+</td>
+<td style="text-align:right;">
+-5256000
+</td>
+<td style="text-align:right;">
+-4897000
+</td>
+<td style="text-align:right;">
+-4474000
+</td>
+<td style="text-align:right;">
+-8650000
+</td>
+<td style="text-align:right;">
+-8806000
+</td>
+<td style="text-align:right;">
+-9295000
+</td>
+<td style="text-align:right;">
+-2705000
+</td>
+<td style="text-align:right;">
+-2384000
+</td>
+<td style="text-align:right;">
+-2383500
+</td>
+<td style="text-align:right;">
+-2380000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sale Purchase of Stock
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Net Borrowings
+</td>
+<td style="text-align:right;">
+-35000
+</td>
+<td style="text-align:right;">
+8928000
+</td>
+<td style="text-align:right;">
+1771000
+</td>
+<td style="text-align:right;">
+1527000
+</td>
+<td style="text-align:right;">
+-301000
+</td>
+<td style="text-align:right;">
+3447000
+</td>
+<td style="text-align:right;">
+2763000
+</td>
+<td style="text-align:right;">
+19000
+</td>
+<td style="text-align:right;">
+-22401000
+</td>
+<td style="text-align:right;">
+-8952000
+</td>
+<td style="text-align:right;">
+-58411000
+</td>
+<td style="text-align:right;">
+-57546000
+</td>
+<td style="text-align:right;">
+3139000
+</td>
+<td style="text-align:right;">
+6260000
+</td>
+<td style="text-align:right;">
+11028000
+</td>
+<td style="text-align:right;">
+17148000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other Cash Flows from Financing Activities
+</td>
+<td style="text-align:right;">
+-1170000
+</td>
+<td style="text-align:right;">
+-1227000
+</td>
+<td style="text-align:right;">
+-978000
+</td>
+<td style="text-align:right;">
+-952000
+</td>
+<td style="text-align:right;">
+112000
+</td>
+<td style="text-align:right;">
+174000
+</td>
+<td style="text-align:right;">
+204000
+</td>
+<td style="text-align:right;">
+-1000
+</td>
+<td style="text-align:right;">
+-4141000
+</td>
+<td style="text-align:right;">
+1006000
+</td>
+<td style="text-align:right;">
+-1818000
+</td>
+<td style="text-align:right;">
+-8114000
+</td>
+<td style="text-align:right;">
+-192000
+</td>
+<td style="text-align:right;">
+-151000
+</td>
+<td style="text-align:right;">
+-107000
+</td>
+<td style="text-align:right;">
+-373000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total Cash Flows From Financing Activities
+</td>
+<td style="text-align:right;">
+-11548000
+</td>
+<td style="text-align:right;">
+-1433000
+</td>
+<td style="text-align:right;">
+-3073000
+</td>
+<td style="text-align:right;">
+-3032000
+</td>
+<td style="text-align:right;">
+-10469000
+</td>
+<td style="text-align:right;">
+-6418000
+</td>
+<td style="text-align:right;">
+-5917000
+</td>
+<td style="text-align:right;">
+-9413000
+</td>
+<td style="text-align:right;">
+-31033000
+</td>
+<td style="text-align:right;">
+-19146000
+</td>
+<td style="text-align:right;">
+-90464000
+</td>
+<td style="text-align:right;">
+-76054000
+</td>
+<td style="text-align:right;">
+-122000
+</td>
+<td style="text-align:right;">
+3394000
+</td>
+<td style="text-align:right;">
+7400000
+</td>
+<td style="text-align:right;">
+14266000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Effect Of Exchange Rate Changes
+</td>
+<td style="text-align:right;">
+72000
+</td>
+<td style="text-align:right;">
+-9000
+</td>
+<td style="text-align:right;">
+284000
+</td>
+<td style="text-align:right;">
+-541000
+</td>
+<td style="text-align:right;">
+-495000
+</td>
+<td style="text-align:right;">
+937000
+</td>
+<td style="text-align:right;">
+-51000
+</td>
+<td style="text-align:right;">
+-473000
+</td>
+<td style="text-align:right;">
+-628000
+</td>
+<td style="text-align:right;">
+891000
+</td>
+<td style="text-align:right;">
+-1146000
+</td>
+<td style="text-align:right;">
+-3464000
+</td>
+<td style="text-align:right;">
+-370000
+</td>
+<td style="text-align:right;">
+489000
+</td>
+<td style="text-align:right;">
+-265000
+</td>
+<td style="text-align:right;">
+-815000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Change In Cash and Cash Equivalents
+</td>
+<td style="text-align:right;">
+-79000
+</td>
+<td style="text-align:right;">
+-29000
+</td>
+<td style="text-align:right;">
+1070000
+</td>
+<td style="text-align:right;">
+218000
+</td>
+<td style="text-align:right;">
+-630000
+</td>
+<td style="text-align:right;">
+4161000
+</td>
+<td style="text-align:right;">
+188000
+</td>
+<td style="text-align:right;">
+-790000
+</td>
+<td style="text-align:right;">
+-9176000
+</td>
+<td style="text-align:right;">
+-5660000
+</td>
+<td style="text-align:right;">
+-41315000
+</td>
+<td style="text-align:right;">
+-138000
+</td>
+<td style="text-align:right;">
+-1731000
+</td>
+<td style="text-align:right;">
+2619000
+</td>
+<td style="text-align:right;">
+1683000
+</td>
+<td style="text-align:right;">
+3515000
+</td>
+</tr>
+</tbody>
+</table>
+<p>As in previous posts let’s clean the data up and put it into a better format which is easier for computations.</p>
+<pre class="r"><code>############# Combine and clean the data ###############
+
+ISBSCF &lt;- rbind(IS, BS, CF)
+
+ISBSCF &lt;- ISBSCF %&gt;%
+  t() %&gt;%
+  data.frame() %&gt;%
+  rownames_to_column(&#39;rn&#39;) %&gt;%
+  separate(rn, into = c(&quot;symbol&quot;, &quot;year&quot;),
+           sep = -4, convert = TRUE)
+
+
+ISBSCF$symbol &lt;- gsub(&quot;(f).*&quot;, &quot;&quot;, ISBSCF$symbol)
+ISBSCF$symbol &lt;- gsub(&#39;.$&#39;, &#39;&#39;, ISBSCF$symbol)
+ISBSCF$symbol &lt;- gsub(&#39;^X&#39;, &#39;&#39;, ISBSCF$symbol)</code></pre>
+</div>
+<div id="how-the-full-data-looks" class="section level4">
+<h4>How the full data looks:</h4>
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-8">Table 4: </span>Income Statment - Balance Sheet - Cash Flow
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+symbol
+</th>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+Total.Revenue
+</th>
+<th style="text-align:right;">
+Cost.of.Revenue
+</th>
+<th style="text-align:right;">
+Gross.Profit
+</th>
+<th style="text-align:right;">
+Research.Development
+</th>
+<th style="text-align:right;">
+Selling.General.and.Administrative
+</th>
+<th style="text-align:right;">
+Non.Recurring
+</th>
+<th style="text-align:right;">
+Others
+</th>
+<th style="text-align:right;">
+Total.Operating.Expenses
+</th>
+<th style="text-align:right;">
+Operating.Income.or.Loss
+</th>
+<th style="text-align:right;">
+Total.Other.Income.Expenses.Net
+</th>
+<th style="text-align:right;">
+Earnings.Before.Interest.and.Taxes
+</th>
+<th style="text-align:right;">
+Interest.Expense
+</th>
+<th style="text-align:right;">
+Income.Before.Tax
+</th>
+<th style="text-align:right;">
+Income.Tax.Expense
+</th>
+<th style="text-align:right;">
+Minority.Interest
+</th>
+<th style="text-align:right;">
+Net.Income.From.Continuing.Ops
+</th>
+<th style="text-align:right;">
+Discontinued.Operations
+</th>
+<th style="text-align:right;">
+Extraordinary.Items
+</th>
+<th style="text-align:right;">
+Effect.Of.Accounting.Changes
+</th>
+<th style="text-align:right;">
+Other.Items
+</th>
+<th style="text-align:right;">
+Net.Income
+</th>
+<th style="text-align:right;">
+Preferred.Stock.And.Other.Adjustments
+</th>
+<th style="text-align:right;">
+Net.Income.Applicable.To.Common.Shares
+</th>
+<th style="text-align:right;">
+Cash.And.Cash.Equivalents
+</th>
+<th style="text-align:right;">
+Short.Term.Investments
+</th>
+<th style="text-align:right;">
+Net.Receivables
+</th>
+<th style="text-align:right;">
+Inventory
+</th>
+<th style="text-align:right;">
+Other.Current.Assets
+</th>
+<th style="text-align:right;">
+Total.Current.Assets
+</th>
+<th style="text-align:right;">
+Long.Term.Investments
+</th>
+<th style="text-align:right;">
+Property..plant.and.equipment
+</th>
+<th style="text-align:right;">
+Goodwill
+</th>
+<th style="text-align:right;">
+Intangible.Assets
+</th>
+<th style="text-align:right;">
+Accumulated.Amortization
+</th>
+<th style="text-align:right;">
+Other.Assets
+</th>
+<th style="text-align:right;">
+Deferred.Long.Term.Asset.Charges
+</th>
+<th style="text-align:right;">
+Total.Assets
+</th>
+<th style="text-align:right;">
+Accounts.Payable
+</th>
+<th style="text-align:right;">
+Short.Current.Long.Term.Debt
+</th>
+<th style="text-align:right;">
+Other.Current.Liabilities
+</th>
+<th style="text-align:right;">
+Total.Current.Liabilities
+</th>
+<th style="text-align:right;">
+Long.Term.Debt
+</th>
+<th style="text-align:right;">
+Other.Liabilities
+</th>
+<th style="text-align:right;">
+Deferred.Long.Term.Liability.Charges
+</th>
+<th style="text-align:right;">
+Minority.Interest1
+</th>
+<th style="text-align:right;">
+Negative.Goodwill
+</th>
+<th style="text-align:right;">
+Total.Liabilities
+</th>
+<th style="text-align:right;">
+Misc..Stocks.Options.Warrants
+</th>
+<th style="text-align:right;">
+Redeemable.Preferred.Stock
+</th>
+<th style="text-align:right;">
+Preferred.Stock
+</th>
+<th style="text-align:right;">
+Common.Stock
+</th>
+<th style="text-align:right;">
+Retained.Earnings
+</th>
+<th style="text-align:right;">
+Treasury.Stock
+</th>
+<th style="text-align:right;">
+Capital.Surplus
+</th>
+<th style="text-align:right;">
+Other.Stockholder.Equity
+</th>
+<th style="text-align:right;">
+Total.stockholders..equity
+</th>
+<th style="text-align:right;">
+Net.Tangible.Assets
+</th>
+<th style="text-align:right;">
+Net.Income1
+</th>
+<th style="text-align:right;">
+Depreciation
+</th>
+<th style="text-align:right;">
+Adjustments.To.Net.Income
+</th>
+<th style="text-align:right;">
+Changes.In.Accounts.Receivables
+</th>
+<th style="text-align:right;">
+Changes.In.Liabilities
+</th>
+<th style="text-align:right;">
+Changes.In.Inventories
+</th>
+<th style="text-align:right;">
+Changes.In.Other.Operating.Activities
+</th>
+<th style="text-align:right;">
+Total.Cash.Flow.From.Operating.Activities
+</th>
+<th style="text-align:right;">
+Capital.Expenditure
+</th>
+<th style="text-align:right;">
+Investments
+</th>
+<th style="text-align:right;">
+Other.Cash.flows.from.Investing.Activities
+</th>
+<th style="text-align:right;">
+Total.Cash.Flows.From.Investing.Activities
+</th>
+<th style="text-align:right;">
+Dividends.Paid
+</th>
+<th style="text-align:right;">
+Sale.Purchase.of.Stock
+</th>
+<th style="text-align:right;">
+Net.Borrowings
+</th>
+<th style="text-align:right;">
+Other.Cash.Flows.from.Financing.Activities
+</th>
+<th style="text-align:right;">
+Total.Cash.Flows.From.Financing.Activities
+</th>
+<th style="text-align:right;">
+Effect.Of.Exchange.Rate.Changes
+</th>
+<th style="text-align:right;">
+Change.In.Cash.and.Cash.Equivalents
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+50982000
+</td>
+<td style="text-align:right;">
+28769000
+</td>
+<td style="text-align:right;">
+22213000
+</td>
+<td style="text-align:right;">
+900000
+</td>
+<td style="text-align:right;">
+8803000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+41427000
+</td>
+<td style="text-align:right;">
+38472000
+</td>
+<td style="text-align:right;">
+12510000
+</td>
+<td style="text-align:right;">
+-127000
+</td>
+<td style="text-align:right;">
+12510000
+</td>
+<td style="text-align:right;">
+-627000
+</td>
+<td style="text-align:right;">
+12383000
+</td>
+<td style="text-align:right;">
+2575000
+</td>
+<td style="text-align:right;">
+720000
+</td>
+<td style="text-align:right;">
+9808000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+9389000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+9389000
+</td>
+<td style="text-align:right;">
+3230000
+</td>
+<td style="text-align:right;">
+681000
+</td>
+<td style="text-align:right;">
+4822000
+</td>
+<td style="text-align:right;">
+4301000
+</td>
+<td style="text-align:right;">
+1387000
+</td>
+<td style="text-align:right;">
+15481000
+</td>
+<td style="text-align:right;">
+637000
+</td>
+<td style="text-align:right;">
+10347000
+</td>
+<td style="text-align:right;">
+17341000
+</td>
+<td style="text-align:right;">
+12152000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3498000
+</td>
+<td style="text-align:right;">
+1117000
+</td>
+<td style="text-align:right;">
+59456000
+</td>
+<td style="text-align:right;">
+9121000
+</td>
+<td style="text-align:right;">
+2012000
+</td>
+<td style="text-align:right;">
+3194000
+</td>
+<td style="text-align:right;">
+19772000
+</td>
+<td style="text-align:right;">
+21535000
+</td>
+<td style="text-align:right;">
+5742000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+720000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+47164000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+464000
+</td>
+<td style="text-align:right;">
+26265000
+</td>
+<td style="text-align:right;">
+-15286000
+</td>
+<td style="text-align:right;">
+129000
+</td>
+<td style="text-align:right;">
+-5105000
+</td>
+<td style="text-align:right;">
+11572000
+</td>
+<td style="text-align:right;">
+-17921000
+</td>
+<td style="text-align:right;">
+9389000
+</td>
+<td style="text-align:right;">
+1450000
+</td>
+<td style="text-align:right;">
+-3590000
+</td>
+<td style="text-align:right;">
+-1298000
+</td>
+<td style="text-align:right;">
+976000
+</td>
+<td style="text-align:right;">
+-471000
+</td>
+<td style="text-align:right;">
+-793000
+</td>
+<td style="text-align:right;">
+6753000
+</td>
+<td style="text-align:right;">
+-1329000
+</td>
+<td style="text-align:right;">
+47000
+</td>
+<td style="text-align:right;">
+264000
+</td>
+<td style="text-align:right;">
+4644000
+</td>
+<td style="text-align:right;">
+-4066000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-35000
+</td>
+<td style="text-align:right;">
+-1170000
+</td>
+<td style="text-align:right;">
+-11548000
+</td>
+<td style="text-align:right;">
+72000
+</td>
+<td style="text-align:right;">
+-79000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+53715000
+</td>
+<td style="text-align:right;">
+30547000
+</td>
+<td style="text-align:right;">
+23168000
+</td>
+<td style="text-align:right;">
+900000
+</td>
+<td style="text-align:right;">
+13507000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+44031000
+</td>
+<td style="text-align:right;">
+44954000
+</td>
+<td style="text-align:right;">
+8761000
+</td>
+<td style="text-align:right;">
+-608000
+</td>
+<td style="text-align:right;">
+8761000
+</td>
+<td style="text-align:right;">
+-608000
+</td>
+<td style="text-align:right;">
+8153000
+</td>
+<td style="text-align:right;">
+1667000
+</td>
+<td style="text-align:right;">
+758000
+</td>
+<td style="text-align:right;">
+6486000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+6053000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+6053000
+</td>
+<td style="text-align:right;">
+3317000
+</td>
+<td style="text-align:right;">
+521000
+</td>
+<td style="text-align:right;">
+4204000
+</td>
+<td style="text-align:right;">
+3962000
+</td>
+<td style="text-align:right;">
+4356000
+</td>
+<td style="text-align:right;">
+16983000
+</td>
+<td style="text-align:right;">
+565000
+</td>
+<td style="text-align:right;">
+10411000
+</td>
+<td style="text-align:right;">
+16881000
+</td>
+<td style="text-align:right;">
+11520000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3925000
+</td>
+<td style="text-align:right;">
+1085000
+</td>
+<td style="text-align:right;">
+60285000
+</td>
+<td style="text-align:right;">
+8217000
+</td>
+<td style="text-align:right;">
+1537000
+</td>
+<td style="text-align:right;">
+2787000
+</td>
+<td style="text-align:right;">
+23177000
+</td>
+<td style="text-align:right;">
+16342000
+</td>
+<td style="text-align:right;">
+6259000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+758000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+45898000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+484000
+</td>
+<td style="text-align:right;">
+26648000
+</td>
+<td style="text-align:right;">
+-13633000
+</td>
+<td style="text-align:right;">
+130000
+</td>
+<td style="text-align:right;">
+-4425000
+</td>
+<td style="text-align:right;">
+13629000
+</td>
+<td style="text-align:right;">
+-14772000
+</td>
+<td style="text-align:right;">
+6053000
+</td>
+<td style="text-align:right;">
+1214000
+</td>
+<td style="text-align:right;">
+-231000
+</td>
+<td style="text-align:right;">
+-506000
+</td>
+<td style="text-align:right;">
+542000
+</td>
+<td style="text-align:right;">
+-104000
+</td>
+<td style="text-align:right;">
+-68000
+</td>
+<td style="text-align:right;">
+7292000
+</td>
+<td style="text-align:right;">
+-1509000
+</td>
+<td style="text-align:right;">
+-215000
+</td>
+<td style="text-align:right;">
+292000
+</td>
+<td style="text-align:right;">
+-5879000
+</td>
+<td style="text-align:right;">
+-3916000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+8928000
+</td>
+<td style="text-align:right;">
+-1227000
+</td>
+<td style="text-align:right;">
+-1433000
+</td>
+<td style="text-align:right;">
+-9000
+</td>
+<td style="text-align:right;">
+-29000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+52713000
+</td>
+<td style="text-align:right;">
+30229000
+</td>
+<td style="text-align:right;">
+22484000
+</td>
+<td style="text-align:right;">
+978000
+</td>
+<td style="text-align:right;">
+13799000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+44031000
+</td>
+<td style="text-align:right;">
+45006000
+</td>
+<td style="text-align:right;">
+7707000
+</td>
+<td style="text-align:right;">
+-238000
+</td>
+<td style="text-align:right;">
+7707000
+</td>
+<td style="text-align:right;">
+-572000
+</td>
+<td style="text-align:right;">
+7469000
+</td>
+<td style="text-align:right;">
+1922000
+</td>
+<td style="text-align:right;">
+626000
+</td>
+<td style="text-align:right;">
+5547000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+5184000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+5184000
+</td>
+<td style="text-align:right;">
+3382000
+</td>
+<td style="text-align:right;">
+565000
+</td>
+<td style="text-align:right;">
+3854000
+</td>
+<td style="text-align:right;">
+4278000
+</td>
+<td style="text-align:right;">
+1120000
+</td>
+<td style="text-align:right;">
+13884000
+</td>
+<td style="text-align:right;">
+491000
+</td>
+<td style="text-align:right;">
+11673000
+</td>
+<td style="text-align:right;">
+17624000
+</td>
+<td style="text-align:right;">
+9809000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+2948000
+</td>
+<td style="text-align:right;">
+1354000
+</td>
+<td style="text-align:right;">
+56429000
+</td>
+<td style="text-align:right;">
+8591000
+</td>
+<td style="text-align:right;">
+2173000
+</td>
+<td style="text-align:right;">
+2392000
+</td>
+<td style="text-align:right;">
+20556000
+</td>
+<td style="text-align:right;">
+11011000
+</td>
+<td style="text-align:right;">
+7748000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+626000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+39449000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+484000
+</td>
+<td style="text-align:right;">
+23179000
+</td>
+<td style="text-align:right;">
+-7443000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+-3279000
+</td>
+<td style="text-align:right;">
+16354000
+</td>
+<td style="text-align:right;">
+-11079000
+</td>
+<td style="text-align:right;">
+5184000
+</td>
+<td style="text-align:right;">
+1464000
+</td>
+<td style="text-align:right;">
+348000
+</td>
+<td style="text-align:right;">
+142000
+</td>
+<td style="text-align:right;">
+-281000
+</td>
+<td style="text-align:right;">
+190000
+</td>
+<td style="text-align:right;">
+-68000
+</td>
+<td style="text-align:right;">
+7047000
+</td>
+<td style="text-align:right;">
+-1804000
+</td>
+<td style="text-align:right;">
+100000
+</td>
+<td style="text-align:right;">
+291000
+</td>
+<td style="text-align:right;">
+-3188000
+</td>
+<td style="text-align:right;">
+-3609000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+1771000
+</td>
+<td style="text-align:right;">
+-978000
+</td>
+<td style="text-align:right;">
+-3073000
+</td>
+<td style="text-align:right;">
+284000
+</td>
+<td style="text-align:right;">
+1070000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+53272000
+</td>
+<td style="text-align:right;">
+30808000
+</td>
+<td style="text-align:right;">
+22464000
+</td>
+<td style="text-align:right;">
+1005000
+</td>
+<td style="text-align:right;">
+14065000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+44031000
+</td>
+<td style="text-align:right;">
+45878000
+</td>
+<td style="text-align:right;">
+7394000
+</td>
+<td style="text-align:right;">
+-174000
+</td>
+<td style="text-align:right;">
+7394000
+</td>
+<td style="text-align:right;">
+-552000
+</td>
+<td style="text-align:right;">
+7220000
+</td>
+<td style="text-align:right;">
+1961000
+</td>
+<td style="text-align:right;">
+643000
+</td>
+<td style="text-align:right;">
+5259000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+4909000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+4909000
+</td>
+<td style="text-align:right;">
+2302000
+</td>
+<td style="text-align:right;">
+596000
+</td>
+<td style="text-align:right;">
+3416000
+</td>
+<td style="text-align:right;">
+4335000
+</td>
+<td style="text-align:right;">
+1352000
+</td>
+<td style="text-align:right;">
+12686000
+</td>
+<td style="text-align:right;">
+592000
+</td>
+<td style="text-align:right;">
+11058000
+</td>
+<td style="text-align:right;">
+16213000
+</td>
+<td style="text-align:right;">
+8846000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+2903000
+</td>
+<td style="text-align:right;">
+1185000
+</td>
+<td style="text-align:right;">
+52298000
+</td>
+<td style="text-align:right;">
+8296000
+</td>
+<td style="text-align:right;">
+1495000
+</td>
+<td style="text-align:right;">
+2759000
+</td>
+<td style="text-align:right;">
+20019000
+</td>
+<td style="text-align:right;">
+9696000
+</td>
+<td style="text-align:right;">
+6343000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+643000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+36216000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+484000
+</td>
+<td style="text-align:right;">
+22619000
+</td>
+<td style="text-align:right;">
+-7816000
+</td>
+<td style="text-align:right;">
+152000
+</td>
+<td style="text-align:right;">
+-3697000
+</td>
+<td style="text-align:right;">
+15439000
+</td>
+<td style="text-align:right;">
+-9620000
+</td>
+<td style="text-align:right;">
+4909000
+</td>
+<td style="text-align:right;">
+1370000
+</td>
+<td style="text-align:right;">
+331000
+</td>
+<td style="text-align:right;">
+2000
+</td>
+<td style="text-align:right;">
+847000
+</td>
+<td style="text-align:right;">
+-129000
+</td>
+<td style="text-align:right;">
+-68000
+</td>
+<td style="text-align:right;">
+7330000
+</td>
+<td style="text-align:right;">
+-1867000
+</td>
+<td style="text-align:right;">
+-62000
+</td>
+<td style="text-align:right;">
+295000
+</td>
+<td style="text-align:right;">
+-3539000
+</td>
+<td style="text-align:right;">
+-3331000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+1527000
+</td>
+<td style="text-align:right;">
+-952000
+</td>
+<td style="text-align:right;">
+-3032000
+</td>
+<td style="text-align:right;">
+-541000
+</td>
+<td style="text-align:right;">
+218000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+79591000
+</td>
+<td style="text-align:right;">
+42655000
+</td>
+<td style="text-align:right;">
+36936000
+</td>
+<td style="text-align:right;">
+5379000
+</td>
+<td style="text-align:right;">
+20325000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-998000
+</td>
+<td style="text-align:right;">
+67361000
+</td>
+<td style="text-align:right;">
+12230000
+</td>
+<td style="text-align:right;">
+-888000
+</td>
+<td style="text-align:right;">
+12230000
+</td>
+<td style="text-align:right;">
+-723000
+</td>
+<td style="text-align:right;">
+11342000
+</td>
+<td style="text-align:right;">
+2619000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+8723000
+</td>
+<td style="text-align:right;">
+5000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+8728000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+8728000
+</td>
+<td style="text-align:right;">
+11379000
+</td>
+<td style="text-align:right;">
+618000
+</td>
+<td style="text-align:right;">
+8596000
+</td>
+<td style="text-align:right;">
+1682000
+</td>
+<td style="text-align:right;">
+2902000
+</td>
+<td style="text-align:right;">
+49146000
+</td>
+<td style="text-align:right;">
+439000
+</td>
+<td style="text-align:right;">
+10792000
+</td>
+<td style="text-align:right;">
+36265000
+</td>
+<td style="text-align:right;">
+3087000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+14505000
+</td>
+<td style="text-align:right;">
+5216000
+</td>
+<td style="text-align:right;">
+123382000
+</td>
+<td style="text-align:right;">
+6558000
+</td>
+<td style="text-align:right;">
+7055000
+</td>
+<td style="text-align:right;">
+14680000
+</td>
+<td style="text-align:right;">
+38227000
+</td>
+<td style="text-align:right;">
+35681000
+</td>
+<td style="text-align:right;">
+32544000
+</td>
+<td style="text-align:right;">
+2676000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+106452000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+55151000
+</td>
+<td style="text-align:right;">
+159206000
+</td>
+<td style="text-align:right;">
+-197561000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-29490000
+</td>
+<td style="text-align:right;">
+16796000
+</td>
+<td style="text-align:right;">
+-22556000
+</td>
+<td style="text-align:right;">
+8728000
+</td>
+<td style="text-align:right;">
+4480000
+</td>
+<td style="text-align:right;">
+1485000
+</td>
+<td style="text-align:right;">
+1006000
+</td>
+<td style="text-align:right;">
+126000
+</td>
+<td style="text-align:right;">
+-127000
+</td>
+<td style="text-align:right;">
+-451000
+</td>
+<td style="text-align:right;">
+15247000
+</td>
+<td style="text-align:right;">
+-3395000
+</td>
+<td style="text-align:right;">
+-554000
+</td>
+<td style="text-align:right;">
+-1000
+</td>
+<td style="text-align:right;">
+-4913000
+</td>
+<td style="text-align:right;">
+-5666000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-301000
+</td>
+<td style="text-align:right;">
+112000
+</td>
+<td style="text-align:right;">
+-10469000
+</td>
+<td style="text-align:right;">
+-495000
+</td>
+<td style="text-align:right;">
+-630000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+79139000
+</td>
+<td style="text-align:right;">
+42196000
+</td>
+<td style="text-align:right;">
+36943000
+</td>
+<td style="text-align:right;">
+5590000
+</td>
+<td style="text-align:right;">
+20900000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-1445000
+</td>
+<td style="text-align:right;">
+67241000
+</td>
+<td style="text-align:right;">
+11898000
+</td>
+<td style="text-align:right;">
+-498000
+</td>
+<td style="text-align:right;">
+11898000
+</td>
+<td style="text-align:right;">
+-615000
+</td>
+<td style="text-align:right;">
+11400000
+</td>
+<td style="text-align:right;">
+5642000
+</td>
+<td style="text-align:right;">
+131000
+</td>
+<td style="text-align:right;">
+5758000
+</td>
+<td style="text-align:right;">
+-5000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+5753000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+5753000
+</td>
+<td style="text-align:right;">
+11972000
+</td>
+<td style="text-align:right;">
+608000
+</td>
+<td style="text-align:right;">
+10380000
+</td>
+<td style="text-align:right;">
+1583000
+</td>
+<td style="text-align:right;">
+2266000
+</td>
+<td style="text-align:right;">
+49735000
+</td>
+<td style="text-align:right;">
+581000
+</td>
+<td style="text-align:right;">
+11116000
+</td>
+<td style="text-align:right;">
+36788000
+</td>
+<td style="text-align:right;">
+3742000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+13844000
+</td>
+<td style="text-align:right;">
+4862000
+</td>
+<td style="text-align:right;">
+125356000
+</td>
+<td style="text-align:right;">
+6451000
+</td>
+<td style="text-align:right;">
+5215000
+</td>
+<td style="text-align:right;">
+16451000
+</td>
+<td style="text-align:right;">
+37363000
+</td>
+<td style="text-align:right;">
+39871000
+</td>
+<td style="text-align:right;">
+30397000
+</td>
+<td style="text-align:right;">
+2136000
+</td>
+<td style="text-align:right;">
+131000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+107631000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+54566000
+</td>
+<td style="text-align:right;">
+153126000
+</td>
+<td style="text-align:right;">
+-190098000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-26591000
+</td>
+<td style="text-align:right;">
+17594000
+</td>
+<td style="text-align:right;">
+-22936000
+</td>
+<td style="text-align:right;">
+5753000
+</td>
+<td style="text-align:right;">
+4541000
+</td>
+<td style="text-align:right;">
+-383000
+</td>
+<td style="text-align:right;">
+1297000
+</td>
+<td style="text-align:right;">
+47000
+</td>
+<td style="text-align:right;">
+18000
+</td>
+<td style="text-align:right;">
+5451000
+</td>
+<td style="text-align:right;">
+16724000
+</td>
+<td style="text-align:right;">
+-3229000
+</td>
+<td style="text-align:right;">
+-1039000
+</td>
+<td style="text-align:right;">
+-1000
+</td>
+<td style="text-align:right;">
+-7081000
+</td>
+<td style="text-align:right;">
+-5506000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3447000
+</td>
+<td style="text-align:right;">
+174000
+</td>
+<td style="text-align:right;">
+-6418000
+</td>
+<td style="text-align:right;">
+937000
+</td>
+<td style="text-align:right;">
+4161000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+79919000
+</td>
+<td style="text-align:right;">
+41402000
+</td>
+<td style="text-align:right;">
+38517000
+</td>
+<td style="text-align:right;">
+5726000
+</td>
+<td style="text-align:right;">
+20225000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-1604000
+</td>
+<td style="text-align:right;">
+65749000
+</td>
+<td style="text-align:right;">
+14170000
+</td>
+<td style="text-align:right;">
+-1840000
+</td>
+<td style="text-align:right;">
+14170000
+</td>
+<td style="text-align:right;">
+-630000
+</td>
+<td style="text-align:right;">
+12330000
+</td>
+<td style="text-align:right;">
+449000
+</td>
+<td style="text-align:right;">
+146000
+</td>
+<td style="text-align:right;">
+11881000
+</td>
+<td style="text-align:right;">
+-9000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+11872000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+11872000
+</td>
+<td style="text-align:right;">
+7826000
+</td>
+<td style="text-align:right;">
+701000
+</td>
+<td style="text-align:right;">
+10239000
+</td>
+<td style="text-align:right;">
+1553000
+</td>
+<td style="text-align:right;">
+532000
+</td>
+<td style="text-align:right;">
+43889000
+</td>
+<td style="text-align:right;">
+659000
+</td>
+<td style="text-align:right;">
+10830000
+</td>
+<td style="text-align:right;">
+36199000
+</td>
+<td style="text-align:right;">
+4688000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+12184000
+</td>
+<td style="text-align:right;">
+5224000
+</td>
+<td style="text-align:right;">
+117470000
+</td>
+<td style="text-align:right;">
+6209000
+</td>
+<td style="text-align:right;">
+6239000
+</td>
+<td style="text-align:right;">
+14693000
+</td>
+<td style="text-align:right;">
+36275000
+</td>
+<td style="text-align:right;">
+34663000
+</td>
+<td style="text-align:right;">
+28140000
+</td>
+<td style="text-align:right;">
+1496000
+</td>
+<td style="text-align:right;">
+146000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+99078000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+53935000
+</td>
+<td style="text-align:right;">
+152759000
+</td>
+<td style="text-align:right;">
+-188448000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-29398000
+</td>
+<td style="text-align:right;">
+18246000
+</td>
+<td style="text-align:right;">
+-22641000
+</td>
+<td style="text-align:right;">
+11872000
+</td>
+<td style="text-align:right;">
+4381000
+</td>
+<td style="text-align:right;">
+-526000
+</td>
+<td style="text-align:right;">
+712000
+</td>
+<td style="text-align:right;">
+197000
+</td>
+<td style="text-align:right;">
+-14000
+</td>
+<td style="text-align:right;">
+462000
+</td>
+<td style="text-align:right;">
+17084000
+</td>
+<td style="text-align:right;">
+-3567000
+</td>
+<td style="text-align:right;">
+-161000
+</td>
+<td style="text-align:right;">
+-1000
+</td>
+<td style="text-align:right;">
+-10928000
+</td>
+<td style="text-align:right;">
+-5256000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+2763000
+</td>
+<td style="text-align:right;">
+204000
+</td>
+<td style="text-align:right;">
+-5917000
+</td>
+<td style="text-align:right;">
+-51000
+</td>
+<td style="text-align:right;">
+188000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+81741000
+</td>
+<td style="text-align:right;">
+41057000
+</td>
+<td style="text-align:right;">
+40684000
+</td>
+<td style="text-align:right;">
+5247000
+</td>
+<td style="text-align:right;">
+19589000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-669000
+</td>
+<td style="text-align:right;">
+65224000
+</td>
+<td style="text-align:right;">
+16517000
+</td>
+<td style="text-align:right;">
+-572000
+</td>
+<td style="text-align:right;">
+16517000
+</td>
+<td style="text-align:right;">
+-468000
+</td>
+<td style="text-align:right;">
+15945000
+</td>
+<td style="text-align:right;">
+2581000
+</td>
+<td style="text-align:right;">
+162000
+</td>
+<td style="text-align:right;">
+13364000
+</td>
+<td style="text-align:right;">
+-174000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+13190000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+13190000
+</td>
+<td style="text-align:right;">
+7686000
+</td>
+<td style="text-align:right;">
+508000
+</td>
+<td style="text-align:right;">
+9534000
+</td>
+<td style="text-align:right;">
+1551000
+</td>
+<td style="text-align:right;">
+293000
+</td>
+<td style="text-align:right;">
+42504000
+</td>
+<td style="text-align:right;">
+1131000
+</td>
+<td style="text-align:right;">
+10727000
+</td>
+<td style="text-align:right;">
+32021000
+</td>
+<td style="text-align:right;">
+3487000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+10612000
+</td>
+<td style="text-align:right;">
+4822000
+</td>
+<td style="text-align:right;">
+110495000
+</td>
+<td style="text-align:right;">
+6028000
+</td>
+<td style="text-align:right;">
+5271000
+</td>
+<td style="text-align:right;">
+14281000
+</td>
+<td style="text-align:right;">
+34269000
+</td>
+<td style="text-align:right;">
+33431000
+</td>
+<td style="text-align:right;">
+28371000
+</td>
+<td style="text-align:right;">
+1626000
+</td>
+<td style="text-align:right;">
+162000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+96071000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+53262000
+</td>
+<td style="text-align:right;">
+146124000
+</td>
+<td style="text-align:right;">
+-185124000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-29606000
+</td>
+<td style="text-align:right;">
+14262000
+</td>
+<td style="text-align:right;">
+-21246000
+</td>
+<td style="text-align:right;">
+13190000
+</td>
+<td style="text-align:right;">
+3855000
+</td>
+<td style="text-align:right;">
+2406000
+</td>
+<td style="text-align:right;">
+812000
+</td>
+<td style="text-align:right;">
+81000
+</td>
+<td style="text-align:right;">
+133000
+</td>
+<td style="text-align:right;">
+-3222000
+</td>
+<td style="text-align:right;">
+17255000
+</td>
+<td style="text-align:right;">
+-3579000
+</td>
+<td style="text-align:right;">
+-231000
+</td>
+<td style="text-align:right;">
+1000
+</td>
+<td style="text-align:right;">
+-8159000
+</td>
+<td style="text-align:right;">
+-4897000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+19000
+</td>
+<td style="text-align:right;">
+-1000
+</td>
+<td style="text-align:right;">
+-9413000
+</td>
+<td style="text-align:right;">
+-473000
+</td>
+<td style="text-align:right;">
+-790000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+121615000
+</td>
+<td style="text-align:right;">
+98396000
+</td>
+<td style="text-align:right;">
+23219000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+15134000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+113530000
+</td>
+<td style="text-align:right;">
+8085000
+</td>
+<td style="text-align:right;">
+-28220000
+</td>
+<td style="text-align:right;">
+8085000
+</td>
+<td style="text-align:right;">
+-2708000
+</td>
+<td style="text-align:right;">
+-20135000
+</td>
+<td style="text-align:right;">
+583000
+</td>
+<td style="text-align:right;">
+20882000
+</td>
+<td style="text-align:right;">
+-20718000
+</td>
+<td style="text-align:right;">
+-1726000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-22355000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-22809000
+</td>
+<td style="text-align:right;">
+16369000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+19874000
+</td>
+<td style="text-align:right;">
+19271000
+</td>
+<td style="text-align:right;">
+7441000
+</td>
+<td style="text-align:right;">
+95974000
+</td>
+<td style="text-align:right;">
+34920000
+</td>
+<td style="text-align:right;">
+50749000
+</td>
+<td style="text-align:right;">
+58710000
+</td>
+<td style="text-align:right;">
+18159000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+49713000
+</td>
+<td style="text-align:right;">
+12432000
+</td>
+<td style="text-align:right;">
+309129000
+</td>
+<td style="text-align:right;">
+17153000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+19710000
+</td>
+<td style="text-align:right;">
+49937000
+</td>
+<td style="text-align:right;">
+95234000
+</td>
+<td style="text-align:right;">
+74883000
+</td>
+<td style="text-align:right;">
+5739000
+</td>
+<td style="text-align:right;">
+20882000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+257266000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+702000
+</td>
+<td style="text-align:right;">
+93109000
+</td>
+<td style="text-align:right;">
+-62836000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+21089000
+</td>
+<td style="text-align:right;">
+30975000
+</td>
+<td style="text-align:right;">
+-46798000
+</td>
+<td style="text-align:right;">
+-22355000
+</td>
+<td style="text-align:right;">
+7796000
+</td>
+<td style="text-align:right;">
+18532000
+</td>
+<td style="text-align:right;">
+-430000
+</td>
+<td style="text-align:right;">
+1697000
+</td>
+<td style="text-align:right;">
+-902000
+</td>
+<td style="text-align:right;">
+-92000
+</td>
+<td style="text-align:right;">
+4246000
+</td>
+<td style="text-align:right;">
+-7695000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+12953000
+</td>
+<td style="text-align:right;">
+18239000
+</td>
+<td style="text-align:right;">
+-4474000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-22401000
+</td>
+<td style="text-align:right;">
+-4141000
+</td>
+<td style="text-align:right;">
+-31033000
+</td>
+<td style="text-align:right;">
+-628000
+</td>
+<td style="text-align:right;">
+-9176000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+118243000
+</td>
+<td style="text-align:right;">
+106858000
+</td>
+<td style="text-align:right;">
+11385000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+15389000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+122247000
+</td>
+<td style="text-align:right;">
+-4004000
+</td>
+<td style="text-align:right;">
+-7147000
+</td>
+<td style="text-align:right;">
+-4004000
+</td>
+<td style="text-align:right;">
+-2753000
+</td>
+<td style="text-align:right;">
+-11151000
+</td>
+<td style="text-align:right;">
+-2611000
+</td>
+<td style="text-align:right;">
+20859000
+</td>
+<td style="text-align:right;">
+-8540000
+</td>
+<td style="text-align:right;">
+-309000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-8484000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-8944000
+</td>
+<td style="text-align:right;">
+18211000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+24209000
+</td>
+<td style="text-align:right;">
+19419000
+</td>
+<td style="text-align:right;">
+6720000
+</td>
+<td style="text-align:right;">
+116253000
+</td>
+<td style="text-align:right;">
+38696000
+</td>
+<td style="text-align:right;">
+53874000
+</td>
+<td style="text-align:right;">
+83968000
+</td>
+<td style="text-align:right;">
+20273000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+56181000
+</td>
+<td style="text-align:right;">
+8819000
+</td>
+<td style="text-align:right;">
+369245000
+</td>
+<td style="text-align:right;">
+15172000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+19531000
+</td>
+<td style="text-align:right;">
+60043000
+</td>
+<td style="text-align:right;">
+108575000
+</td>
+<td style="text-align:right;">
+84243000
+</td>
+<td style="text-align:right;">
+5484000
+</td>
+<td style="text-align:right;">
+20859000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+292356000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+702000
+</td>
+<td style="text-align:right;">
+117245000
+</td>
+<td style="text-align:right;">
+-61923000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+22979000
+</td>
+<td style="text-align:right;">
+56024000
+</td>
+<td style="text-align:right;">
+-48217000
+</td>
+<td style="text-align:right;">
+-8484000
+</td>
+<td style="text-align:right;">
+7429000
+</td>
+<td style="text-align:right;">
+9305000
+</td>
+<td style="text-align:right;">
+-2846000
+</td>
+<td style="text-align:right;">
+1343000
+</td>
+<td style="text-align:right;">
+1183000
+</td>
+<td style="text-align:right;">
+-1898000
+</td>
+<td style="text-align:right;">
+6032000
+</td>
+<td style="text-align:right;">
+-7371000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+10133000
+</td>
+<td style="text-align:right;">
+6564000
+</td>
+<td style="text-align:right;">
+-8650000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-8952000
+</td>
+<td style="text-align:right;">
+1006000
+</td>
+<td style="text-align:right;">
+-19146000
+</td>
+<td style="text-align:right;">
+891000
+</td>
+<td style="text-align:right;">
+-5660000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+119468000
+</td>
+<td style="text-align:right;">
+94886000
+</td>
+<td style="text-align:right;">
+24582000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+14707000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+109593000
+</td>
+<td style="text-align:right;">
+9875000
+</td>
+<td style="text-align:right;">
+-2843000
+</td>
+<td style="text-align:right;">
+9875000
+</td>
+<td style="text-align:right;">
+-2026000
+</td>
+<td style="text-align:right;">
+7032000
+</td>
+<td style="text-align:right;">
+-1133000
+</td>
+<td style="text-align:right;">
+4688000
+</td>
+<td style="text-align:right;">
+8165000
+</td>
+<td style="text-align:right;">
+-954000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+7500000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+6829000
+</td>
+<td style="text-align:right;">
+10525000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+24076000
+</td>
+<td style="text-align:right;">
+22354000
+</td>
+<td style="text-align:right;">
+3885000
+</td>
+<td style="text-align:right;">
+131436000
+</td>
+<td style="text-align:right;">
+44313000
+</td>
+<td style="text-align:right;">
+50518000
+</td>
+<td style="text-align:right;">
+68070000
+</td>
+<td style="text-align:right;">
+16436000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+52042000
+</td>
+<td style="text-align:right;">
+1833000
+</td>
+<td style="text-align:right;">
+365183000
+</td>
+<td style="text-align:right;">
+14435000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+20772000
+</td>
+<td style="text-align:right;">
+70364000
+</td>
+<td style="text-align:right;">
+105080000
+</td>
+<td style="text-align:right;">
+83040000
+</td>
+<td style="text-align:right;">
+5534000
+</td>
+<td style="text-align:right;">
+4688000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+284667000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+702000
+</td>
+<td style="text-align:right;">
+139532000
+</td>
+<td style="text-align:right;">
+-64412000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+18626000
+</td>
+<td style="text-align:right;">
+75822000
+</td>
+<td style="text-align:right;">
+-11052000
+</td>
+<td style="text-align:right;">
+7500000
+</td>
+<td style="text-align:right;">
+7070000
+</td>
+<td style="text-align:right;">
+-14391000
+</td>
+<td style="text-align:right;">
+1460000
+</td>
+<td style="text-align:right;">
+2953000
+</td>
+<td style="text-align:right;">
+-815000
+</td>
+<td style="text-align:right;">
+-2617000
+</td>
+<td style="text-align:right;">
+1160000
+</td>
+<td style="text-align:right;">
+-7199000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-10317000
+</td>
+<td style="text-align:right;">
+49135000
+</td>
+<td style="text-align:right;">
+-8806000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-58411000
+</td>
+<td style="text-align:right;">
+-1818000
+</td>
+<td style="text-align:right;">
+-90464000
+</td>
+<td style="text-align:right;">
+-1146000
+</td>
+<td style="text-align:right;">
+-41315000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+115834000
+</td>
+<td style="text-align:right;">
+90111000
+</td>
+<td style="text-align:right;">
+25723000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+16327000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+106438000
+</td>
+<td style="text-align:right;">
+9396000
+</td>
+<td style="text-align:right;">
+-1211000
+</td>
+<td style="text-align:right;">
+9396000
+</td>
+<td style="text-align:right;">
+-1706000
+</td>
+<td style="text-align:right;">
+8185000
+</td>
+<td style="text-align:right;">
+6485000
+</td>
+<td style="text-align:right;">
+4836000
+</td>
+<td style="text-align:right;">
+1700000
+</td>
+<td style="text-align:right;">
+-7807000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-6126000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-6135000
+</td>
+<td style="text-align:right;">
+10372000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+43013000
+</td>
+<td style="text-align:right;">
+22515000
+</td>
+<td style="text-align:right;">
+5109000
+</td>
+<td style="text-align:right;">
+280896000
+</td>
+<td style="text-align:right;">
+31973000
+</td>
+<td style="text-align:right;">
+54095000
+</td>
+<td style="text-align:right;">
+65526000
+</td>
+<td style="text-align:right;">
+17797000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+42784000
+</td>
+<td style="text-align:right;">
+3105000
+</td>
+<td style="text-align:right;">
+493071000
+</td>
+<td style="text-align:right;">
+13680000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+27453000
+</td>
+<td style="text-align:right;">
+138270000
+</td>
+<td style="text-align:right;">
+144659000
+</td>
+<td style="text-align:right;">
+79175000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+4836000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+389961000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+702000
+</td>
+<td style="text-align:right;">
+140020000
+</td>
+<td style="text-align:right;">
+-42454000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+21085000
+</td>
+<td style="text-align:right;">
+98268000
+</td>
+<td style="text-align:right;">
+14945000
+</td>
+<td style="text-align:right;">
+-6126000
+</td>
+<td style="text-align:right;">
+6509000
+</td>
+<td style="text-align:right;">
+21411000
+</td>
+<td style="text-align:right;">
+-52000
+</td>
+<td style="text-align:right;">
+-1537000
+</td>
+<td style="text-align:right;">
+-314000
+</td>
+<td style="text-align:right;">
+-2617000
+</td>
+<td style="text-align:right;">
+19891000
+</td>
+<td style="text-align:right;">
+-7309000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-5316000
+</td>
+<td style="text-align:right;">
+59488000
+</td>
+<td style="text-align:right;">
+-9295000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+-57546000
+</td>
+<td style="text-align:right;">
+-8114000
+</td>
+<td style="text-align:right;">
+-76054000
+</td>
+<td style="text-align:right;">
+-3464000
+</td>
+<td style="text-align:right;">
+-138000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+160338000
+</td>
+<td style="text-align:right;">
+145459000
+</td>
+<td style="text-align:right;">
+14879000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+10460000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+155919000
+</td>
+<td style="text-align:right;">
+4419000
+</td>
+<td style="text-align:right;">
+-74000
+</td>
+<td style="text-align:right;">
+4419000
+</td>
+<td style="text-align:right;">
+-1228000
+</td>
+<td style="text-align:right;">
+4345000
+</td>
+<td style="text-align:right;">
+650000
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+3695000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3677000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3677000
+</td>
+<td style="text-align:right;">
+7111000
+</td>
+<td style="text-align:right;">
+15925000
+</td>
+<td style="text-align:right;">
+3698000
+</td>
+<td style="text-align:right;">
+11220000
+</td>
+<td style="text-align:right;">
+2567000
+</td>
+<td style="text-align:right;">
+114649000
+</td>
+<td style="text-align:right;">
+2595000
+</td>
+<td style="text-align:right;">
+37883000
+</td>
+<td style="text-align:right;">
+264000
+</td>
+<td style="text-align:right;">
+178000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+16755000
+</td>
+<td style="text-align:right;">
+10412000
+</td>
+<td style="text-align:right;">
+256540000
+</td>
+<td style="text-align:right;">
+20426000
+</td>
+<td style="text-align:right;">
+1700000
+</td>
+<td style="text-align:right;">
+18868000
+</td>
+<td style="text-align:right;">
+95569000
+</td>
+<td style="text-align:right;">
+11833000
+</td>
+<td style="text-align:right;">
+23088000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+134000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+220474000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+41000
+</td>
+<td style="text-align:right;">
+22668000
+</td>
+<td style="text-align:right;">
+-8783000
+</td>
+<td style="text-align:right;">
+22006000
+</td>
+<td style="text-align:right;">
+-7366000
+</td>
+<td style="text-align:right;">
+35932000
+</td>
+<td style="text-align:right;">
+35932000
+</td>
+<td style="text-align:right;">
+3677000
+</td>
+<td style="text-align:right;">
+8308000
+</td>
+<td style="text-align:right;">
+-677000
+</td>
+<td style="text-align:right;">
+-2239000
+</td>
+<td style="text-align:right;">
+6781000
+</td>
+<td style="text-align:right;">
+-828000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+15022000
+</td>
+<td style="text-align:right;">
+-7785000
+</td>
+<td style="text-align:right;">
+3387000
+</td>
+<td style="text-align:right;">
+181000
+</td>
+<td style="text-align:right;">
+-16261000
+</td>
+<td style="text-align:right;">
+-2705000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+3139000
+</td>
+<td style="text-align:right;">
+-192000
+</td>
+<td style="text-align:right;">
+-122000
+</td>
+<td style="text-align:right;">
+-370000
+</td>
+<td style="text-align:right;">
+-1731000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+156776000
+</td>
+<td style="text-align:right;">
+140218000
+</td>
+<td style="text-align:right;">
+16558000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+9676000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+149894000
+</td>
+<td style="text-align:right;">
+6882000
+</td>
+<td style="text-align:right;">
+1277000
+</td>
+<td style="text-align:right;">
+6882000
+</td>
+<td style="text-align:right;">
+-1190000
+</td>
+<td style="text-align:right;">
+8159000
+</td>
+<td style="text-align:right;">
+402000
+</td>
+<td style="text-align:right;">
+126000
+</td>
+<td style="text-align:right;">
+7757000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+7731000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+7731000
+</td>
+<td style="text-align:right;">
+8934000
+</td>
+<td style="text-align:right;">
+17554000
+</td>
+<td style="text-align:right;">
+10599000
+</td>
+<td style="text-align:right;">
+11176000
+</td>
+<td style="text-align:right;">
+3649000
+</td>
+<td style="text-align:right;">
+116801000
+</td>
+<td style="text-align:right;">
+3448000
+</td>
+<td style="text-align:right;">
+36901000
+</td>
+<td style="text-align:right;">
+75000
+</td>
+<td style="text-align:right;">
+213000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+18215000
+</td>
+<td style="text-align:right;">
+10762000
+</td>
+<td style="text-align:right;">
+258496000
+</td>
+<td style="text-align:right;">
+23282000
+</td>
+<td style="text-align:right;">
+1960000
+</td>
+<td style="text-align:right;">
+16402000
+</td>
+<td style="text-align:right;">
+94600000
+</td>
+<td style="text-align:right;">
+13174000
+</td>
+<td style="text-align:right;">
+25526000
+</td>
+<td style="text-align:right;">
+232000
+</td>
+<td style="text-align:right;">
+126000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+222792000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+41000
+</td>
+<td style="text-align:right;">
+21906000
+</td>
+<td style="text-align:right;">
+-8212000
+</td>
+<td style="text-align:right;">
+21843000
+</td>
+<td style="text-align:right;">
+-6959000
+</td>
+<td style="text-align:right;">
+35578000
+</td>
+<td style="text-align:right;">
+35290000
+</td>
+<td style="text-align:right;">
+7731000
+</td>
+<td style="text-align:right;">
+8453000
+</td>
+<td style="text-align:right;">
+-910000
+</td>
+<td style="text-align:right;">
+-2297000
+</td>
+<td style="text-align:right;">
+6089000
+</td>
+<td style="text-align:right;">
+-970000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+18096000
+</td>
+<td style="text-align:right;">
+-7049000
+</td>
+<td style="text-align:right;">
+2331000
+</td>
+<td style="text-align:right;">
+71000
+</td>
+<td style="text-align:right;">
+-19360000
+</td>
+<td style="text-align:right;">
+-2384000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+6260000
+</td>
+<td style="text-align:right;">
+-151000
+</td>
+<td style="text-align:right;">
+3394000
+</td>
+<td style="text-align:right;">
+489000
+</td>
+<td style="text-align:right;">
+2619000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+151800000
+</td>
+<td style="text-align:right;">
+134933000
+</td>
+<td style="text-align:right;">
+16867000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+12504000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+147437000
+</td>
+<td style="text-align:right;">
+4363000
+</td>
+<td style="text-align:right;">
+2421000
+</td>
+<td style="text-align:right;">
+4363000
+</td>
+<td style="text-align:right;">
+-951000
+</td>
+<td style="text-align:right;">
+6784000
+</td>
+<td style="text-align:right;">
+2184000
+</td>
+<td style="text-align:right;">
+113000
+</td>
+<td style="text-align:right;">
+4600000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+4589000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+4589000
+</td>
+<td style="text-align:right;">
+7828000
+</td>
+<td style="text-align:right;">
+19642000
+</td>
+<td style="text-align:right;">
+11102000
+</td>
+<td style="text-align:right;">
+8898000
+</td>
+<td style="text-align:right;">
+3145000
+</td>
+<td style="text-align:right;">
+108461000
+</td>
+<td style="text-align:right;">
+3523000
+</td>
+<td style="text-align:right;">
+33692000
+</td>
+<td style="text-align:right;">
+50000
+</td>
+<td style="text-align:right;">
+198000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+14894000
+</td>
+<td style="text-align:right;">
+9705000
+</td>
+<td style="text-align:right;">
+237951000
+</td>
+<td style="text-align:right;">
+21296000
+</td>
+<td style="text-align:right;">
+1361000
+</td>
+<td style="text-align:right;">
+16277000
+</td>
+<td style="text-align:right;">
+90281000
+</td>
+<td style="text-align:right;">
+13222000
+</td>
+<td style="text-align:right;">
+25086000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+113000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+208668000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+41000
+</td>
+<td style="text-align:right;">
+15634000
+</td>
+<td style="text-align:right;">
+-8135000
+</td>
+<td style="text-align:right;">
+21630000
+</td>
+<td style="text-align:right;">
+-7013000
+</td>
+<td style="text-align:right;">
+29170000
+</td>
+<td style="text-align:right;">
+28922000
+</td>
+<td style="text-align:right;">
+4589000
+</td>
+<td style="text-align:right;">
+8717000
+</td>
+<td style="text-align:right;">
+3607000
+</td>
+<td style="text-align:right;">
+-2855000
+</td>
+<td style="text-align:right;">
+6595000
+</td>
+<td style="text-align:right;">
+-803000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+19850000
+</td>
+<td style="text-align:right;">
+-6992000
+</td>
+<td style="text-align:right;">
+-2074000
+</td>
+<td style="text-align:right;">
+937000
+</td>
+<td style="text-align:right;">
+-25302000
+</td>
+<td style="text-align:right;">
+-2383500
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+11028000
+</td>
+<td style="text-align:right;">
+-107000
+</td>
+<td style="text-align:right;">
+7400000
+</td>
+<td style="text-align:right;">
+-265000
+</td>
+<td style="text-align:right;">
+1683000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+149558000
+</td>
+<td style="text-align:right;">
+131410000
+</td>
+<td style="text-align:right;">
+18148000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+10097000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+141507000
+</td>
+<td style="text-align:right;">
+8051000
+</td>
+<td style="text-align:right;">
+2201000
+</td>
+<td style="text-align:right;">
+8051000
+</td>
+<td style="text-align:right;">
+-773000
+</td>
+<td style="text-align:right;">
+10252000
+</td>
+<td style="text-align:right;">
+2881000
+</td>
+<td style="text-align:right;">
+109000
+</td>
+<td style="text-align:right;">
+7371000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+7373000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+7373000
+</td>
+<td style="text-align:right;">
+5386000
+</td>
+<td style="text-align:right;">
+18181000
+</td>
+<td style="text-align:right;">
+11042000
+</td>
+<td style="text-align:right;">
+8319000
+</td>
+<td style="text-align:right;">
+2704000
+</td>
+<td style="text-align:right;">
+102587000
+</td>
+<td style="text-align:right;">
+3244000
+</td>
+<td style="text-align:right;">
+32177000
+</td>
+<td style="text-align:right;">
+6000
+</td>
+<td style="text-align:right;">
+124000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+16154000
+</td>
+<td style="text-align:right;">
+11509000
+</td>
+<td style="text-align:right;">
+224925000
+</td>
+<td style="text-align:right;">
+20272000
+</td>
+<td style="text-align:right;">
+961000
+</td>
+<td style="text-align:right;">
+16084000
+</td>
+<td style="text-align:right;">
+82336000
+</td>
+<td style="text-align:right;">
+11060000
+</td>
+<td style="text-align:right;">
+23959000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+109000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+196174000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+41000
+</td>
+<td style="text-align:right;">
+14414000
+</td>
+<td style="text-align:right;">
+-7234000
+</td>
+<td style="text-align:right;">
+21421000
+</td>
+<td style="text-align:right;">
+-6257000
+</td>
+<td style="text-align:right;">
+28642000
+</td>
+<td style="text-align:right;">
+28512000
+</td>
+<td style="text-align:right;">
+7373000
+</td>
+<td style="text-align:right;">
+7966000
+</td>
+<td style="text-align:right;">
+-2153000
+</td>
+<td style="text-align:right;">
+-3563000
+</td>
+<td style="text-align:right;">
+7758000
+</td>
+<td style="text-align:right;">
+-1155000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+16226000
+</td>
+<td style="text-align:right;">
+-7196000
+</td>
+<td style="text-align:right;">
+-513000
+</td>
+<td style="text-align:right;">
+634000
+</td>
+<td style="text-align:right;">
+-26162000
+</td>
+<td style="text-align:right;">
+-2380000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+17148000
+</td>
+<td style="text-align:right;">
+-373000
+</td>
+<td style="text-align:right;">
+14266000
+</td>
+<td style="text-align:right;">
+-815000
+</td>
+<td style="text-align:right;">
+3515000
+</td>
+</tr>
+</tbody>
+</table>
+<p>Now that we have the full data, we can perform any number of calculations across different financial statements. Now the companies are in the “rows” and the “columns” consist of thefinancial entires.</p>
+<p>Some calculations are necessary for computing the <code>NFO</code>.</p>
+</div>
+<div id="compute-the-cash-flow-cycle" class="section level4">
+<h4>Compute the Cash Flow Cycle</h4>
+<pre class="r"><code>########## Create the Cash Cycle Calculations #############
+
+#Set CashCycle data.frame up
+CashCycle &lt;- data.frame(matrix(&quot;&quot;, nrow = nrow(ISBSCF)))
+CashCycle[,1] &lt;- NULL
+CashCycle$Ticker &lt;- ISBSCF$symbol
+CashCycle$Date &lt;- ISBSCF$year
+
+#CashCycle excluding accured expense Calculations
+CashCycle$CollectionPeriod &lt;- (ISBSCF$Net.Receivables / ISBSCF$Total.Revenue) * 365
+CashCycle$DaysofInventory &lt;- (ISBSCF$Inventory / ISBSCF$Cost.of.Revenue) * 365
+CashCycle$DaysofPayable &lt;- (ISBSCF$Accounts.Payable / ISBSCF$Cost.of.Revenue) * 365
+CashCycle$CashCollectionCycle &lt;- CashCycle$CollectionPeriod + CashCycle$DaysofInventory - CashCycle$DaysofPayable
+#CashCycle including accured expense Calculations
+CashCycle$DaysofPayableAccExp &lt;- ((ISBSCF$Accounts.Payable + ISBSCF$Total.Current.Liabilities) / ISBSCF$Cost.of.Revenue) * 365
+CashCycle$CashCollectionCycleAccExp &lt;- CashCycle$CollectionPeriod + CashCycle$DaysofInventory - CashCycle$DaysofPayableAccExp
+
+CashCycle &lt;- CashCycle[Reduce(`&amp;`, lapply(CashCycle, function(x) !is.nan(x)  &amp; !is.infinite(x))),]</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-10">Table 5: </span>Cash Flow Cycle
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Ticker
+</th>
+<th style="text-align:right;">
+Date
+</th>
+<th style="text-align:right;">
+CollectionPeriod
+</th>
+<th style="text-align:right;">
+DaysofInventory
+</th>
+<th style="text-align:right;">
+DaysofPayable
+</th>
+<th style="text-align:right;">
+CashCollectionCycle
+</th>
+<th style="text-align:right;">
+DaysofPayableAccExp
+</th>
+<th style="text-align:right;">
+CashCollectionCycleAccExp
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+34.522577
+</td>
+<td style="text-align:right;">
+54.56794
+</td>
+<td style="text-align:right;">
+115.72057
+</td>
+<td style="text-align:right;">
+-26.630053
+</td>
+<td style="text-align:right;">
+366.5732
+</td>
+<td style="text-align:right;">
+-277.4827
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+28.566695
+</td>
+<td style="text-align:right;">
+47.34115
+</td>
+<td style="text-align:right;">
+98.18329
+</td>
+<td style="text-align:right;">
+-22.275450
+</td>
+<td style="text-align:right;">
+375.1206
+</td>
+<td style="text-align:right;">
+-299.2128
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+26.686206
+</td>
+<td style="text-align:right;">
+51.65470
+</td>
+<td style="text-align:right;">
+103.73201
+</td>
+<td style="text-align:right;">
+-25.391103
+</td>
+<td style="text-align:right;">
+351.9354
+</td>
+<td style="text-align:right;">
+-273.5945
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+23.405166
+</td>
+<td style="text-align:right;">
+51.35922
+</td>
+<td style="text-align:right;">
+98.28746
+</td>
+<td style="text-align:right;">
+-23.523067
+</td>
+<td style="text-align:right;">
+335.4640
+</td>
+<td style="text-align:right;">
+-260.6996
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+39.420789
+</td>
+<td style="text-align:right;">
+14.39292
+</td>
+<td style="text-align:right;">
+56.11699
+</td>
+<td style="text-align:right;">
+-2.303276
+</td>
+<td style="text-align:right;">
+383.2265
+</td>
+<td style="text-align:right;">
+-329.4128
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+47.873994
+</td>
+<td style="text-align:right;">
+13.69312
+</td>
+<td style="text-align:right;">
+55.80185
+</td>
+<td style="text-align:right;">
+5.765263
+</td>
+<td style="text-align:right;">
+378.9959
+</td>
+<td style="text-align:right;">
+-317.4288
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+46.762785
+</td>
+<td style="text-align:right;">
+13.69125
+</td>
+<td style="text-align:right;">
+54.73854
+</td>
+<td style="text-align:right;">
+5.715492
+</td>
+<td style="text-align:right;">
+374.5389
+</td>
+<td style="text-align:right;">
+-314.0849
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+42.572393
+</td>
+<td style="text-align:right;">
+13.78851
+</td>
+<td style="text-align:right;">
+53.58940
+</td>
+<td style="text-align:right;">
+2.771507
+</td>
+<td style="text-align:right;">
+358.2435
+</td>
+<td style="text-align:right;">
+-301.8826
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+59.647330
+</td>
+<td style="text-align:right;">
+71.48578
+</td>
+<td style="text-align:right;">
+63.62906
+</td>
+<td style="text-align:right;">
+67.504052
+</td>
+<td style="text-align:right;">
+248.8704
+</td>
+<td style="text-align:right;">
+-117.7373
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+74.729878
+</td>
+<td style="text-align:right;">
+66.33041
+</td>
+<td style="text-align:right;">
+51.82373
+</td>
+<td style="text-align:right;">
+89.236560
+</td>
+<td style="text-align:right;">
+256.9155
+</td>
+<td style="text-align:right;">
+-115.8552
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+73.557271
+</td>
+<td style="text-align:right;">
+85.98961
+</td>
+<td style="text-align:right;">
+55.52742
+</td>
+<td style="text-align:right;">
+104.019457
+</td>
+<td style="text-align:right;">
+326.1981
+</td>
+<td style="text-align:right;">
+-166.6512
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+135.536587
+</td>
+<td style="text-align:right;">
+91.19836
+</td>
+<td style="text-align:right;">
+55.41166
+</td>
+<td style="text-align:right;">
+171.323283
+</td>
+<td style="text-align:right;">
+615.4826
+</td>
+<td style="text-align:right;">
+-388.7476
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+8.418279
+</td>
+<td style="text-align:right;">
+28.15433
+</td>
+<td style="text-align:right;">
+51.25492
+</td>
+<td style="text-align:right;">
+-14.682320
+</td>
+<td style="text-align:right;">
+291.0660
+</td>
+<td style="text-align:right;">
+-254.4934
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+24.676194
+</td>
+<td style="text-align:right;">
+29.09213
+</td>
+<td style="text-align:right;">
+60.60513
+</td>
+<td style="text-align:right;">
+-6.836807
+</td>
+<td style="text-align:right;">
+306.8574
+</td>
+<td style="text-align:right;">
+-253.0891
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+26.694532
+</td>
+<td style="text-align:right;">
+24.06950
+</td>
+<td style="text-align:right;">
+57.60666
+</td>
+<td style="text-align:right;">
+-6.842631
+</td>
+<td style="text-align:right;">
+301.8209
+</td>
+<td style="text-align:right;">
+-251.0569
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+26.948274
+</td>
+<td style="text-align:right;">
+23.10657
+</td>
+<td style="text-align:right;">
+56.30683
+</td>
+<td style="text-align:right;">
+-6.251977
+</td>
+<td style="text-align:right;">
+285.0005
+</td>
+<td style="text-align:right;">
+-234.9457
+</td>
+</tr>
+</tbody>
+</table>
+<p>Where all the results are in days. So Unilever <code>2018</code>, <code>CollectionPeriod</code> was <code>34.5</code> days, up from their <code>2017</code>, <code>CollectionPeriod</code> and up annually since <code>2015</code>. Wheras <code>Ford</code> has been decreasing their <code>CollectionPeriod</code> over the sample period.</p>
+<p>Let us continue with some DuPont analysis…</p>
+<pre class="r"><code>########## Create the DuPont Calculations #############
+
+#DuPont Analysis
+#Set CashCycle data.frame up
+DuPontAnalysis &lt;- data.frame(matrix(&quot;&quot;, nrow = nrow(ISBSCF)))
+DuPontAnalysis[,1] &lt;- NULL
+DuPontAnalysis$Ticker &lt;- ISBSCF$symbol
+DuPontAnalysis$Date &lt;- ISBSCF$year
+#DuPont Analysis Calculations
+DuPontAnalysis$ROE &lt;- ISBSCF$Net.Income / ISBSCF$Total.stockholders..equity
+DuPontAnalysis$ROS &lt;- ISBSCF$Net.Income / ISBSCF$Total.Revenue
+DuPontAnalysis$Turnover &lt;- ISBSCF$Total.Revenue / ISBSCF$Total.Assets
+DuPontAnalysis$Leverage &lt;- ISBSCF$Total.Assets / ISBSCF$Total.stockholders..equity
+
+DuPontAnalysis &lt;- DuPontAnalysis[Reduce(`&amp;`, lapply(DuPontAnalysis, function(x) !is.nan(x)  &amp; !is.infinite(x))),]</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-12">Table 6: </span>DuPont Calculations
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Ticker
+</th>
+<th style="text-align:right;">
+Date
+</th>
+<th style="text-align:right;">
+ROE
+</th>
+<th style="text-align:right;">
+ROS
+</th>
+<th style="text-align:right;">
+Turnover
+</th>
+<th style="text-align:right;">
+Leverage
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+0.8113550
+</td>
+<td style="text-align:right;">
+0.1841630
+</td>
+<td style="text-align:right;">
+0.8574744
+</td>
+<td style="text-align:right;">
+5.137919
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+0.4441265
+</td>
+<td style="text-align:right;">
+0.1126873
+</td>
+<td style="text-align:right;">
+0.8910177
+</td>
+<td style="text-align:right;">
+4.423289
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+0.3169867
+</td>
+<td style="text-align:right;">
+0.0983439
+</td>
+<td style="text-align:right;">
+0.9341473
+</td>
+<td style="text-align:right;">
+3.450471
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+0.3179610
+</td>
+<td style="text-align:right;">
+0.0921497
+</td>
+<td style="text-align:right;">
+1.0186240
+</td>
+<td style="text-align:right;">
+3.387396
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+0.5196475
+</td>
+<td style="text-align:right;">
+0.1096606
+</td>
+<td style="text-align:right;">
+0.6450779
+</td>
+<td style="text-align:right;">
+7.345916
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+0.3269865
+</td>
+<td style="text-align:right;">
+0.0726949
+</td>
+<td style="text-align:right;">
+0.6313140
+</td>
+<td style="text-align:right;">
+7.124929
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+0.6506632
+</td>
+<td style="text-align:right;">
+0.1485504
+</td>
+<td style="text-align:right;">
+0.6803354
+</td>
+<td style="text-align:right;">
+6.438123
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+0.9248352
+</td>
+<td style="text-align:right;">
+0.1613633
+</td>
+<td style="text-align:right;">
+0.7397710
+</td>
+<td style="text-align:right;">
+7.747511
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+-0.7217111
+</td>
+<td style="text-align:right;">
+-0.1838178
+</td>
+<td style="text-align:right;">
+0.3934118
+</td>
+<td style="text-align:right;">
+9.979952
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+-0.1514351
+</td>
+<td style="text-align:right;">
+-0.0717505
+</td>
+<td style="text-align:right;">
+0.3202291
+</td>
+<td style="text-align:right;">
+6.590836
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+0.0989159
+</td>
+<td style="text-align:right;">
+0.0627783
+</td>
+<td style="text-align:right;">
+0.3271456
+</td>
+<td style="text-align:right;">
+4.816320
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+-0.0623397
+</td>
+<td style="text-align:right;">
+-0.0528860
+</td>
+<td style="text-align:right;">
+0.2349236
+</td>
+<td style="text-align:right;">
+5.017615
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+0.1023322
+</td>
+<td style="text-align:right;">
+0.0229328
+</td>
+<td style="text-align:right;">
+0.6250019
+</td>
+<td style="text-align:right;">
+7.139597
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+0.2172972
+</td>
+<td style="text-align:right;">
+0.0493124
+</td>
+<td style="text-align:right;">
+0.6064929
+</td>
+<td style="text-align:right;">
+7.265614
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+0.1573192
+</td>
+<td style="text-align:right;">
+0.0302306
+</td>
+<td style="text-align:right;">
+0.6379465
+</td>
+<td style="text-align:right;">
+8.157388
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+0.2574192
+</td>
+<td style="text-align:right;">
+0.0492986
+</td>
+<td style="text-align:right;">
+0.6649239
+</td>
+<td style="text-align:right;">
+7.852978
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="compute-the-need-for-funds-and-working-capital-calculations" class="section level4">
+<h4>Compute the Need for Funds and Working Capital calculations</h4>
+<pre class="r"><code>########## Create the NFO &amp; WC Calculations #############
+
+#NFO-WC Analysis
+NFO_WCAnalysis &lt;- data.frame(matrix(&quot;&quot;, nrow = nrow(ISBSCF)))
+NFO_WCAnalysis[,1] &lt;- NULL
+NFO_WCAnalysis$Ticker &lt;- ISBSCF$symbol
+NFO_WCAnalysis$Date &lt;- ISBSCF$year
+#NFO_WC Analysis Calculations
+NFO_WCAnalysis$REC &lt;- ISBSCF$Net.Receivables
+NFO_WCAnalysis$INV &lt;- ISBSCF$Inventory
+NFO_WCAnalysis$OtherCurrentAssetsNotCash &lt;- ISBSCF$Other.Current.Assets
+NFO_WCAnalysis$Payables &lt;- ISBSCF$Accounts.Payable
+NFO_WCAnalysis$SpontaneousFunsIncDeftaxes &lt;- ISBSCF$Total.Current.Liabilities + ISBSCF$Other.Current.Liabilities + ISBSCF$Income.Tax.Expense
+
+####
+NFO_WCAnalysis$NFO &lt;- NFO_WCAnalysis$REC + NFO_WCAnalysis$INV + NFO_WCAnalysis$OtherCurrentAssetsNotCash - NFO_WCAnalysis$Payables - NFO_WCAnalysis$SpontaneousFunsIncDeftaxes
+NFO_WCAnalysis$LTD &lt;- ISBSCF$Long.Term.Debt
+NFO_WCAnalysis$EQ &lt;- ISBSCF$Total.stockholders..equity
+NFO_WCAnalysis$OtherLongTermLiabilities &lt;- ISBSCF$Minority.Interest + ISBSCF$Other.Liabilities
+NFO_WCAnalysis$FA &lt;- ISBSCF$Total.Assets - ISBSCF$Total.Current.Assets
+
+###
+NFO_WCAnalysis$WC &lt;- NFO_WCAnalysis$LTD + NFO_WCAnalysis$EQ + NFO_WCAnalysis$OtherLongTermLiabilities - NFO_WCAnalysis$FA
+NFO_WCAnalysis$CreditPlusCashMinus &lt;- NFO_WCAnalysis$NFO - NFO_WCAnalysis$WC
+
+NFO_WCAnalysis &lt;- NFO_WCAnalysis[Reduce(`&amp;`, lapply(NFO_WCAnalysis, function(x) !is.nan(x)  &amp; !is.infinite(x))),]</code></pre>
+<p>Lets inspect the result.</p>
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-14">Table 7: </span>NFO WC Analysis
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Ticker
+</th>
+<th style="text-align:right;">
+Date
+</th>
+<th style="text-align:right;">
+REC
+</th>
+<th style="text-align:right;">
+INV
+</th>
+<th style="text-align:right;">
+OtherCurrentAssetsNotCash
+</th>
+<th style="text-align:right;">
+Payables
+</th>
+<th style="text-align:right;">
+SpontaneousFunsIncDeftaxes
+</th>
+<th style="text-align:right;">
+NFO
+</th>
+<th style="text-align:right;">
+LTD
+</th>
+<th style="text-align:right;">
+EQ
+</th>
+<th style="text-align:right;">
+OtherLongTermLiabilities
+</th>
+<th style="text-align:right;">
+FA
+</th>
+<th style="text-align:right;">
+WC
+</th>
+<th style="text-align:right;">
+CreditPlusCashMinus
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+4822000
+</td>
+<td style="text-align:right;">
+4301000
+</td>
+<td style="text-align:right;">
+1387000
+</td>
+<td style="text-align:right;">
+9121000
+</td>
+<td style="text-align:right;">
+25541000
+</td>
+<td style="text-align:right;">
+-24152000
+</td>
+<td style="text-align:right;">
+21535000
+</td>
+<td style="text-align:right;">
+11572000
+</td>
+<td style="text-align:right;">
+6462000
+</td>
+<td style="text-align:right;">
+43975000
+</td>
+<td style="text-align:right;">
+-4406000
+</td>
+<td style="text-align:right;">
+-19746000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+4204000
+</td>
+<td style="text-align:right;">
+3962000
+</td>
+<td style="text-align:right;">
+4356000
+</td>
+<td style="text-align:right;">
+8217000
+</td>
+<td style="text-align:right;">
+27631000
+</td>
+<td style="text-align:right;">
+-23326000
+</td>
+<td style="text-align:right;">
+16342000
+</td>
+<td style="text-align:right;">
+13629000
+</td>
+<td style="text-align:right;">
+7017000
+</td>
+<td style="text-align:right;">
+43302000
+</td>
+<td style="text-align:right;">
+-6314000
+</td>
+<td style="text-align:right;">
+-17012000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+3854000
+</td>
+<td style="text-align:right;">
+4278000
+</td>
+<td style="text-align:right;">
+1120000
+</td>
+<td style="text-align:right;">
+8591000
+</td>
+<td style="text-align:right;">
+24870000
+</td>
+<td style="text-align:right;">
+-24209000
+</td>
+<td style="text-align:right;">
+11011000
+</td>
+<td style="text-align:right;">
+16354000
+</td>
+<td style="text-align:right;">
+8374000
+</td>
+<td style="text-align:right;">
+42545000
+</td>
+<td style="text-align:right;">
+-6806000
+</td>
+<td style="text-align:right;">
+-17403000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+3416000
+</td>
+<td style="text-align:right;">
+4335000
+</td>
+<td style="text-align:right;">
+1352000
+</td>
+<td style="text-align:right;">
+8296000
+</td>
+<td style="text-align:right;">
+24739000
+</td>
+<td style="text-align:right;">
+-23932000
+</td>
+<td style="text-align:right;">
+9696000
+</td>
+<td style="text-align:right;">
+15439000
+</td>
+<td style="text-align:right;">
+6986000
+</td>
+<td style="text-align:right;">
+39612000
+</td>
+<td style="text-align:right;">
+-7491000
+</td>
+<td style="text-align:right;">
+-16441000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+8596000
+</td>
+<td style="text-align:right;">
+1682000
+</td>
+<td style="text-align:right;">
+2902000
+</td>
+<td style="text-align:right;">
+6558000
+</td>
+<td style="text-align:right;">
+55526000
+</td>
+<td style="text-align:right;">
+-48904000
+</td>
+<td style="text-align:right;">
+35681000
+</td>
+<td style="text-align:right;">
+16796000
+</td>
+<td style="text-align:right;">
+32678000
+</td>
+<td style="text-align:right;">
+74236000
+</td>
+<td style="text-align:right;">
+10919000
+</td>
+<td style="text-align:right;">
+-59823000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+10380000
+</td>
+<td style="text-align:right;">
+1583000
+</td>
+<td style="text-align:right;">
+2266000
+</td>
+<td style="text-align:right;">
+6451000
+</td>
+<td style="text-align:right;">
+59456000
+</td>
+<td style="text-align:right;">
+-51678000
+</td>
+<td style="text-align:right;">
+39871000
+</td>
+<td style="text-align:right;">
+17594000
+</td>
+<td style="text-align:right;">
+30528000
+</td>
+<td style="text-align:right;">
+75621000
+</td>
+<td style="text-align:right;">
+12372000
+</td>
+<td style="text-align:right;">
+-64050000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+10239000
+</td>
+<td style="text-align:right;">
+1553000
+</td>
+<td style="text-align:right;">
+532000
+</td>
+<td style="text-align:right;">
+6209000
+</td>
+<td style="text-align:right;">
+51417000
+</td>
+<td style="text-align:right;">
+-45302000
+</td>
+<td style="text-align:right;">
+34663000
+</td>
+<td style="text-align:right;">
+18246000
+</td>
+<td style="text-align:right;">
+28286000
+</td>
+<td style="text-align:right;">
+73581000
+</td>
+<td style="text-align:right;">
+7614000
+</td>
+<td style="text-align:right;">
+-52916000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+9534000
+</td>
+<td style="text-align:right;">
+1551000
+</td>
+<td style="text-align:right;">
+293000
+</td>
+<td style="text-align:right;">
+6028000
+</td>
+<td style="text-align:right;">
+51131000
+</td>
+<td style="text-align:right;">
+-45781000
+</td>
+<td style="text-align:right;">
+33431000
+</td>
+<td style="text-align:right;">
+14262000
+</td>
+<td style="text-align:right;">
+28533000
+</td>
+<td style="text-align:right;">
+67991000
+</td>
+<td style="text-align:right;">
+8235000
+</td>
+<td style="text-align:right;">
+-54016000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+19874000
+</td>
+<td style="text-align:right;">
+19271000
+</td>
+<td style="text-align:right;">
+7441000
+</td>
+<td style="text-align:right;">
+17153000
+</td>
+<td style="text-align:right;">
+70230000
+</td>
+<td style="text-align:right;">
+-40797000
+</td>
+<td style="text-align:right;">
+95234000
+</td>
+<td style="text-align:right;">
+30975000
+</td>
+<td style="text-align:right;">
+95765000
+</td>
+<td style="text-align:right;">
+213155000
+</td>
+<td style="text-align:right;">
+8819000
+</td>
+<td style="text-align:right;">
+-49616000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+24209000
+</td>
+<td style="text-align:right;">
+19419000
+</td>
+<td style="text-align:right;">
+6720000
+</td>
+<td style="text-align:right;">
+15172000
+</td>
+<td style="text-align:right;">
+76963000
+</td>
+<td style="text-align:right;">
+-41787000
+</td>
+<td style="text-align:right;">
+108575000
+</td>
+<td style="text-align:right;">
+56024000
+</td>
+<td style="text-align:right;">
+105102000
+</td>
+<td style="text-align:right;">
+252992000
+</td>
+<td style="text-align:right;">
+16709000
+</td>
+<td style="text-align:right;">
+-58496000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+24076000
+</td>
+<td style="text-align:right;">
+22354000
+</td>
+<td style="text-align:right;">
+3885000
+</td>
+<td style="text-align:right;">
+14435000
+</td>
+<td style="text-align:right;">
+90003000
+</td>
+<td style="text-align:right;">
+-54123000
+</td>
+<td style="text-align:right;">
+105080000
+</td>
+<td style="text-align:right;">
+75822000
+</td>
+<td style="text-align:right;">
+87728000
+</td>
+<td style="text-align:right;">
+233747000
+</td>
+<td style="text-align:right;">
+34883000
+</td>
+<td style="text-align:right;">
+-89006000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GE
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+43013000
+</td>
+<td style="text-align:right;">
+22515000
+</td>
+<td style="text-align:right;">
+5109000
+</td>
+<td style="text-align:right;">
+13680000
+</td>
+<td style="text-align:right;">
+172208000
+</td>
+<td style="text-align:right;">
+-115251000
+</td>
+<td style="text-align:right;">
+144659000
+</td>
+<td style="text-align:right;">
+98268000
+</td>
+<td style="text-align:right;">
+84011000
+</td>
+<td style="text-align:right;">
+212175000
+</td>
+<td style="text-align:right;">
+114763000
+</td>
+<td style="text-align:right;">
+-230014000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+3698000
+</td>
+<td style="text-align:right;">
+11220000
+</td>
+<td style="text-align:right;">
+2567000
+</td>
+<td style="text-align:right;">
+20426000
+</td>
+<td style="text-align:right;">
+115087000
+</td>
+<td style="text-align:right;">
+-118028000
+</td>
+<td style="text-align:right;">
+11833000
+</td>
+<td style="text-align:right;">
+35932000
+</td>
+<td style="text-align:right;">
+23222000
+</td>
+<td style="text-align:right;">
+141891000
+</td>
+<td style="text-align:right;">
+-70904000
+</td>
+<td style="text-align:right;">
+-47124000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+10599000
+</td>
+<td style="text-align:right;">
+11176000
+</td>
+<td style="text-align:right;">
+3649000
+</td>
+<td style="text-align:right;">
+23282000
+</td>
+<td style="text-align:right;">
+111404000
+</td>
+<td style="text-align:right;">
+-109262000
+</td>
+<td style="text-align:right;">
+13174000
+</td>
+<td style="text-align:right;">
+35578000
+</td>
+<td style="text-align:right;">
+25652000
+</td>
+<td style="text-align:right;">
+141695000
+</td>
+<td style="text-align:right;">
+-67291000
+</td>
+<td style="text-align:right;">
+-41971000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+11102000
+</td>
+<td style="text-align:right;">
+8898000
+</td>
+<td style="text-align:right;">
+3145000
+</td>
+<td style="text-align:right;">
+21296000
+</td>
+<td style="text-align:right;">
+108742000
+</td>
+<td style="text-align:right;">
+-106893000
+</td>
+<td style="text-align:right;">
+13222000
+</td>
+<td style="text-align:right;">
+29170000
+</td>
+<td style="text-align:right;">
+25199000
+</td>
+<td style="text-align:right;">
+129490000
+</td>
+<td style="text-align:right;">
+-61899000
+</td>
+<td style="text-align:right;">
+-44994000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+11042000
+</td>
+<td style="text-align:right;">
+8319000
+</td>
+<td style="text-align:right;">
+2704000
+</td>
+<td style="text-align:right;">
+20272000
+</td>
+<td style="text-align:right;">
+101301000
+</td>
+<td style="text-align:right;">
+-99508000
+</td>
+<td style="text-align:right;">
+11060000
+</td>
+<td style="text-align:right;">
+28642000
+</td>
+<td style="text-align:right;">
+24068000
+</td>
+<td style="text-align:right;">
+122338000
+</td>
+<td style="text-align:right;">
+-58568000
+</td>
+<td style="text-align:right;">
+-40940000
+</td>
+</tr>
+</tbody>
+</table>
+<p>According to <a href="https://www.iese.edu/faculty-research/faculty/miguel-anton/">Miguel Antón</a>:</p>
+<p>*If NFO &gt; WC - ask for credit</p>
+<p>*If NFO &lt; WC - surplus cash</p>
+<p>Lets plot the results and analyse them further:</p>
+<pre class="r"><code>########## Plot the NFO &amp; WC #############
+
+symbol &lt;- NULL
+symbols &lt;- unique(NFO_WCAnalysis$Ticker)
+
+# Create the plots for NFO and WC for all symbols
+plotList &lt;- list()
+for(symbol in symbols){
+  plotList[[symbol]] &lt;- ggplot(subset(NFO_WCAnalysis, Ticker %in% symbol)) +
+    geom_line(aes(Date, NFO, group = Ticker, colour = &quot;Blue&quot;)) +
+    geom_line(aes(Date, WC, group = Ticker, colour = &quot;Red&quot;)) +
+    labs(title=paste0(&quot;NFO and WC plot &quot;, symbol), x=&quot;Year&quot;, y=&quot;NFO / WC&quot;) +
+    scale_color_manual(labels = c(&quot;NFO&quot;, &quot;WC&quot;), values = c(&quot;Blue&quot;, &quot;Red&quot;)) +
+    guides(color=guide_legend(&quot;Legend&quot;)) +
+    theme_tq() +
+    theme(legend.position = &quot;right&quot;)
+}
+
+
+# Change the symbols to view the NFO WC plots
+plotList[1]</code></pre>
+<pre><code>## $UN</code></pre>
+<p><img src="/post/nfo-wc-calculations/nfo-wc-calculations-plots_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>plotList[2]</code></pre>
+<pre><code>## $IBM</code></pre>
+<p><img src="/post/nfo-wc-calculations/nfo-wc-calculations-plots_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+<pre class="r"><code>plotList[3]</code></pre>
+<pre><code>## $GE</code></pre>
+<p><img src="/post/nfo-wc-calculations/nfo-wc-calculations-plots_files/figure-html/unnamed-chunk-15-3.png" width="672" /></p>
+<pre class="r"><code>plotList[4]</code></pre>
+<pre><code>## $F</code></pre>
+<p><img src="/post/nfo-wc-calculations/nfo-wc-calculations-plots_files/figure-html/unnamed-chunk-15-4.png" width="672" /></p>
+<pre class="r"><code># Print the results to a PDF document
+#pdf(&quot;PlotsNFO_WC.pdf&quot;, onefile = TRUE, paper = &quot;USr&quot;) #Uncomment this if you want to save to .pdf
+#plotList
+#dev.off()</code></pre>
+</div>
+<div id="plotting-the-collection-period-inventory-days-and-days-of-payabales" class="section level4">
+<h4>Plotting the collection period, inventory days and days of payabales</h4>
+<p>We can also analyse the collection periods for each firm. <code>mm</code> here simply means <code>melted</code> data - which is a way of <code>reshaping</code> a data frame in R, check out the <code>melt</code> functon from the <code>reshape2</code> package in R if interested.</p>
+<pre class="r"><code>########## Collection Period, Days of Inventory and Days of Payable #############
+# Create the plots for Collection Period, Days of Inventory and Days of Payable
+
+mm &lt;- melt(CashCycle, id = c(&#39;Ticker&#39;, &#39;Date&#39;))
+mm &lt;- mm[mm$variable == &quot;CollectionPeriod&quot; | mm$variable == &quot;DaysofInventory&quot; | mm$variable == &quot;DaysofPayable&quot;,]
+mm$value &lt;- with(mm, ifelse(variable == &quot;DaysofPayable&quot;, -value, value))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-17">Table 8: </span>Collection Period - Days of Inventory - Days of Payable
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Ticker
+</th>
+<th style="text-align:right;">
+Date
+</th>
+<th style="text-align:left;">
+variable
+</th>
+<th style="text-align:right;">
+value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:left;">
+CollectionPeriod
+</td>
+<td style="text-align:right;">
+34.52258
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+CollectionPeriod
+</td>
+<td style="text-align:right;">
+28.56669
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+CollectionPeriod
+</td>
+<td style="text-align:right;">
+26.68621
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+UN
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:left;">
+CollectionPeriod
+</td>
+<td style="text-align:right;">
+23.40517
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:left;">
+CollectionPeriod
+</td>
+<td style="text-align:right;">
+39.42079
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IBM
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+CollectionPeriod
+</td>
+<td style="text-align:right;">
+47.87399
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="plot-the-results" class="section level4">
+<h4>Plot the results</h4>
+<pre class="r"><code>########## Plot the Collection Period, Days of Inventory and Days of Payable #############
+
+symbol &lt;- NULL
+symbols &lt;- unique(mm$Ticker)
+
+plotListBar &lt;- list()
+for(symbol in symbols){
+  plotListBar[[symbol]] &lt;- ggplot(mm[mm$Ticker == symbol,], aes(Date, value,  fill = variable)) + facet_wrap(~ Ticker) +
+    geom_bar(stat=&quot;identity&quot;, position = &quot;dodge&quot;) +
+    theme_tq() +
+    theme(legend.position = &quot;right&quot;)
+}
+
+plotListBar[1]</code></pre>
+<pre><code>## $UN</code></pre>
+<p><img src="/post/nfo-wc-calculations/nfo-wc-calculations-plots_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre class="r"><code>plotListBar[2]</code></pre>
+<pre><code>## $IBM</code></pre>
+<p><img src="/post/nfo-wc-calculations/nfo-wc-calculations-plots_files/figure-html/unnamed-chunk-18-2.png" width="672" /></p>
+<pre class="r"><code>plotListBar[3]</code></pre>
+<pre><code>## $GE</code></pre>
+<p><img src="/post/nfo-wc-calculations/nfo-wc-calculations-plots_files/figure-html/unnamed-chunk-18-3.png" width="672" /></p>
+<pre class="r"><code>plotListBar[4]</code></pre>
+<pre><code>## $F</code></pre>
+<p><img src="/post/nfo-wc-calculations/nfo-wc-calculations-plots_files/figure-html/unnamed-chunk-18-4.png" width="672" /></p>
+<pre class="r"><code># Print the results to a PDF document
+#pdf(&quot;Plots_OperationalRatios.pdf&quot;, onefile = TRUE, paper = &quot;USr&quot;) #Uncomment if you want to save to .pdf
+#plotListBar
+#dev.off()</code></pre>
+</div>
+<div id="any-errors-are-my-own" class="section level4">
+<h4>Any errors are my own!</h4>
+<p>You can save the results using:</p>
+<pre class="r"><code># library(openxlsx)
+# if(devtools::find_rtools()) Sys.setenv(R_ZIPCMD= file.path(devtools:::get_rtools_path(),&quot;zip&quot;))
+# write.xlsx(CashCycle, &#39;CashCycle.xlsx&#39;)
+# write.xlsx(DuPontAnalysis, &#39;DuPontAnalysis.xlsx&#39;)
+# write.xlsx(NFO_WCAnalysis, &#39;NFO_WCAnalysis.xlsx&#39;)
+# write.xlsx(df, &#39;FinancialsAllCompanies.xlsx&#39;)</code></pre>
+</div>
+
+    </div>
+
+    
+
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/finance/">finance</a>
+  
+  <a class="badge badge-light" href="/tags/yahoo-finance/">yahoo finance</a>
+  
+  <a class="badge badge-light" href="/tags/corporate-finance/">corporate finance</a>
+  
+  <a class="badge badge-light" href="/tags/managerial-finance/">managerial finance</a>
+  
+  <a class="badge badge-light" href="/tags/dupont/">dupont</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  <div class="media author-card">
+    
+      
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu88685f9f250f5c15d78dab2d9552b11c_15179_250x250_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="/">Matthew Smith</a></h5>
+      <h6 class="card-subtitle">Researcher</h6>
+      <p class="card-text">I am a researcher with a focus on Machine Learning methods applied to economics and finance.</p>
+      <ul class="network-icon" aria-hidden="true">
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="/#contact" >
+              <i class="fas fa-envelope"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://twitter.com/MatthewSmith786" target="_blank" rel="noopener">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://scholar.google.co.uk/" target="_blank" rel="noopener">
+              <i class="ai ai-google-scholar"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://github.com/msmith01" target="_blank" rel="noopener">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/">Fundamental Financial Ratios in R</a></li>
+          
+          <li><a href="/post/yahoo-finance-ipo/">Scraping Yahoo Finance IPO Data</a></li>
+          
+          <li><a href="/post/nvidia-share-price/">Tracking NVDA&#39;s share price</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.130521ecfc6f534c52c158217bbff718.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+        
+  </p>
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

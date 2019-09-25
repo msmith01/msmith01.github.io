@@ -3,282 +3,317 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://lf0.com/courses/example/example1/</loc>
+    <loc>/courses/example/example1/</loc>
     <lastmod>2019-05-05T00:00:00+01:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/courses/example/</loc>
+    <loc>/courses/example/</loc>
     <lastmod>2018-09-09T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/courses/example/example2/</loc>
+    <loc>/courses/example/example2/</loc>
     <lastmod>2019-05-05T00:00:00+01:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/talk/example/</loc>
+    <loc>/talk/example/</loc>
     <lastmod>2030-06-01T13:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/</loc>
+    <loc>/</loc>
     <lastmod>2030-06-01T13:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/talk/</loc>
+    <loc>/talk/</loc>
     <lastmod>2030-06-01T13:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/categories/</loc>
+    <loc>/categories/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/corporate-finance/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/dupont/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/finance/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/finance/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/managerial-finance/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/nfo-wc-calculations/nfo-wc-calculations-plots/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/yahoo-finance/</loc>
+    <lastmod>2019-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/hackerrank/</loc>
     <lastmod>2019-09-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/categories/hackerrank/</loc>
+    <loc>/tags/hackerrank/</loc>
     <lastmod>2019-09-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/hackerrank/</loc>
+    <loc>/tags/machine-learning/</loc>
     <lastmod>2019-09-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/machine-learning/</loc>
+    <loc>/post/hackerrank-competitions/hackerrank-compeitions/</loc>
     <lastmod>2019-09-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/post/</loc>
+    <loc>/tags/time-series/</loc>
     <lastmod>2019-09-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/post/hackerrank-competitions/hackerrank-compeitions/</loc>
+    <loc>/tags/xgboost/</loc>
     <lastmod>2019-09-24T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/</loc>
-    <lastmod>2019-09-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://lf0.com/tags/time-series/</loc>
-    <lastmod>2019-09-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://lf0.com/tags/xgboost/</loc>
-    <lastmod>2019-09-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://lf0.com/authors/admin/</loc>
+    <loc>/authors/admin/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/asset-pricing/</loc>
+    <loc>/tags/asset-pricing/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/authors/</loc>
+    <loc>/authors/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/fundamental-analysis/</loc>
+    <loc>/tags/fundamental-analysis/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</loc>
+    <loc>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</loc>
+    <loc>/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/missing-value-imputation/</loc>
+    <loc>/tags/missing-value-imputation/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/ratios/</loc>
+    <loc>/tags/ratios/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/categories/statistics/</loc>
+    <loc>/categories/statistics/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/stock-prices/</loc>
+    <loc>/tags/stock-prices/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/categories/yahoo-finance/</loc>
+    <loc>/categories/yahoo-finance/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/yahoo-finance/</loc>
-    <lastmod>2019-09-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://lf0.com/tags/aws/</loc>
+    <loc>/tags/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/categories/aws/</loc>
+    <loc>/categories/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/finance/</loc>
+    <loc>/tags/fundamentals/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/fundamentals/</loc>
+    <loc>/tags/ipo/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/ipo/</loc>
+    <loc>/tags/nohup/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/nohup/</loc>
+    <loc>/tags/rstudio/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/rstudio/</loc>
+    <loc>/post/rstudio-amazonaws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/post/rstudio-amazonaws/</loc>
+    <loc>/post/yahoo-finance-ipo/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/post/yahoo-finance-ipo/</loc>
+    <loc>/post/nohup-r-connect/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/post/nohup-r-connect/</loc>
+    <loc>/post/nvidia-share-price/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/post/nvidia-share-price/</loc>
-    <lastmod>2019-09-21T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>http://lf0.com/publication_types/3/</loc>
+    <loc>/publication_types/3/</loc>
     <lastmod>2019-04-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/publication/preprint/</loc>
+    <loc>/publication/preprint/</loc>
     <lastmod>2019-04-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/publication_types/</loc>
+    <loc>/publication_types/</loc>
     <lastmod>2019-04-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/publication/</loc>
+    <loc>/publication/</loc>
     <lastmod>2019-04-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/source-themes/</loc>
+    <loc>/tags/source-themes/</loc>
     <lastmod>2019-04-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/slides/</loc>
+    <loc>/slides/</loc>
     <lastmod>2019-02-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/slides/example/</loc>
+    <loc>/slides/example/</loc>
     <lastmod>2019-02-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/deep-learning/</loc>
+    <loc>/privacy/</loc>
+    <lastmod>2018-06-28T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/terms/</loc>
+    <lastmod>2018-06-28T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/deep-learning/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/tags/demo/</loc>
+    <loc>/tags/demo/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/project/external-project/</loc>
+    <loc>/project/external-project/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/project/internal-project/</loc>
+    <loc>/project/internal-project/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/project/</loc>
+    <loc>/project/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/publication_types/2/</loc>
+    <loc>/publication_types/2/</loc>
     <lastmod>2015-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/publication/journal-article/</loc>
+    <loc>/publication/journal-article/</loc>
     <lastmod>2015-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/authors/robert-ford/</loc>
+    <loc>/authors/robert-ford/</loc>
     <lastmod>2015-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/publication_types/1/</loc>
+    <loc>/publication_types/1/</loc>
     <lastmod>2013-07-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/publication/conference-paper/</loc>
+    <loc>/publication/conference-paper/</loc>
     <lastmod>2013-07-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://lf0.com/courses/</loc>
+    <loc>/courses/</loc>
   </url>
   
 </urlset>

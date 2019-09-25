@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>missing value imputation | Matthew Smith R Shenanigans</title>
-    <link>http://lf0.com/tags/missing-value-imputation/</link>
-      <atom:link href="http://lf0.com/tags/missing-value-imputation/index.xml" rel="self" type="application/rss+xml" />
+    <link>/tags/missing-value-imputation/</link>
+      <atom:link href="/tags/missing-value-imputation/index.xml" rel="self" type="application/rss+xml" />
     <description>missing value imputation</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>http://lf0.com/img/icon-192.png</url>
+      <url>/img/icon-192.png</url>
       <title>missing value imputation</title>
-      <link>http://lf0.com/tags/missing-value-imputation/</link>
+      <link>/tags/missing-value-imputation/</link>
     </image>
     
     <item>
       <title>Kalman Smoothing for Time Series Missing Value Imputation</title>
-      <link>http://lf0.com/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</link>
+      <link>/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</guid>
+      <guid>/post/kalman-smoothing/kalman-smoothing-time-series-imputation/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I was recently given a task to impute some time series missing values for a prediction problem. Python has the &lt;code&gt;TSFRESH&lt;/code&gt; package which is pretty well documented but I wanted to apply something using R. I opted for a model from statistics and control theory, called Kalman Smoothing which is available in the &lt;code&gt;imputeTS&lt;/code&gt; package in R.&lt;/p&gt;
@@ -186,10 +186,10 @@ WMT_missing
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-241.8435
+NA
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.06050
+NA
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -247,112 +247,112 @@ GOOG_actual
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-04-18
+2007-01-09
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-235.1070
+242.2819
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-237.1162
+241.8435
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-06-13
+2007-01-29
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-250.8735
+246.6176
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-251.6767
+245.3155
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-09-24
+2007-03-09
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-281.2974
+226.5736
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-282.9494
+225.6343
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-10-31
+2007-04-23
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-348.2663
+239.1593
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-352.1799
+238.6455
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-11-30
+2007-05-03
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-343.3643
+233.3537
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-345.2061
+235.7314
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-12-20
+2007-09-17
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-342.2341
+264.9737
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-343.5573
+261.6692
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-01-14
+2007-10-05
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-317.9094
+296.0007
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-325.6892
+295.9158
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-03-11
+2007-10-22
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-212.4316
+328.9113
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-219.0988
+324.1600
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-04-03
+2007-11-01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-233.2543
+353.2276
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-226.7102
+350.2920
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-06-24
+2008-06-05
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-273.2377
+283.8127
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-270.1375
+292.0553
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -361,7 +361,7 @@ GOOG_actual
 &lt;div id=&#34;print-the-rmse-for-google&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Print the RMSE for Google&lt;/h4&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rmse(GOOG_error$GOOG_actual, GOOG_error$GOOG_predictions)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] 10.15679&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 7.889578&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;apply-the-same-to-the-walmart-predictions&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Apply the same to the Walmart predictions:&lt;/h4&gt;
@@ -385,112 +385,112 @@ WMT_actual
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-04-18
+2007-01-09
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.90075
+34.88928
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.65949
+35.06050
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-06-13
+2007-01-29
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-36.68838
+35.14012
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-36.96761
+35.23806
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-09-24
+2007-03-09
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-32.80370
+35.17471
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-33.00339
+35.08268
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-10-31
+2007-04-23
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-33.54558
+36.56807
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-33.93412
+36.37310
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-11-30
+2007-05-03
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.80596
+35.89254
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.95321
+35.94939
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2007-12-20
+2007-09-17
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-36.31553
+32.93606
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-36.07756
+32.51551
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-01-14
+2007-10-05
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.73070
+33.87928
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-35.94184
+34.05422
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-03-11
+2007-10-22
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-37.49653
+33.38332
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-37.88709
+33.96415
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-04-03
+2007-11-01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-41.21812
+33.55119
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-41.61236
+33.04843
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2008-06-24
+2008-06-05
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-43.61165
+44.16592
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-43.60572
+45.49237
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -499,7 +499,7 @@ WMT_actual
 &lt;div id=&#34;print-the-rmse-for-walmart&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Print the RMSE for Walmart&lt;/h4&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rmse(WMT_error$WMT_actual, WMT_error$WMT_predictions)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] 0.5358089&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.6258724&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 </description>
     </item>

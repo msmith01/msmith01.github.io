@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ipo | Matthew Smith R Shenanigans</title>
-    <link>http://lf0.com/tags/ipo/</link>
-      <atom:link href="http://lf0.com/tags/ipo/index.xml" rel="self" type="application/rss+xml" />
+    <link>/tags/ipo/</link>
+      <atom:link href="/tags/ipo/index.xml" rel="self" type="application/rss+xml" />
     <description>ipo</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>http://lf0.com/img/icon-192.png</url>
+      <url>/img/icon-192.png</url>
       <title>ipo</title>
-      <link>http://lf0.com/tags/ipo/</link>
+      <link>/tags/ipo/</link>
     </image>
     
     <item>
       <title>Scraping Yahoo Finance IPO Data</title>
-      <link>http://lf0.com/post/yahoo-finance-ipo/</link>
+      <link>/post/yahoo-finance-ipo/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/yahoo-finance-ipo/</guid>
+      <guid>/post/yahoo-finance-ipo/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I wrote a script a while back when I was working on a project which required the analysis of IPO data, of course I used the IPO data from the bloomberg terminal but I wanted a free source also. Yahoo Finance collects IPO data for a number of worldwide markets, its not clean data but it goes as far back as the year 2000.&lt;/p&gt;

@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Yahoo Finance | Matthew Smith R Shenanigans</title>
-    <link>http://lf0.com/categories/yahoo-finance/</link>
-      <atom:link href="http://lf0.com/categories/yahoo-finance/index.xml" rel="self" type="application/rss+xml" />
+    <link>/categories/yahoo-finance/</link>
+      <atom:link href="/categories/yahoo-finance/index.xml" rel="self" type="application/rss+xml" />
     <description>Yahoo Finance</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>http://lf0.com/img/icon-192.png</url>
+      <url>/img/icon-192.png</url>
       <title>Yahoo Finance</title>
-      <link>http://lf0.com/categories/yahoo-finance/</link>
+      <link>/categories/yahoo-finance/</link>
     </image>
     
     <item>
       <title>Fundamental Financial Ratios in R</title>
-      <link>http://lf0.com/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</link>
+      <link>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</guid>
+      <guid>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
@@ -10316,25 +10316,25 @@ Price.Book
 AAPL
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:02
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Apple Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27756073
+19675563
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-18.483484
+18.767937
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0135333
+0.0135979
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 4519179776
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.226439
+10.383821
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10342,16 +10342,16 @@ Apple Inc. 
 AMZN
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:02
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Amazon.com, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4315284
+3217392
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-72.253980
+73.362510
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -10360,7 +10360,7 @@ NA
 494656000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.214447
+16.463211
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10368,16 +10368,16 @@ NA
 GOOG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:01
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Alphabet Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1372965
+1345323
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-24.604017
+25.164429
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -10386,7 +10386,7 @@ NA
 347344992
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4.401222
+4.501470
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10394,25 +10394,25 @@ NA
 MSFT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:01
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Microsoft Corporation
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-24602078
+20835063
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27.150198
+27.541502
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0132241
+0.0133935
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 7635409920
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.260662
+10.408545
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10420,16 +10420,16 @@ Microsoft Corporation
 BIDU
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:01
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Baidu, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-6524817
+3734534
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-7.605579
+8.009974
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -10438,7 +10438,7 @@ NA
 348540992
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.401697
+1.476227
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -10480,10 +10480,10 @@ adjusted
 AAPL
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-217.68
+221.03
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10491,10 +10491,10 @@ AAPL
 AMZN
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1741.61
+1768.33
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10502,10 +10502,10 @@ AMZN
 BIDU
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-97.61
+102.80
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10513,10 +10513,10 @@ BIDU
 GOOG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1218.76
+1246.52
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -10524,10 +10524,10 @@ GOOG
 MSFT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-137.38
+139.36
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -11048,16 +11048,16 @@ NA
 18491000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:01
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Baidu, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-6524817
+3734534
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-7.605579
+8.009974
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -11066,13 +11066,13 @@ NA
 348540992
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.401697
+1.476227
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-97.61
+102.80
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -11311,31 +11311,31 @@ NA
 4283000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:01
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Microsoft Corporation
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-24602078
+20835063
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27.150198
+27.541502
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0132241
+0.0133935
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 7635409920
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.260662
+10.408545
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-137.38
+139.36
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -11574,16 +11574,16 @@ NA
 5986000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:01
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Alphabet Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1372965
+1345323
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-24.604017
+25.164429
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -11592,13 +11592,13 @@ NA
 347344992
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4.401222
+4.501470
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1218.76
+1246.52
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -11837,16 +11837,16 @@ NA
 10317000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:02
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Amazon.com, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4315284
+3217392
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-72.253980
+73.362510
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 NA
@@ -11855,13 +11855,13 @@ NA
 494656000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.214447
+16.463211
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1741.61
+1768.33
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -12100,31 +12100,31 @@ NA
 5624000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24 16:00:02
+2019-09-25 16:00:01
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
 Apple Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27756073
+19675563
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-18.483484
+18.767937
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.0135333
+0.0135979
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 4519179776
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.226439
+10.383821
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-217.68
+221.03
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -12990,7 +12990,7 @@ ROE
 BIDU
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 175752000
@@ -13002,25 +13002,25 @@ BIDU
 33317000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-34021087
+35830015
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-128197087
+130006015
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.4749307
+0.4816322
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2088503
+0.219955
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.3275132
+0.3449273
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.233855
+1.29946
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.847798
+3.902093
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2654389
@@ -13040,7 +13040,7 @@ BIDU
 MSFT
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 82718000
@@ -13052,25 +13052,25 @@ MSFT
 44958000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1048952653
+1064070734
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1213136653
+1228254734
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4.9134339
+4.9746650
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-12.6810688
+12.863835
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-9.5048265
+9.6418153
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-63.300504
+64.21283
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-26.983777
+27.320048
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.1501540
@@ -13090,7 +13090,7 @@ MSFT
 GOOG
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 177628000
@@ -13102,25 +13102,25 @@ GOOG
 40421000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-423330186
+432972486
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-461793186
+471435486
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2.1370311
+2.1816526
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2.3832402
+2.437524
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.0940892
+3.1645640
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-13.773106
+14.08682
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-11.424586
+11.663133
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2246472
@@ -13140,7 +13140,7 @@ GOOG
 AMZN
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 43549000
@@ -13152,25 +13152,25 @@ AMZN
 27762000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-861497829
+874715023
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-948846829
+962064023
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-7.2487496
+7.3497229
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-19.7822643
+20.085766
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.6992096
+3.7559633
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-85.525447
+86.83759
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-34.177899
+34.653988
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.0432527
@@ -13190,7 +13190,7 @@ AMZN
 AAPL
 &lt;/td&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-24
+2019-09-25
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 107147000
@@ -13202,25 +13202,25 @@ AAPL
 81801000
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-983735022
+998874301
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1216400022
+1231539301
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.5796264
+3.6241784
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-9.1811719
+9.322466
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-3.7038913
+3.7608927
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.524752
+16.77906
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-14.870234
+15.055309
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
 0.2241420
@@ -13278,16 +13278,16 @@ AAPL
 Apple Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-18.483484
+18.767937
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.524752
+16.77906
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.226439
+10.383821
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-9.1811719
+9.322466
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -13298,16 +13298,16 @@ AMZN
 Amazon.com, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-72.253980
+73.362510
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-85.525447
+86.83759
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-16.214447
+16.463211
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-19.7822643
+20.085766
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -13318,16 +13318,16 @@ GOOG
 Alphabet Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-24.604017
+25.164429
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-13.773106
+14.08682
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-4.401222
+4.501470
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-2.3832402
+2.437524
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -13338,16 +13338,16 @@ MSFT
 Microsoft Corporation
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-27.150198
+27.541502
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-63.300504
+64.21283
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-10.260662
+10.408545
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-12.6810688
+12.863835
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
@@ -13358,16 +13358,16 @@ BIDU
 Baidu, Inc. 
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-7.605579
+8.009974
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.233855
+1.29946
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.401697
+1.476227
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-0.2088503
+0.219955
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -13391,7 +13391,7 @@ Baidu, Inc. 
   facet_wrap(~ symbol, ncol = 2, scales = &amp;quot;free&amp;quot;) +
   theme_tq() +
   ggtitle(&amp;quot;Stock Prices since December 2018&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/financial-ratios-in-r/2019-09-22-fundamental-financial-ratios-in-r_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/financial-ratios-in-r/2019-09-22-fundamental-financial-ratios-in-r_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;also-using-fundamental-data&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Also using fundamental data:&lt;/h4&gt;
@@ -13404,7 +13404,7 @@ Baidu, Inc. 
   ylab(&amp;quot;Total Assets &amp;amp; Total Liabilities&amp;quot;) +
   theme_tq() +
   theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/financial-ratios-in-r/2019-09-22-fundamental-financial-ratios-in-r_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/financial-ratios-in-r/2019-09-22-fundamental-financial-ratios-in-r_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Any errors are my own, if you find any please let me know!&lt;/p&gt;
 &lt;/div&gt;
 </description>
@@ -13412,11 +13412,11 @@ Baidu, Inc. 
     
     <item>
       <title>Scraping Yahoo Finance IPO Data</title>
-      <link>http://lf0.com/post/yahoo-finance-ipo/</link>
+      <link>/post/yahoo-finance-ipo/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/yahoo-finance-ipo/</guid>
+      <guid>/post/yahoo-finance-ipo/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I wrote a script a while back when I was working on a project which required the analysis of IPO data, of course I used the IPO data from the bloomberg terminal but I wanted a free source also. Yahoo Finance collects IPO data for a number of worldwide markets, its not clean data but it goes as far back as the year 2000.&lt;/p&gt;
@@ -14368,11 +14368,11 @@ See Tim Loughran and Jay Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/
     
     <item>
       <title>Tracking NVDA&#39;s share price</title>
-      <link>http://lf0.com/post/nvidia-share-price/</link>
+      <link>/post/nvidia-share-price/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>http://lf0.com/post/nvidia-share-price/</guid>
+      <guid>/post/nvidia-share-price/</guid>
       <description>
-&lt;script src=&#34;http://lf0.com/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;p&gt;I had been tracking the performance of Nvidia for a while since they were reporting impressive earnings and share price growth over recent years. I conducted a study (DCF analysis) to see if Nvidia was fairly priced at this time. I had it marked down as a $141 fair value per share based on the DCF I constructed, however it was trading between a high of $280 to a low of $130 from September and to December of 2018.&lt;/p&gt;
@@ -16177,23 +16177,6 @@ NASDAQ
 &lt;tbody&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left;&#34;&gt;
-2019-09-17
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.792566
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.711286
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.525241
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.507810
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
 2019-09-18
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
@@ -16274,7 +16257,24 @@ NASDAQ
 1.462705
 &lt;/td&gt;
 &lt;td style=&#34;text-align:right;&#34;&gt;
-1.472372
+1.472373
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2019-09-25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.764450
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.584427
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.497936
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.487800
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
@@ -16295,7 +16295,7 @@ NASDAQ
                                 AMD = &amp;#39;red&amp;#39;,
                                 INTC = &amp;#39;blue&amp;#39;)) +
   theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;http://lf0.com/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/nvidia-share-price/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;So $1 invested in Nvidia back in Jan 2017 would have given you aprox $2.75 return if you sold at the back end of 2018, however the price today would be around $1.60. Compare that with AMD you would have got the same return of $2.75 if you sold at the same time as Nvidia but today your return would be more or less the same at aprox $2.75 despite a drop in AMD’s share price at the same time as NVDA.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
