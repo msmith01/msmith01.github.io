@@ -24,9 +24,6 @@
 &lt;div id=&#34;corporate-finance-and-managerial-finance&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Corporate Finance and Managerial Finance&lt;/h4&gt;
 &lt;p&gt;I created a script to download any company from Yahoo Finance and compute the &lt;em&gt;DuPont&lt;/em&gt;, &lt;em&gt;Need for Funds&lt;/em&gt; and &lt;em&gt;Working Capital&lt;/em&gt; based on companies fundamentals and plot these for each company. I suggest you first watch these two short videos from IESE Business School - part 1 &lt;a href=&#34;https://www.coursera.org/lecture/operational-finance/4-need-of-funds-nfo-and-working-capital-wc-cRBRP&#34;&gt;here&lt;/a&gt; and part 2 &lt;a href=&#34;https://www.coursera.org/lecture/operational-finance/5-need-of-funds-nfo-and-working-capital-wc-continued-hxJP6&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-&lt;center&gt;
-&lt;img src=&#34;letsdoit.jpg&#34; alt=&#34;Letsdoit!&#34; /&gt;
-&lt;/center&gt;
 &lt;p&gt;Firstly load in some packages:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
 library(kableExtra)

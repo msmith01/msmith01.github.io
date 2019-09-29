@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>backtesting | Matthew Smith R Shenanigans</title>
-    <link>/tags/backtesting/</link>
-      <atom:link href="/tags/backtesting/index.xml" rel="self" type="application/rss+xml" />
-    <description>backtesting</description>
+    <title>quantstrat | Matthew Smith R Shenanigans</title>
+    <link>/tags/quantstrat/</link>
+      <atom:link href="/tags/quantstrat/index.xml" rel="self" type="application/rss+xml" />
+    <description>quantstrat</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 29 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
-      <title>backtesting</title>
-      <link>/tags/backtesting/</link>
+      <title>quantstrat</title>
+      <link>/tags/quantstrat/</link>
     </image>
     
     <item>

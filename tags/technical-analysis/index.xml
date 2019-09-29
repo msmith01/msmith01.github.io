@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>backtesting | Matthew Smith R Shenanigans</title>
-    <link>/tags/backtesting/</link>
-      <atom:link href="/tags/backtesting/index.xml" rel="self" type="application/rss+xml" />
-    <description>backtesting</description>
+    <title>technical analysis | Matthew Smith R Shenanigans</title>
+    <link>/tags/technical-analysis/</link>
+      <atom:link href="/tags/technical-analysis/index.xml" rel="self" type="application/rss+xml" />
+    <description>technical analysis</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 29 Sep 2019 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
-      <title>backtesting</title>
-      <link>/tags/backtesting/</link>
+      <title>technical analysis</title>
+      <link>/tags/technical-analysis/</link>
     </image>
     
     <item>
