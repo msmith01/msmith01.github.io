@@ -63,12 +63,12 @@
   </url>
   
   <url>
-    <loc>/tags/time-series/</loc>
+    <loc>/post/synth-real-time-series/financial-time-series/</loc>
     <lastmod>2019-11-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/post/synth-real-time-series/financial-time-series/</loc>
+    <loc>/tags/time-series/</loc>
     <lastmod>2019-11-03T00:00:00+00:00</lastmod>
   </url>
   
@@ -213,12 +213,12 @@
   </url>
   
   <url>
-    <loc>/tags/aws/</loc>
+    <loc>/categories/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/aws/</loc>
+    <loc>/tags/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
@@ -359,6 +359,10 @@
   
   <url>
     <loc>/courses/</loc>
+  </url>
+  
+  <url>
+    <loc>/lf0-com/</loc>
   </url>
   
 </urlset>
