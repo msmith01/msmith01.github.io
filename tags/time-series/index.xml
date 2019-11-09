@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>time-series | Matthew Smith R Shenanigans</title>
+    <title>time series | Matthew Smith R Shenanigans</title>
     <link>/tags/time-series/</link>
       <atom:link href="/tags/time-series/index.xml" rel="self" type="application/rss+xml" />
-    <description>time-series</description>
+    <description>time series</description>
     <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 03 Nov 2019 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
-      <title>time-series</title>
+      <title>time series</title>
       <link>/tags/time-series/</link>
     </image>
     

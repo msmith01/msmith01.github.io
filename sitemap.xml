@@ -63,12 +63,12 @@
   </url>
   
   <url>
-    <loc>/post/synth-real-time-series/financial-time-series/</loc>
+    <loc>/tags/time-series/</loc>
     <lastmod>2019-11-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/time-series/</loc>
+    <loc>/post/synth-real-time-series/financial-time-series/</loc>
     <lastmod>2019-11-03T00:00:00+00:00</lastmod>
   </url>
   
@@ -359,10 +359,6 @@
   
   <url>
     <loc>/courses/</loc>
-  </url>
-  
-  <url>
-    <loc>/lf0-com/</loc>
   </url>
   
 </urlset>
