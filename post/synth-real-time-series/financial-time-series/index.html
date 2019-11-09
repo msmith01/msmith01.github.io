@@ -415,7 +415,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    53 min read
+    52 min read
   </span>
   
 
@@ -591,10 +591,10 @@
 <p><strong>::Note::</strong> This is a long post but I talk about the procedure I took when dealing with a specific time series classification task.</p>
 <p>I was given a “Data Science” challenge as part of an interview in which I had to distinguish between real financial time series and synthetic time series. I document the results here, the data was anonymous and I have no idea which assets were which or from what time series the assets came from.</p>
 <p>To conclude I obtained an <em>in-sample-test-accuracy</em> of 67% and an <em>out-of-sample-test-accuracy</em> of 65% (based on what the interviewers told me)</p>
-<p>All I knew was that I had 12,000 real time series and 12,000 synthetically created time series. (apologies for no data but this was the companies data and not mine). In total there were 24,000 observations. I show the code here for methodological purposes and if you are interested in visualising time series in R and <code>ggplot2</code>. The time series features used here are taken from the following papers:</p>
+<p>All I knew was that I had 12,000 real time series and 12,000 synthetically created time series. (apologies for no data but this was the companies data and not mine, I have uploaded the train and test data sets discussed later <a href="https://github.com/msmith01/financial_time_series">here</a> where you should be able to run the final XGBoost model). In total there were 24,000 observations. I show the code here for methodological purposes and if you are interested in visualising time series in R and <code>ggplot2</code>. The time series features used here are taken from the following papers:</p>
 <ul>
-<li>Large Scale Unusual Time Series Detection by R.Hyndman, E.Wang and N.Laptop</li>
-<li>Visualising forecasting algorithm performance using time series instance spaces by Y.Kang, Rob.Hyndman and Kate.Smith-Miles</li>
+<li>Large Scale Unusual Time Series Detection by R.Hyndman, E.Wang and N.Laptev</li>
+<li>Visualising forecasting algorithm performance using time series instance spaces by Y.Kang, Rob.Hyndman and Kate Smith-Miles</li>
 </ul>
 <p>You can check out my Jupyter Notebook version <a href="https://nbviewer.jupyter.org/github/msmith01/time_series_detection/blob/master/Time_Series_Classification_Financial_Markets.ipynb">here</a>.</p>
 <p>I added a lot of notes to the code throughout the document which might be of additional interest.</p>
@@ -639,7 +639,7 @@
 <li>Save the results as “submission.csv”.</li>
 </ul>
 <p>Lets get started…</p>
-<p>I often remove all other data in my environment before hand and turn scientific notation off which is what the first 2 lines does. The <code>shhh</code> command is useful for Jupyter Notebooks which outputs all the warning messages, adding <code>shhh</code> suppresses these warning messaged when loading in the packages. (In R markdown I can set <code>warning = FALSE</code> but there is no option on Notebooks.)</p>
+<p>I often remove all other data in my environment before hand and turn scientific notation off which is what the first 2 lines does. The <code>shhh</code> command is useful for Jupyter Notebooks which outputs all the warning messages, adding <code>shhh</code> suppresses these warning messaged when loading in the packages. (In R markdown I can set <code>warning = FALSE</code> but there is no option on Notebooks. - that I know of - )</p>
 <pre class="r"><code>rm(list = ls())
 options(scipen=999)
 setwd(&#39;C:/Users/Matt/Desktop/Data Science Challenge&#39;)
@@ -2945,8 +2945,8 @@ test$dataset &lt;- &quot;test&quot;
 train_val$dataset &lt;- &quot;train&quot;</code></pre>
 <p>Here (if I were to do things differently) I would keep to <code>tidy</code> data principles and use <code>test %&gt;% add_column(dataset = "test)</code> and <code>train %&gt;% add_colum(dataset = "train")</code> instead of <code>test$dataset &lt;- "test</code> and <code>train_val$dataset &lt;- "train"</code>. But that doesn’t matter much.</p>
 </div>
-<div id="how-the-training-data-looks" class="section level3">
-<h3>How the training data looks:</h3>
+<div id="how-the-training-data-looks-after-cleaning" class="section level3">
+<h3>How the training data looks after cleaning:</h3>
 <table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
 <span id="tab:unnamed-chunk-5">Table 2: </span>How the training set looks now (cleaned)
@@ -3076,8 +3076,8 @@ train_val$dataset &lt;- &quot;train&quot;</code></pre>
 </tbody>
 </table>
 </div>
-<div id="how-the-testing-data-looks" class="section level3">
-<h3>How the testing data looks:</h3>
+<div id="how-the-testing-data-looks-after-cleaning" class="section level3">
+<h3>How the testing data looks after cleaning:</h3>
 <table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
 <span id="tab:unnamed-chunk-6">Table 3: </span>How the testing data looks (cleaned)
@@ -3206,7 +3206,7 @@ train_val$dataset &lt;- &quot;train&quot;</code></pre>
 </tr>
 </tbody>
 </table>
-<p><strong>The goal</strong>: Was to classify which financial time series was <em>real</em> vs which was <em>synthetically created</em> (by some algorithm I have no knowledge of how it generated the synthetic time series)</p>
+<p><strong>The goal</strong>: Was to classify which financial time series were <em>real</em> vs which were <em>synthetically created</em> (by some algorithm I have no knowledge of how it generated the synthetic time series)</p>
 <p>I re-arranged the data using the <code>melt</code> function in R, however I suggest anybody reading this to use the <code>pivol_longer</code> function from the <code>tidyverse</code> packages. The <code>pivot_longer</code> package was released a few weeks after writing the code for this problem.</p>
 <pre class="r"><code>######################################################################
 ################# Rearrange the data #################################
@@ -3427,13 +3427,13 @@ plot1 &lt;- df %&gt;%
 plot_grid(plot0, plot1)</code></pre>
 <p><img src="/post/synth-real-time-series/synth_real_time_series_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>An important note in the code here is that I randomly sample by <em>group</em>, that is, I do not take a random sample from all observations across all groups. Instead I <code>group_by</code> each time series (each of the 6,000 observations after I filtered by the <code>class == 0</code>, likewise when I filter by the <code>class == 1</code>), I then <code>nest()</code> the data to collapse the daily time series for each asset into a <code>list</code>. From here I will have 6,000 observations, each of which has their time series nested inside a list. Thus, I can sample 1 of the 6,000 observations and then <code>unnest()</code> and obtain a full time series set of one of the random assets selected, - instead of sampling randomly over all assets time series data (which would be completely wrong).</p>
-<p>For example the following commented out code <code>group_by()</code> the ID variable and <code>nest()</code> the data, takes a random <code>sample_n()</code> of the grouped data and then <code>unnest()</code> the data to its original form, this time with a sample of the IDs.</p>
+<p>For example the following commented out code <code>group_by()</code> the ID variable and <code>nest()</code> the data, takes a random <code>sample_n()</code> of the grouped data and then <code>unnest()</code> the data to its original form, this time with a random sample of the IDs.</p>
 <pre class="r"><code>#  group_by(row_id) %&gt;%
 #  nest() %&gt;%
 #  ungroup() %&gt;% 
 #  sample_n(1) %&gt;%
 #  unnest() %&gt;%</code></pre>
-<p>Next I compute the Dickey Fuller test on both series for a single random observation (it’s too computationally expensive to compute it on all 12,000 observations).</p>
+<p>Next I compute the Dickey Fuller test on both series for a single random observation, hence the <code>sample_n(1)</code> argument (it’s too computationally expensive to compute it on all 12,000 observations).</p>
 <p>For the synthetically created series.</p>
 <pre class="r"><code># Dickey Fuller test on the 0 class
 # I only randomly sample 1 of the assets for the 0 class to save on output space
@@ -3453,33 +3453,33 @@ df %&gt;%
 ##  
 ## Type 1: no drift no trend 
 ##      lag    ADF p.value
-## [1,]   0 -14.49    0.01
-## [2,]   1 -10.43    0.01
-## [3,]   2  -8.98    0.01
-## [4,]   3  -8.38    0.01
-## [5,]   4  -7.96    0.01
+## [1,]   0 -17.94    0.01
+## [2,]   1 -11.75    0.01
+## [3,]   2  -8.66    0.01
+## [4,]   3  -7.62    0.01
+## [5,]   4  -7.13    0.01
 ## Type 2: with drift no trend 
 ##      lag    ADF p.value
-## [1,]   0 -14.48    0.01
-## [2,]   1 -10.42    0.01
-## [3,]   2  -8.98    0.01
-## [4,]   3  -8.37    0.01
-## [5,]   4  -7.95    0.01
+## [1,]   0 -17.94    0.01
+## [2,]   1 -11.76    0.01
+## [3,]   2  -8.67    0.01
+## [4,]   3  -7.64    0.01
+## [5,]   4  -7.15    0.01
 ## Type 3: with drift and trend 
 ##      lag    ADF p.value
-## [1,]   0 -14.49    0.01
-## [2,]   1 -10.44    0.01
-## [3,]   2  -9.00    0.01
-## [4,]   3  -8.39    0.01
-## [5,]   4  -7.95    0.01
+## [1,]   0 -18.00    0.01
+## [2,]   1 -11.83    0.01
+## [3,]   2  -8.77    0.01
+## [4,]   3  -7.74    0.01
+## [5,]   4  -7.26    0.01
 ## ---- 
 ## Note: in fact, p.value = 0.01 means p.value &lt;= 0.01</code></pre>
 <pre><code>## # A tibble: 3 x 3
 ##   row_id           data adf_res          
 ##    &lt;int&gt; &lt;list&lt;df[,4]&gt;&gt; &lt;named list&gt;     
-## 1   2351      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;
-## 2   2351      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;
-## 3   2351      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;</code></pre>
+## 1   7807      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;
+## 2   7807      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;
+## 3   7807      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;</code></pre>
 <p>The same but on the real financial series.</p>
 <pre class="r"><code># Dickey Fuller test on the 1 class
 # I only randomly sample 1 of the assets for the 1 class to save on output space
@@ -3499,33 +3499,33 @@ df %&gt;%
 ##  
 ## Type 1: no drift no trend 
 ##      lag    ADF p.value
-## [1,]   0 -17.30    0.01
-## [2,]   1 -13.89    0.01
-## [3,]   2  -9.82    0.01
-## [4,]   3  -7.71    0.01
-## [5,]   4  -6.99    0.01
+## [1,]   0 -15.99    0.01
+## [2,]   1 -10.71    0.01
+## [3,]   2  -9.12    0.01
+## [4,]   3  -8.74    0.01
+## [5,]   4  -7.58    0.01
 ## Type 2: with drift no trend 
 ##      lag    ADF p.value
-## [1,]   0 -17.27    0.01
-## [2,]   1 -13.87    0.01
-## [3,]   2  -9.80    0.01
-## [4,]   3  -7.69    0.01
-## [5,]   4  -6.98    0.01
+## [1,]   0 -16.10    0.01
+## [2,]   1 -10.84    0.01
+## [3,]   2  -9.27    0.01
+## [4,]   3  -8.93    0.01
+## [5,]   4  -7.81    0.01
 ## Type 3: with drift and trend 
 ##      lag    ADF p.value
-## [1,]   0 -17.25    0.01
-## [2,]   1 -13.85    0.01
-## [3,]   2  -9.79    0.01
-## [4,]   3  -7.69    0.01
-## [5,]   4  -6.97    0.01
+## [1,]   0 -16.27    0.01
+## [2,]   1 -10.99    0.01
+## [3,]   2  -9.46    0.01
+## [4,]   3  -9.18    0.01
+## [5,]   4  -8.06    0.01
 ## ---- 
 ## Note: in fact, p.value = 0.01 means p.value &lt;= 0.01</code></pre>
 <pre><code>## # A tibble: 3 x 3
 ##   row_id           data adf_res          
 ##    &lt;int&gt; &lt;list&lt;df[,4]&gt;&gt; &lt;named list&gt;     
-## 1   4622      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;
-## 2   4622      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;
-## 3   4622      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;</code></pre>
+## 1  10833      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;
+## 2  10833      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;
+## 3  10833      [260 x 4] &lt;dbl[,3] [5 x 3]&gt;</code></pre>
 <p>Next the Jarque-Bera tests for normality. Firstly on the synthetically created series.</p>
 <pre class="r"><code># For both classes I take a random sample of 1 observation from each class (Synthetic and Real financial series)
 
@@ -3547,19 +3547,19 @@ print(&quot;Jarque-Bera Test on the 0 - Synthetic class&quot;)</code></pre>
 ##  Jarque Bera Test
 ## 
 ## data:  .x$value
-## X-squared = 31.099, df = 2, p-value = 0.0000001766
+## X-squared = 0.3088, df = 2, p-value = 0.8569
 ## 
 ## 
 ##  Skewness
 ## 
 ## data:  .x$value
-## statistic = 0.4279, p-value = 0.004851
+## statistic = 0.045794, p-value = 0.7631
 ## 
 ## 
 ##  Kurtosis
 ## 
 ## data:  .x$value
-## statistic = 4.4623, p-value = 0.000001487</code></pre>
+## statistic = 2.8582, p-value = 0.6406</code></pre>
 <p>Also on the real financial series.</p>
 <pre class="r"><code>jb_one &lt;- df %&gt;%
   filter(class == 0) %&gt;%
@@ -3579,19 +3579,19 @@ print(&quot;Jarque-Bera Test on the 1 - Real class&quot;)</code></pre>
 ##  Jarque Bera Test
 ## 
 ## data:  .x$value
-## X-squared = 34.104, df = 2, p-value = 0.00000003931
+## X-squared = 25.14, df = 2, p-value = 0.000003474
 ## 
 ## 
 ##  Skewness
 ## 
 ## data:  .x$value
-## statistic = 0.009521, p-value = 0.95
+## statistic = 0.084191, p-value = 0.5794
 ## 
 ## 
 ##  Kurtosis
 ## 
 ## data:  .x$value
-## statistic = 4.7742, p-value = 0.000000005236</code></pre>
+## statistic = 4.514, p-value = 0.0000006251</code></pre>
 </div>
 <div id="autocorrelation-plots" class="section level3">
 <h3>Autocorrelation plots:</h3>
@@ -3666,10 +3666,10 @@ Stats &lt;- df %&gt;%
 <pre class="r"><code># I saved to whole dataset as &quot;Stats&quot; next I split it between training and test.
 Stats &lt;- read.csv(&quot;C:/Users/Matt/Desktop/Data Science Challenge/TSfeatures_train_val.csv&quot;)</code></pre>
 <p><strong>Note:</strong> Again, bad practice by me. I just called the <code>df</code> data <code>Stats</code> which consists of only the time series features. This still only refers to the <code>train_val.csv</code> data and <em>not</em> the <code>test.csv</code> data.</p>
-<p>The training data looks like: (after computing the time series features). Now each asset has been collapsed from ~260 days down to 1 signal observation.</p>
+<p>The training data looks like: (after computing the time series features). Now each asset has been collapsed from ~260 days down to 1 signal time series feature observation.</p>
 <p>Recall the goal here was to classify synthetic time series vs real time series and not what the next days price is going to be. For each asset I have a signal observation and based on this I can train a classifying algorithm to distinguish between real vs synthetic time series.</p>
 </div>
-<div id="how-the-training-data-looks-1" class="section level3">
+<div id="how-the-training-data-looks" class="section level3">
 <h3>How the training data looks:</h3>
 <table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 12px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
@@ -5984,7 +5984,7 @@ NA
 </tbody>
 </table>
 <pre><code>## [1] 12000   109</code></pre>
-<p>The dimensions of the data as still 12,000 with 109 features (created from the tsfeatures package). That is we have 6,000 synthetic and 6,000 real financial time series (12,000 * ~260 = 3,120,000 but we applied tsfeatures to collapse the ~260 down to 1 single observation)</p>
+<p>The dimensions of the data as still 12,000 with 109 features (created from the tsfeatures package). That is we have 6,000 synthetic and 6,000 real financial time series (12,000 * ~260 = 3,120,000 but we applied tsfeatures to collapse the ~260 down to 1 single observation for each asset)</p>
 <p>I collapsed this problem down from a time series prediction problem to a pure classification problem. I split the data between training and validation set next… I also split the data into <code>X_train</code>, <code>Y_train</code>… etc.</p>
 <p>I split the <code>df/Stats</code> data set into a train set of 75% of the observations and an <em>in-sample</em> test data set of 25% of the observations.</p>
 <pre class="r"><code>######################################################################
@@ -6354,151 +6354,151 @@ walker_propcross
 <tbody>
 <tr>
 <td style="text-align:left;">
-6871
+6801
 </td>
 <td style="text-align:right;">
-0.0261213
+0.0498492
 </td>
 <td style="text-align:right;">
--0.0312543
+-0.0642025
 </td>
 <td style="text-align:right;">
-0.0396675
+0.0542648
 </td>
 <td style="text-align:right;">
--0.5387087
+-0.4423482
 </td>
 <td style="text-align:right;">
-0.3618037
+0.2575236
 </td>
 <td style="text-align:right;">
--0.7127104
+-0.5981303
 </td>
 <td style="text-align:right;">
-0.6506867
+0.4149592
 </td>
 <td style="text-align:right;">
-0.1712203
+0.0271444
 </td>
 <td style="text-align:right;">
-0.4671815
+0.4710425
 </td>
 <td style="text-align:right;">
-0.6602317
+0.7181467
 </td>
 <td style="text-align:right;">
-0.0261213
+0.0498492
 </td>
 <td style="text-align:right;">
-1
+2
 </td>
 <td style="text-align:right;">
-1.2094960
+0.8754566
 </td>
 <td style="text-align:right;">
-2.077291
+2.057333
 </td>
 <td style="text-align:right;">
-0.5135135
-</td>
-<td style="text-align:right;">
-1
+0.5598456
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-0.4671815
+1
 </td>
 <td style="text-align:right;">
-0.6602317
+0.4710425
 </td>
 <td style="text-align:right;">
-0.0261213
+0.7181467
+</td>
+<td style="text-align:right;">
+0.0498492
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.8754566
+</td>
+<td style="text-align:right;">
+2.057333
+</td>
+<td style="text-align:right;">
+0.5598456
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-1.2094960
-</td>
-<td style="text-align:right;">
-2.077291
-</td>
-<td style="text-align:right;">
-0.5135135
-</td>
-<td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-1
+1.704503
 </td>
 <td style="text-align:right;">
-1.653587
+1.460466
 </td>
 <td style="text-align:right;">
-1.437026
+1.33
 </td>
 <td style="text-align:right;">
-1.51
+1.00
 </td>
 <td style="text-align:right;">
-1.0
+-0.50
 </td>
 <td style="text-align:right;">
--0.25
-</td>
-<td style="text-align:right;">
-0.0134615
+0.1115385
 </td>
 <td style="text-align:right;">
 0.8604651
 </td>
 <td style="text-align:right;">
-129
+139
 </td>
 <td style="text-align:right;">
--0.25
+-0.50
 </td>
 <td style="text-align:right;">
-0.0134615
+0.1115385
 </td>
 <td style="text-align:right;">
-0.4671815
+0.4710425
 </td>
 <td style="text-align:right;">
-0.9819775
+0.9888208
+</td>
+<td style="text-align:right;">
+2
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-4
+3
 </td>
 <td style="text-align:right;">
 0.8604651
 </td>
 <td style="text-align:right;">
-0.1384425
+0.0332257
 </td>
 <td style="text-align:right;">
-0.0368007
+0.0244434
 </td>
 <td style="text-align:right;">
-0.1264413
+0.0370423
 </td>
 <td style="text-align:right;">
-0.0490622
+0.0287773
 </td>
 <td style="text-align:right;">
--0.25
+-0.50
 </td>
 <td style="text-align:right;">
-0.0473199
+0.0001000
 </td>
 <td style="text-align:right;">
 0.0001000
@@ -6516,70 +6516,70 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.4456548
+0.7769640
 </td>
 <td style="text-align:right;">
-2.158220
+3.827223
 </td>
 <td style="text-align:right;">
-122
+209
 </td>
 <td style="text-align:right;">
-1.206163
+1.027671
 </td>
 <td style="text-align:right;">
-101
+131
 </td>
 <td style="text-align:right;">
-3.318012
+3.254518
 </td>
 <td style="text-align:right;">
-239
+195
 </td>
 <td style="text-align:right;">
-2.077291
+2.057333
 </td>
 <td style="text-align:right;">
-0.0343410
+0.0695918
 </td>
 <td style="text-align:right;">
-0.0134615
+0.1115385
 </td>
 <td style="text-align:right;">
-0.0400750
+0.0474059
 </td>
 <td style="text-align:right;">
-0.5343498
+0.5669070
 </td>
 <td style="text-align:right;">
-1.0455465
-</td>
-<td style="text-align:right;">
-1
+1.0663179
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-1.653587
+1
 </td>
 <td style="text-align:right;">
-1.653587
+1.704503
 </td>
 <td style="text-align:right;">
-1.653587
+1.704503
+</td>
+<td style="text-align:right;">
+1.704503
 </td>
 <td style="text-align:right;">
 0.8604651
 </td>
 <td style="text-align:right;">
-1.54
+1.41
 </td>
 <td style="text-align:right;">
-0.0934525
+0.0639649
 </td>
 <td style="text-align:right;">
-1.437026
+1.460466
 </td>
 <td style="text-align:right;">
 1.42
@@ -6588,7 +6588,7 @@ NA
 1.00
 </td>
 <td style="text-align:right;">
-1.437026
+1.460466
 </td>
 <td style="text-align:right;">
 0
@@ -6597,25 +6597,25 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.0163279
+0.0069481
 </td>
 <td style="text-align:right;">
-0.0000320
+0.0000643
 </td>
 <td style="text-align:right;">
--0.9382053
+-0.8628963
 </td>
 <td style="text-align:right;">
-0.2710799
+0.2636951
 </td>
 <td style="text-align:right;">
--0.0483332
+-0.0719026
 </td>
 <td style="text-align:right;">
-0.0457256
+0.0587799
 </td>
 <td style="text-align:right;">
-1.2094960
+0.8754566
 </td>
 <td style="text-align:right;">
 1
@@ -6627,129 +6627,102 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.0163279
+0.0069481
 </td>
 <td style="text-align:right;">
-0.0000320
+0.0000643
 </td>
 <td style="text-align:right;">
--0.9382053
+-0.8628963
 </td>
 <td style="text-align:right;">
-0.2710799
+0.2636951
 </td>
 <td style="text-align:right;">
--0.0483332
+-0.0719026
 </td>
 <td style="text-align:right;">
-0.0457256
+0.0587799
 </td>
 <td style="text-align:right;">
-0.9819775
+0.9888208
 </td>
 <td style="text-align:right;">
--0.0312543
+-0.0642025
 </td>
 <td style="text-align:right;">
-0.0396675
+0.0542648
 </td>
 <td style="text-align:right;">
--0.5387087
+-0.4423482
 </td>
 <td style="text-align:right;">
-0.3618037
+0.2575236
 </td>
 <td style="text-align:right;">
--0.7127104
+-0.5981303
 </td>
 <td style="text-align:right;">
-0.6506867
+0.4149592
 </td>
 <td style="text-align:right;">
-0.1799848
+0.1777957
 </td>
 <td style="text-align:right;">
--257.7815
+-246.9618
 </td>
 <td style="text-align:right;">
-0.5135135
+0.5598456
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-461
+4209
 </td>
 <td style="text-align:right;">
--0.1007662
+-0.0037257
 </td>
 <td style="text-align:right;">
--0.0046000
+-0.0166400
 </td>
 <td style="text-align:right;">
-0.0251457
+0.0302609
 </td>
 <td style="text-align:right;">
--0.4496709
+-0.5444182
 </td>
 <td style="text-align:right;">
-0.2316894
+0.3391695
 </td>
 <td style="text-align:right;">
--0.6268291
+-0.7025401
 </td>
 <td style="text-align:right;">
-0.4251541
+0.5898760
 </td>
 <td style="text-align:right;">
-0.0338985
+0.0369855
 </td>
 <td style="text-align:right;">
-0.4440154
+0.3976834
 </td>
 <td style="text-align:right;">
-0.6988417
+0.6409266
 </td>
 <td style="text-align:right;">
--0.1007662
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0.1611769
-</td>
-<td style="text-align:right;">
-2.073478
-</td>
-<td style="text-align:right;">
-0.5135135
+-0.0037257
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-0
+0.0772589
 </td>
 <td style="text-align:right;">
-0.4440154
+2.065480
 </td>
 <td style="text-align:right;">
-0.6988417
-</td>
-<td style="text-align:right;">
--0.1007662
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0.1611769
-</td>
-<td style="text-align:right;">
-2.073478
-</td>
-<td style="text-align:right;">
-0.5135135
+0.5598456
 </td>
 <td style="text-align:right;">
 1
@@ -6758,124 +6731,25 @@ NA
 1
 </td>
 <td style="text-align:right;">
-1.710756
+0.3976834
 </td>
 <td style="text-align:right;">
-1.419605
+0.6409266
 </td>
 <td style="text-align:right;">
-1.37
-</td>
-<td style="text-align:right;">
-1.0
-</td>
-<td style="text-align:right;">
-0.50
-</td>
-<td style="text-align:right;">
--0.1692308
-</td>
-<td style="text-align:right;">
-0.1627907
-</td>
-<td style="text-align:right;">
-127
-</td>
-<td style="text-align:right;">
-0.50
-</td>
-<td style="text-align:right;">
--0.1692308
-</td>
-<td style="text-align:right;">
-0.4440154
-</td>
-<td style="text-align:right;">
-0.9838851
-</td>
-<td style="text-align:right;">
-2
+-0.0037257
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-5
+0.0772589
 </td>
 <td style="text-align:right;">
-0.1627907
+2.065480
 </td>
 <td style="text-align:right;">
-0.0319993
-</td>
-<td style="text-align:right;">
-0.0300665
-</td>
-<td style="text-align:right;">
-0.0338985
-</td>
-<td style="text-align:right;">
-0.0320637
-</td>
-<td style="text-align:right;">
-0.50
-</td>
-<td style="text-align:right;">
-0.0001235
-</td>
-<td style="text-align:right;">
-0.0001235
-</td>
-<td style="text-align:right;">
-0.5000458
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0.3887220
-</td>
-<td style="text-align:right;">
-2.439031
-</td>
-<td style="text-align:right;">
-154
-</td>
-<td style="text-align:right;">
-1.051879
-</td>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-2.475601
-</td>
-<td style="text-align:right;">
-78
-</td>
-<td style="text-align:right;">
-2.073478
-</td>
-<td style="text-align:right;">
-0.1052842
-</td>
-<td style="text-align:right;">
--0.1692308
-</td>
-<td style="text-align:right;">
-0.0142721
-</td>
-<td style="text-align:right;">
-0.4992312
-</td>
-<td style="text-align:right;">
-1.0093949
+0.5598456
 </td>
 <td style="text-align:right;">
 1
@@ -6884,270 +6758,73 @@ NA
 1
 </td>
 <td style="text-align:right;">
-1.710756
+1.752028
 </td>
 <td style="text-align:right;">
-1.710756
+1.427591
 </td>
 <td style="text-align:right;">
-1.710756
-</td>
-<td style="text-align:right;">
-0.1627907
-</td>
-<td style="text-align:right;">
-1.45
-</td>
-<td style="text-align:right;">
-0.0489944
-</td>
-<td style="text-align:right;">
-1.419605
-</td>
-<td style="text-align:right;">
-1.37
+1.39
 </td>
 <td style="text-align:right;">
 1.00
 </td>
 <td style="text-align:right;">
-1.419605
+-0.25
 </td>
 <td style="text-align:right;">
-0
+-0.1000000
 </td>
 <td style="text-align:right;">
-1
+0.4651163
 </td>
 <td style="text-align:right;">
-0.0263685
-</td>
-<td style="text-align:right;">
-0.0000446
-</td>
-<td style="text-align:right;">
--1.9935782
-</td>
-<td style="text-align:right;">
-0.4730478
-</td>
-<td style="text-align:right;">
--0.0304319
-</td>
-<td style="text-align:right;">
-0.0411679
-</td>
-<td style="text-align:right;">
-0.1611769
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0.0263685
-</td>
-<td style="text-align:right;">
-0.0000446
-</td>
-<td style="text-align:right;">
--1.9935782
-</td>
-<td style="text-align:right;">
-0.4730478
-</td>
-<td style="text-align:right;">
--0.0304319
-</td>
-<td style="text-align:right;">
-0.0411679
-</td>
-<td style="text-align:right;">
-0.9838851
-</td>
-<td style="text-align:right;">
--0.0046000
-</td>
-<td style="text-align:right;">
-0.0251457
-</td>
-<td style="text-align:right;">
--0.4496709
-</td>
-<td style="text-align:right;">
-0.2316894
-</td>
-<td style="text-align:right;">
--0.6268291
-</td>
-<td style="text-align:right;">
-0.4251541
-</td>
-<td style="text-align:right;">
-0.5297938
-</td>
-<td style="text-align:right;">
--237.3565
-</td>
-<td style="text-align:right;">
-0.5135135
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-8092
-</td>
-<td style="text-align:right;">
-0.0492737
-</td>
-<td style="text-align:right;">
-0.0597751
-</td>
-<td style="text-align:right;">
-0.0342930
-</td>
-<td style="text-align:right;">
--0.3893976
-</td>
-<td style="text-align:right;">
-0.2115787
-</td>
-<td style="text-align:right;">
--0.5704301
-</td>
-<td style="text-align:right;">
-0.3632042
-</td>
-<td style="text-align:right;">
-0.0364343
-</td>
-<td style="text-align:right;">
-0.4302326
-</td>
-<td style="text-align:right;">
-0.6666667
-</td>
-<td style="text-align:right;">
-0.0492737
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1.0518342
-</td>
-<td style="text-align:right;">
-2.060077
-</td>
-<td style="text-align:right;">
-0.4903475
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0.4302326
-</td>
-<td style="text-align:right;">
-0.6666667
-</td>
-<td style="text-align:right;">
-0.0492737
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1.0518342
-</td>
-<td style="text-align:right;">
-2.060077
-</td>
-<td style="text-align:right;">
-0.4903475
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1.730452
-</td>
-<td style="text-align:right;">
-1.372177
-</td>
-<td style="text-align:right;">
-2.14
-</td>
-<td style="text-align:right;">
-1.3
+137
 </td>
 <td style="text-align:right;">
 -0.25
 </td>
 <td style="text-align:right;">
--0.0038462
+-0.1000000
 </td>
 <td style="text-align:right;">
-0.8604651
+0.3976834
 </td>
 <td style="text-align:right;">
-123
+0.9866480
 </td>
 <td style="text-align:right;">
--0.25
+1
 </td>
 <td style="text-align:right;">
--0.0038462
-</td>
-<td style="text-align:right;">
-0.4302326
-</td>
-<td style="text-align:right;">
-0.9898124
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-2
+1
 </td>
 <td style="text-align:right;">
 4
 </td>
 <td style="text-align:right;">
-0.8604651
+0.4651163
 </td>
 <td style="text-align:right;">
-0.0341147
+0.0328564
 </td>
 <td style="text-align:right;">
-0.0341354
+0.0286941
 </td>
 <td style="text-align:right;">
-0.0365390
+0.0369855
 </td>
 <td style="text-align:right;">
-0.0372117
+0.0347972
 </td>
 <td style="text-align:right;">
 -0.25
 </td>
 <td style="text-align:right;">
-0.0001881
+0.0008843
 </td>
 <td style="text-align:right;">
-0.0001881
+0.0008843
 </td>
 <td style="text-align:right;">
 0.5000458
@@ -7162,79 +6839,79 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.3185845
+0.2267605
 </td>
 <td style="text-align:right;">
-4.220036
+3.549229
 </td>
 <td style="text-align:right;">
-24
+215
 </td>
 <td style="text-align:right;">
-1.518752
+1.390319
 </td>
 <td style="text-align:right;">
-16
+3
 </td>
 <td style="text-align:right;">
-2.021841
+2.017745
 </td>
 <td style="text-align:right;">
-83
+143
 </td>
 <td style="text-align:right;">
-2.060077
+2.065480
 </td>
 <td style="text-align:right;">
-0.0832984
+0.0236440
 </td>
 <td style="text-align:right;">
--0.0038462
+-0.1000000
 </td>
 <td style="text-align:right;">
-0.0300268
+0.0060988
 </td>
 <td style="text-align:right;">
-0.4657903
+0.4859730
 </td>
 <td style="text-align:right;">
-0.9151588
-</td>
-<td style="text-align:right;">
-1
+1.0685267
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-1.730452
+1
 </td>
 <td style="text-align:right;">
-1.730452
+1.752028
 </td>
 <td style="text-align:right;">
-1.730452
+1.752028
 </td>
 <td style="text-align:right;">
-0.8604651
+1.752028
 </td>
 <td style="text-align:right;">
-2.12
+0.4651163
 </td>
 <td style="text-align:right;">
-0.0585525
+1.49
 </td>
 <td style="text-align:right;">
-1.372177
+0.0831999
 </td>
 <td style="text-align:right;">
-2.19
+1.427591
 </td>
 <td style="text-align:right;">
-1.29
+1.53
 </td>
 <td style="text-align:right;">
-1.372177
+1.00
+</td>
+<td style="text-align:right;">
+1.427591
 </td>
 <td style="text-align:right;">
 0
@@ -7243,25 +6920,25 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.0050092
+0.0431696
 </td>
 <td style="text-align:right;">
-0.0000396
+0.0000288
 </td>
 <td style="text-align:right;">
--0.2684250
+-0.6356332
 </td>
 <td style="text-align:right;">
-0.2925679
+1.0362897
 </td>
 <td style="text-align:right;">
-0.0553261
+-0.0608160
 </td>
 <td style="text-align:right;">
-0.0348668
+0.0358936
 </td>
 <td style="text-align:right;">
-1.0518342
+0.0772589
 </td>
 <td style="text-align:right;">
 1
@@ -7273,129 +6950,129 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.0050092
+0.0431696
 </td>
 <td style="text-align:right;">
-0.0000396
+0.0000288
 </td>
 <td style="text-align:right;">
--0.2684250
+-0.6356332
 </td>
 <td style="text-align:right;">
-0.2925679
+1.0362897
 </td>
 <td style="text-align:right;">
-0.0553261
+-0.0608160
 </td>
 <td style="text-align:right;">
-0.0348668
+0.0358936
 </td>
 <td style="text-align:right;">
-0.9898124
+0.9866480
 </td>
 <td style="text-align:right;">
-0.0597751
+-0.0166400
 </td>
 <td style="text-align:right;">
-0.0342930
+0.0302609
 </td>
 <td style="text-align:right;">
--0.3893976
+-0.5444182
 </td>
 <td style="text-align:right;">
-0.2115787
+0.3391695
 </td>
 <td style="text-align:right;">
--0.5704301
+-0.7025401
 </td>
 <td style="text-align:right;">
-0.3632042
+0.5898760
 </td>
 <td style="text-align:right;">
-0.0612405
+0.0372919
 </td>
 <td style="text-align:right;">
--221.3231
+-268.4757
 </td>
 <td style="text-align:right;">
-0.4903475
+0.5598456
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-11608
+11168
 </td>
 <td style="text-align:right;">
-0.0132114
+0.0236704
 </td>
 <td style="text-align:right;">
-0.0871615
+-0.0269749
 </td>
 <td style="text-align:right;">
-0.0255899
+0.0299079
 </td>
 <td style="text-align:right;">
--0.4106884
+-0.4943006
 </td>
 <td style="text-align:right;">
-0.2075354
+0.2640054
 </td>
 <td style="text-align:right;">
--0.5985913
+-0.6626027
 </td>
 <td style="text-align:right;">
-0.3916844
+0.4906038
 </td>
 <td style="text-align:right;">
-0.0294703
+0.1265569
 </td>
 <td style="text-align:right;">
-0.4534884
+0.4401544
 </td>
 <td style="text-align:right;">
-0.6627907
+0.6640927
 </td>
 <td style="text-align:right;">
-0.0132114
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-0.2598454
-</td>
-<td style="text-align:right;">
-2.068999
-</td>
-<td style="text-align:right;">
-0.4555985
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.4534884
-</td>
-<td style="text-align:right;">
-0.6627907
-</td>
-<td style="text-align:right;">
-0.0132114
+0.0236704
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:right;">
-0.2598454
+-0.4569401
 </td>
 <td style="text-align:right;">
-2.068999
+2.075666
 </td>
 <td style="text-align:right;">
-0.4555985
+0.4633205
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.4401544
+</td>
+<td style="text-align:right;">
+0.6640927
+</td>
+<td style="text-align:right;">
+0.0236704
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+-0.4569401
+</td>
+<td style="text-align:right;">
+2.075666
+</td>
+<td style="text-align:right;">
+0.4633205
 </td>
 <td style="text-align:right;">
 1
@@ -7404,25 +7081,25 @@ NA
 1
 </td>
 <td style="text-align:right;">
-1.700044
+1.709466
 </td>
 <td style="text-align:right;">
-1.349297
+1.431144
 </td>
 <td style="text-align:right;">
-1.99
+1.52
 </td>
 <td style="text-align:right;">
-1.3
+1.00
 </td>
 <td style="text-align:right;">
 0.25
 </td>
 <td style="text-align:right;">
--0.0230769
+-0.0961538
 </td>
 <td style="text-align:right;">
-0.8604651
+0.1627907
 </td>
 <td style="text-align:right;">
 122
@@ -7431,366 +7108,43 @@ NA
 0.25
 </td>
 <td style="text-align:right;">
--0.0230769
+-0.0961538
 </td>
 <td style="text-align:right;">
-0.4534884
+0.4401544
 </td>
 <td style="text-align:right;">
-0.9883467
-</td>
-<td style="text-align:right;">
-2
+0.9882937
 </td>
 <td style="text-align:right;">
 2
 </td>
 <td style="text-align:right;">
-5
+1
 </td>
 <td style="text-align:right;">
-0.8604651
+4
 </td>
 <td style="text-align:right;">
-0.0296618
+0.1627907
 </td>
 <td style="text-align:right;">
-0.0234184
+0.1453674
 </td>
 <td style="text-align:right;">
-0.0294703
+0.1490540
 </td>
 <td style="text-align:right;">
-0.0225331
+0.1265569
+</td>
+<td style="text-align:right;">
+0.1247021
 </td>
 <td style="text-align:right;">
 0.25
 </td>
 <td style="text-align:right;">
-0.0004471
-</td>
-<td style="text-align:right;">
-0.0004471
-</td>
-<td style="text-align:right;">
-0.5392591
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0.2793480
-</td>
-<td style="text-align:right;">
-4.939577
-</td>
-<td style="text-align:right;">
-36
-</td>
-<td style="text-align:right;">
-1.557270
-</td>
-<td style="text-align:right;">
-129
-</td>
-<td style="text-align:right;">
-2.896679
-</td>
-<td style="text-align:right;">
-138
-</td>
-<td style="text-align:right;">
-2.068999
-</td>
-<td style="text-align:right;">
-0.1536187
-</td>
-<td style="text-align:right;">
--0.0230769
-</td>
-<td style="text-align:right;">
-0.0169952
-</td>
-<td style="text-align:right;">
-0.4226084
-</td>
-<td style="text-align:right;">
-0.8772755
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1.700044
-</td>
-<td style="text-align:right;">
-1.700044
-</td>
-<td style="text-align:right;">
-1.700044
-</td>
-<td style="text-align:right;">
-0.8604651
-</td>
-<td style="text-align:right;">
-1.89
-</td>
-<td style="text-align:right;">
-0.0920472
-</td>
-<td style="text-align:right;">
-1.349297
-</td>
-<td style="text-align:right;">
-1.85
-</td>
-<td style="text-align:right;">
-1.26
-</td>
-<td style="text-align:right;">
-1.349297
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0.0328743
-</td>
-<td style="text-align:right;">
-0.0000349
-</td>
-<td style="text-align:right;">
--0.6546339
-</td>
-<td style="text-align:right;">
-1.9520871
-</td>
-<td style="text-align:right;">
-0.0587741
-</td>
-<td style="text-align:right;">
-0.0331659
-</td>
-<td style="text-align:right;">
-0.2598454
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0.0328743
-</td>
-<td style="text-align:right;">
-0.0000349
-</td>
-<td style="text-align:right;">
--0.6546339
-</td>
-<td style="text-align:right;">
-1.9520871
-</td>
-<td style="text-align:right;">
-0.0587741
-</td>
-<td style="text-align:right;">
-0.0331659
-</td>
-<td style="text-align:right;">
-0.9883467
-</td>
-<td style="text-align:right;">
-0.0871615
-</td>
-<td style="text-align:right;">
-0.0255899
-</td>
-<td style="text-align:right;">
--0.4106884
-</td>
-<td style="text-align:right;">
-0.2075354
-</td>
-<td style="text-align:right;">
--0.5985913
-</td>
-<td style="text-align:right;">
-0.3916844
-</td>
-<td style="text-align:right;">
-0.2347272
-</td>
-<td style="text-align:right;">
--226.3638
-</td>
-<td style="text-align:right;">
-0.4555985
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-510
-</td>
-<td style="text-align:right;">
--0.0003526
-</td>
-<td style="text-align:right;">
--0.0377842
-</td>
-<td style="text-align:right;">
-0.0610169
-</td>
-<td style="text-align:right;">
--0.4503454
-</td>
-<td style="text-align:right;">
-0.3209396
-</td>
-<td style="text-align:right;">
--0.6010193
-</td>
-<td style="text-align:right;">
-0.5016447
-</td>
-<td style="text-align:right;">
-0.1103354
-</td>
-<td style="text-align:right;">
-0.5173745
-</td>
-<td style="text-align:right;">
-0.6718147
-</td>
-<td style="text-align:right;">
--0.0003526
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1.0632435
-</td>
-<td style="text-align:right;">
-2.064176
-</td>
-<td style="text-align:right;">
-0.5057915
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-0.5173745
-</td>
-<td style="text-align:right;">
-0.6718147
-</td>
-<td style="text-align:right;">
--0.0003526
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1.0632435
-</td>
-<td style="text-align:right;">
-2.064176
-</td>
-<td style="text-align:right;">
-0.5057915
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-1.681537
-</td>
-<td style="text-align:right;">
-1.443304
-</td>
-<td style="text-align:right;">
-1.56
-</td>
-<td style="text-align:right;">
-1.0
-</td>
-<td style="text-align:right;">
-0.25
-</td>
-<td style="text-align:right;">
-0.0307692
-</td>
-<td style="text-align:right;">
-0.1860465
-</td>
-<td style="text-align:right;">
-129
-</td>
-<td style="text-align:right;">
-0.25
-</td>
-<td style="text-align:right;">
-0.0307692
-</td>
-<td style="text-align:right;">
-0.5173745
-</td>
-<td style="text-align:right;">
-0.9818784
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-0.1860465
-</td>
-<td style="text-align:right;">
-0.1470449
-</td>
-<td style="text-align:right;">
-0.0463545
-</td>
-<td style="text-align:right;">
-0.1067343
-</td>
-<td style="text-align:right;">
-0.0460646
-</td>
-<td style="text-align:right;">
-0.25
-</td>
-<td style="text-align:right;">
-0.0002208
+0.0411075
 </td>
 <td style="text-align:right;">
 0.0001000
@@ -7808,79 +7162,79 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.8224410
+0.3863291
 </td>
 <td style="text-align:right;">
-5.448022
+2.834691
 </td>
 <td style="text-align:right;">
-64
+227
 </td>
 <td style="text-align:right;">
-1.460865
+1.096209
 </td>
 <td style="text-align:right;">
-102
+123
 </td>
 <td style="text-align:right;">
-4.190547
+2.760158
 </td>
 <td style="text-align:right;">
-218
+197
 </td>
 <td style="text-align:right;">
-2.064176
+2.075666
 </td>
 <td style="text-align:right;">
-0.0642516
+0.1218026
 </td>
 <td style="text-align:right;">
-0.0307692
+-0.0961538
 </td>
 <td style="text-align:right;">
-0.0449687
+0.0088598
 </td>
 <td style="text-align:right;">
-0.5611985
+0.4643608
 </td>
 <td style="text-align:right;">
-1.0943716
-</td>
-<td style="text-align:right;">
-1
+1.0505751
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-1.681537
+1
 </td>
 <td style="text-align:right;">
-1.681537
+1.709466
 </td>
 <td style="text-align:right;">
-1.681537
+1.709466
 </td>
 <td style="text-align:right;">
-0.1860465
+1.709466
 </td>
 <td style="text-align:right;">
-1.59
+0.1627907
 </td>
 <td style="text-align:right;">
-0.1165652
+1.61
 </td>
 <td style="text-align:right;">
-1.443304
+0.0691848
 </td>
 <td style="text-align:right;">
-1.44
+1.431144
+</td>
+<td style="text-align:right;">
+1.50
 </td>
 <td style="text-align:right;">
 1.00
 </td>
 <td style="text-align:right;">
-1.443304
+1.431144
 </td>
 <td style="text-align:right;">
 0
@@ -7889,25 +7243,25 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.0140109
+0.0134781
 </td>
 <td style="text-align:right;">
-0.0000469
+0.0000342
 </td>
 <td style="text-align:right;">
-0.9051600
+-0.6468298
 </td>
 <td style="text-align:right;">
-1.1716687
+-1.1770328
 </td>
 <td style="text-align:right;">
--0.0525826
+-0.0419291
 </td>
 <td style="text-align:right;">
-0.0687406
+0.0376999
 </td>
 <td style="text-align:right;">
-1.0632435
+-0.4569401
 </td>
 <td style="text-align:right;">
 1
@@ -7919,129 +7273,129 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.0140109
+0.0134781
 </td>
 <td style="text-align:right;">
-0.0000469
+0.0000342
 </td>
 <td style="text-align:right;">
-0.9051600
+-0.6468298
 </td>
 <td style="text-align:right;">
-1.1716687
+-1.1770328
 </td>
 <td style="text-align:right;">
--0.0525826
+-0.0419291
 </td>
 <td style="text-align:right;">
-0.0687406
+0.0376999
 </td>
 <td style="text-align:right;">
-0.9818784
+0.9882937
 </td>
 <td style="text-align:right;">
--0.0377842
+-0.0269749
 </td>
 <td style="text-align:right;">
-0.0610169
+0.0299079
 </td>
 <td style="text-align:right;">
--0.4503454
+-0.4943006
 </td>
 <td style="text-align:right;">
-0.3209396
+0.2640054
 </td>
 <td style="text-align:right;">
--0.6010193
+-0.6626027
 </td>
 <td style="text-align:right;">
-0.5016447
+0.4906038
 </td>
 <td style="text-align:right;">
-0.1743573
+0.1743418
 </td>
 <td style="text-align:right;">
--254.8196
+-260.0758
 </td>
 <td style="text-align:right;">
-0.5057915
+0.4633205
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-6691
+5794
 </td>
 <td style="text-align:right;">
-0.0381705
+-0.0007087
 </td>
 <td style="text-align:right;">
--0.1159988
+0.1194830
 </td>
 <td style="text-align:right;">
-0.0461471
+0.0616705
 </td>
 <td style="text-align:right;">
--0.5098657
+-0.4062897
 </td>
 <td style="text-align:right;">
-0.3030327
+0.2206195
 </td>
 <td style="text-align:right;">
--0.6710932
+-0.6016700
 </td>
 <td style="text-align:right;">
-0.5566086
+0.4137913
 </td>
 <td style="text-align:right;">
-0.1285934
+0.1556551
 </td>
 <td style="text-align:right;">
-0.5212355
+0.4806202
 </td>
 <td style="text-align:right;">
-0.7335907
+0.6782946
 </td>
 <td style="text-align:right;">
-0.0381705
+-0.0007087
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+-0.5797405
+</td>
+<td style="text-align:right;">
+2.066637
+</td>
+<td style="text-align:right;">
+0.4787645
 </td>
 <td style="text-align:right;">
 1
-</td>
-<td style="text-align:right;">
--0.7906201
-</td>
-<td style="text-align:right;">
-2.067114
-</td>
-<td style="text-align:right;">
-0.4903475
 </td>
 <td style="text-align:right;">
 0
 </td>
 <td style="text-align:right;">
-1
+0.4806202
 </td>
 <td style="text-align:right;">
-0.5212355
+0.6782946
 </td>
 <td style="text-align:right;">
-0.7335907
+-0.0007087
 </td>
 <td style="text-align:right;">
-0.0381705
+2
 </td>
 <td style="text-align:right;">
-1
+-0.5797405
 </td>
 <td style="text-align:right;">
--0.7906201
+2.066637
 </td>
 <td style="text-align:right;">
-2.067114
-</td>
-<td style="text-align:right;">
-0.4903475
+0.4787645
 </td>
 <td style="text-align:right;">
 1
@@ -8050,73 +7404,396 @@ NA
 1
 </td>
 <td style="text-align:right;">
-1.537979
+1.558307
 </td>
 <td style="text-align:right;">
-1.486248
+1.328565
 </td>
 <td style="text-align:right;">
-1.29
+2.03
 </td>
 <td style="text-align:right;">
-1.0
+1.18
 </td>
 <td style="text-align:right;">
-0.50
+-0.25
 </td>
 <td style="text-align:right;">
--0.3923077
+-0.3000000
 </td>
 <td style="text-align:right;">
-0.1627907
+0.2325581
 </td>
 <td style="text-align:right;">
-135
+120
 </td>
 <td style="text-align:right;">
-0.50
+-0.25
 </td>
 <td style="text-align:right;">
--0.3923077
+-0.3000000
 </td>
 <td style="text-align:right;">
-0.5212355
+0.4806202
 </td>
 <td style="text-align:right;">
-0.9853498
+0.9815963
 </td>
 <td style="text-align:right;">
-1
+2
 </td>
 <td style="text-align:right;">
-1
+2
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:right;">
-0.1627907
+0.2325581
 </td>
 <td style="text-align:right;">
-0.0787333
+0.2198692
 </td>
 <td style="text-align:right;">
-0.0628511
+0.0941053
 </td>
 <td style="text-align:right;">
-0.0832518
+0.1406280
 </td>
 <td style="text-align:right;">
-0.0642555
+0.0756639
 </td>
 <td style="text-align:right;">
-0.50
+-0.25
 </td>
 <td style="text-align:right;">
-0.0003256
+0.0125856
 </td>
 <td style="text-align:right;">
-0.0003256
+0.0001000
+</td>
+<td style="text-align:right;">
+0.5477543
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.7772726
+</td>
+<td style="text-align:right;">
+8.411092
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+1.573682
+</td>
+<td style="text-align:right;">
+146
+</td>
+<td style="text-align:right;">
+3.802986
+</td>
+<td style="text-align:right;">
+149
+</td>
+<td style="text-align:right;">
+2.066637
+</td>
+<td style="text-align:right;">
+0.1381103
+</td>
+<td style="text-align:right;">
+-0.3000000
+</td>
+<td style="text-align:right;">
+0.0193037
+</td>
+<td style="text-align:right;">
+0.3959500
+</td>
+<td style="text-align:right;">
+0.9255264
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.558307
+</td>
+<td style="text-align:right;">
+1.558307
+</td>
+<td style="text-align:right;">
+1.558307
+</td>
+<td style="text-align:right;">
+0.2325581
+</td>
+<td style="text-align:right;">
+1.98
+</td>
+<td style="text-align:right;">
+0.1331827
+</td>
+<td style="text-align:right;">
+1.328565
+</td>
+<td style="text-align:right;">
+2.01
+</td>
+<td style="text-align:right;">
+1.27
+</td>
+<td style="text-align:right;">
+1.328565
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.0139233
+</td>
+<td style="text-align:right;">
+0.0000358
+</td>
+<td style="text-align:right;">
+-0.8988748
+</td>
+<td style="text-align:right;">
+0.9389128
+</td>
+<td style="text-align:right;">
+0.1079346
+</td>
+<td style="text-align:right;">
+0.0661260
+</td>
+<td style="text-align:right;">
+-0.5797405
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.0139233
+</td>
+<td style="text-align:right;">
+0.0000358
+</td>
+<td style="text-align:right;">
+-0.8988748
+</td>
+<td style="text-align:right;">
+0.9389128
+</td>
+<td style="text-align:right;">
+0.1079346
+</td>
+<td style="text-align:right;">
+0.0661260
+</td>
+<td style="text-align:right;">
+0.9815963
+</td>
+<td style="text-align:right;">
+0.1194830
+</td>
+<td style="text-align:right;">
+0.0616705
+</td>
+<td style="text-align:right;">
+-0.4062897
+</td>
+<td style="text-align:right;">
+0.2206195
+</td>
+<td style="text-align:right;">
+-0.6016700
+</td>
+<td style="text-align:right;">
+0.4137913
+</td>
+<td style="text-align:right;">
+0.1182423
+</td>
+<td style="text-align:right;">
+-224.0670
+</td>
+<td style="text-align:right;">
+0.4787645
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+8693
+</td>
+<td style="text-align:right;">
+-0.0814496
+</td>
+<td style="text-align:right;">
+-0.0984498
+</td>
+<td style="text-align:right;">
+0.1142883
+</td>
+<td style="text-align:right;">
+-0.4688008
+</td>
+<td style="text-align:right;">
+0.3181153
+</td>
+<td style="text-align:right;">
+-0.6166136
+</td>
+<td style="text-align:right;">
+0.4555893
+</td>
+<td style="text-align:right;">
+0.1508792
+</td>
+<td style="text-align:right;">
+0.4054054
+</td>
+<td style="text-align:right;">
+0.6602317
+</td>
+<td style="text-align:right;">
+-0.0814496
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.3988370
+</td>
+<td style="text-align:right;">
+2.060571
+</td>
+<td style="text-align:right;">
+0.5250965
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.4054054
+</td>
+<td style="text-align:right;">
+0.6602317
+</td>
+<td style="text-align:right;">
+-0.0814496
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.3988370
+</td>
+<td style="text-align:right;">
+2.060571
+</td>
+<td style="text-align:right;">
+0.5250965
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.651243
+</td>
+<td style="text-align:right;">
+1.484233
+</td>
+<td style="text-align:right;">
+1.19
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+-0.50
+</td>
+<td style="text-align:right;">
+-0.0576923
+</td>
+<td style="text-align:right;">
+0.3488372
+</td>
+<td style="text-align:right;">
+136
+</td>
+<td style="text-align:right;">
+-0.50
+</td>
+<td style="text-align:right;">
+-0.0576923
+</td>
+<td style="text-align:right;">
+0.4054054
+</td>
+<td style="text-align:right;">
+0.9745764
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0.3488372
+</td>
+<td style="text-align:right;">
+0.0946062
+</td>
+<td style="text-align:right;">
+0.0937635
+</td>
+<td style="text-align:right;">
+0.1057152
+</td>
+<td style="text-align:right;">
+0.1052409
+</td>
+<td style="text-align:right;">
+-0.50
+</td>
+<td style="text-align:right;">
+0.0269522
+</td>
+<td style="text-align:right;">
+0.0001000
 </td>
 <td style="text-align:right;">
 0.5000458
@@ -8131,79 +7808,79 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.8821239
+0.5495742
 </td>
 <td style="text-align:right;">
-9.186446
+7.853783
 </td>
 <td style="text-align:right;">
-33
+195
 </td>
 <td style="text-align:right;">
-1.051163
+1.039641
 </td>
 <td style="text-align:right;">
-35
+191
 </td>
 <td style="text-align:right;">
-4.316605
+4.458772
 </td>
 <td style="text-align:right;">
-19
+187
 </td>
 <td style="text-align:right;">
-2.067114
+2.060571
 </td>
 <td style="text-align:right;">
-0.0745460
+0.1164590
 </td>
 <td style="text-align:right;">
--0.3923077
+-0.0576923
 </td>
 <td style="text-align:right;">
-0.0319358
+0.0467339
 </td>
 <td style="text-align:right;">
-0.5197226
+0.5896074
 </td>
 <td style="text-align:right;">
-1.0310709
-</td>
-<td style="text-align:right;">
-1
+1.1095330
 </td>
 <td style="text-align:right;">
 1
 </td>
 <td style="text-align:right;">
-1.537979
+1
 </td>
 <td style="text-align:right;">
-1.537979
+1.651243
 </td>
 <td style="text-align:right;">
-1.537979
+1.651243
 </td>
 <td style="text-align:right;">
-0.1627907
+1.651243
 </td>
 <td style="text-align:right;">
-1.26
+0.3488372
 </td>
 <td style="text-align:right;">
-0.0364267
+1.24
 </td>
 <td style="text-align:right;">
-1.486248
+0.0998210
 </td>
 <td style="text-align:right;">
-1.26
+1.484233
+</td>
+<td style="text-align:right;">
+1.35
 </td>
 <td style="text-align:right;">
 1.00
 </td>
 <td style="text-align:right;">
-1.486248
+1.484233
 </td>
 <td style="text-align:right;">
 0
@@ -8212,25 +7889,25 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.0003187
+0.0033231
 </td>
 <td style="text-align:right;">
-0.0000630
+0.0000574
 </td>
 <td style="text-align:right;">
-0.1736309
+0.1887497
 </td>
 <td style="text-align:right;">
--0.1242825
+0.4564879
 </td>
 <td style="text-align:right;">
--0.1159053
+-0.1022983
 </td>
 <td style="text-align:right;">
-0.0459614
+0.1171558
 </td>
 <td style="text-align:right;">
--0.7906201
+0.3988370
 </td>
 <td style="text-align:right;">
 1
@@ -8242,52 +7919,375 @@ NA
 1
 </td>
 <td style="text-align:right;">
-0.0003187
+0.0033231
 </td>
 <td style="text-align:right;">
-0.0000630
+0.0000574
 </td>
 <td style="text-align:right;">
-0.1736309
+0.1887497
 </td>
 <td style="text-align:right;">
--0.1242825
+0.4564879
 </td>
 <td style="text-align:right;">
--0.1159053
+-0.1022983
 </td>
 <td style="text-align:right;">
-0.0459614
+0.1171558
 </td>
 <td style="text-align:right;">
-0.9853498
+0.9745764
 </td>
 <td style="text-align:right;">
--0.1159988
+-0.0984498
 </td>
 <td style="text-align:right;">
-0.0461471
+0.1142883
 </td>
 <td style="text-align:right;">
--0.5098657
+-0.4688008
 </td>
 <td style="text-align:right;">
-0.3030327
+0.3181153
 </td>
 <td style="text-align:right;">
--0.6710932
+-0.6166136
 </td>
 <td style="text-align:right;">
-0.5566086
+0.4555893
 </td>
 <td style="text-align:right;">
-0.0217238
+0.0391658
 </td>
 <td style="text-align:right;">
--257.2330
+-262.9010
 </td>
 <td style="text-align:right;">
-0.4903475
+0.5250965
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1073
+</td>
+<td style="text-align:right;">
+-0.1253873
+</td>
+<td style="text-align:right;">
+0.1511912
+</td>
+<td style="text-align:right;">
+0.0608605
+</td>
+<td style="text-align:right;">
+-0.3832523
+</td>
+<td style="text-align:right;">
+0.2048003
+</td>
+<td style="text-align:right;">
+-0.5832067
+</td>
+<td style="text-align:right;">
+0.3861283
+</td>
+<td style="text-align:right;">
+0.0876692
+</td>
+<td style="text-align:right;">
+0.4031008
+</td>
+<td style="text-align:right;">
+0.6356589
+</td>
+<td style="text-align:right;">
+-0.1253873
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.2463431
+</td>
+<td style="text-align:right;">
+2.061698
+</td>
+<td style="text-align:right;">
+0.4594595
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.4031008
+</td>
+<td style="text-align:right;">
+0.6356589
+</td>
+<td style="text-align:right;">
+-0.1253873
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.2463431
+</td>
+<td style="text-align:right;">
+2.061698
+</td>
+<td style="text-align:right;">
+0.4594595
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.763381
+</td>
+<td style="text-align:right;">
+1.304792
+</td>
+<td style="text-align:right;">
+2.44
+</td>
+<td style="text-align:right;">
+1.13
+</td>
+<td style="text-align:right;">
+-0.25
+</td>
+<td style="text-align:right;">
+0.1230769
+</td>
+<td style="text-align:right;">
+0.1395349
+</td>
+<td style="text-align:right;">
+121
+</td>
+<td style="text-align:right;">
+-0.25
+</td>
+<td style="text-align:right;">
+0.1230769
+</td>
+<td style="text-align:right;">
+0.4031008
+</td>
+<td style="text-align:right;">
+0.9867903
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.1395349
+</td>
+<td style="text-align:right;">
+0.0779468
+</td>
+<td style="text-align:right;">
+0.0618625
+</td>
+<td style="text-align:right;">
+0.0695878
+</td>
+<td style="text-align:right;">
+0.0601294
+</td>
+<td style="text-align:right;">
+-0.25
+</td>
+<td style="text-align:right;">
+0.0778294
+</td>
+<td style="text-align:right;">
+0.0001000
+</td>
+<td style="text-align:right;">
+0.5663347
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.3151884
+</td>
+<td style="text-align:right;">
+7.528904
+</td>
+<td style="text-align:right;">
+185
+</td>
+<td style="text-align:right;">
+2.069230
+</td>
+<td style="text-align:right;">
+177
+</td>
+<td style="text-align:right;">
+2.340804
+</td>
+<td style="text-align:right;">
+169
+</td>
+<td style="text-align:right;">
+2.061698
+</td>
+<td style="text-align:right;">
+0.0279574
+</td>
+<td style="text-align:right;">
+0.1230769
+</td>
+<td style="text-align:right;">
+0.0310540
+</td>
+<td style="text-align:right;">
+0.3527793
+</td>
+<td style="text-align:right;">
+0.8978003
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.763381
+</td>
+<td style="text-align:right;">
+1.763381
+</td>
+<td style="text-align:right;">
+1.763381
+</td>
+<td style="text-align:right;">
+0.1395349
+</td>
+<td style="text-align:right;">
+2.45
+</td>
+<td style="text-align:right;">
+0.0816322
+</td>
+<td style="text-align:right;">
+1.304792
+</td>
+<td style="text-align:right;">
+2.35
+</td>
+<td style="text-align:right;">
+1.23
+</td>
+<td style="text-align:right;">
+1.304792
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.0213244
+</td>
+<td style="text-align:right;">
+0.0000306
+</td>
+<td style="text-align:right;">
+-0.5577693
+</td>
+<td style="text-align:right;">
+0.6111726
+</td>
+<td style="text-align:right;">
+0.1329904
+</td>
+<td style="text-align:right;">
+0.0758345
+</td>
+<td style="text-align:right;">
+0.2463431
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.0213244
+</td>
+<td style="text-align:right;">
+0.0000306
+</td>
+<td style="text-align:right;">
+-0.5577693
+</td>
+<td style="text-align:right;">
+0.6111726
+</td>
+<td style="text-align:right;">
+0.1329904
+</td>
+<td style="text-align:right;">
+0.0758345
+</td>
+<td style="text-align:right;">
+0.9867903
+</td>
+<td style="text-align:right;">
+0.1511912
+</td>
+<td style="text-align:right;">
+0.0608605
+</td>
+<td style="text-align:right;">
+-0.3832523
+</td>
+<td style="text-align:right;">
+0.2048003
+</td>
+<td style="text-align:right;">
+-0.5832067
+</td>
+<td style="text-align:right;">
+0.3861283
+</td>
+<td style="text-align:right;">
+0.0849681
+</td>
+<td style="text-align:right;">
+-208.4546
+</td>
+<td style="text-align:right;">
+0.4594595
 </td>
 </tr>
 </tbody>
@@ -8309,17 +8309,7 @@ NA
 <tbody>
 <tr>
 <td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-0
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-0
+1
 </td>
 </tr>
 <tr>
@@ -8337,10 +8327,20 @@ NA
 0
 </td>
 </tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+</tr>
 </tbody>
 </table>
 <p>I set the data up for an XGBoost model:</p>
-<p>I create a grid search in order search over a parameter space to locate the optimal parameters for the data set. It needs a little more work but it’s a pretty good starting point. I can just add code to the <code>expand.grid</code> function. That is, say I want to increase the depth of the tree I can add to <code>max_depth = c(5, 8, 14)</code> more parameters such as <code>max_depth = c(5, 8, 14, 1, 2, 3, 4, 6, 7)</code>. <strong>Note</strong> Adding parameters to the grid search increases computational time exponentially. Every parameter you add a value to, the model has to search all possible combinations associated with that parameter. That is, adding an <code>eta = c(0.1)</code> and <code>max_depth = c(5)</code> would give me the optimal parameter for one iteration/loop through the training model, i.e. an <code>eta = c(0.1)</code> mapped onto a <code>max_depth = c(5)</code>. Adding an additional value to the <code>eta = c(0.1, 0.3)</code> and <code>max_depth = c(5)</code> would map <code>eta = 0.1</code> onto <code>max_depth = 5</code> and <code>eta = 0.3</code> on to <code>max_depth = 5</code>. If I add another value such that <code>eta = c(0.1, 0.3, 0.4)</code> then all 3 of these values will be mapped to <code>max_depth = c(5)</code>. Adding values t the <code>max_depth = c(5)</code> parameter would add an extra layer of complexity to the grid search. This added into the fact that there are many parameters to optimize in an XGBoost model can drastically increase computational complexity. Thus, understanding the statistics behind the models in Machine Learning is important when trying to avoid getting stuck in a local minimum (which any greedy algorithm using gradient descent optimisation can do <a href="https://en.wikipedia.org/wiki/Greedy_algorithm">greedy algorithm</a>).</p>
+<p>I create a grid search in order search over a parameter space to locate the optimal parameters for the data set. It needs a little more work but it’s a pretty good starting point. I can just add code to the <code>expand.grid</code> function. That is, say I want to increase the depth of the tree I can add to <code>max_depth = c(5, 8, 14)</code> more parameters such as <code>max_depth = c(5, 8, 14, 1, 2, 3, 4, 6, 7)</code>. <strong>Note</strong> Adding parameters to the grid search increases computational time exponentially. Every parameter you add a value to, the model has to search all possible combinations associated with that parameter. That is, adding an <code>eta = c(0.1)</code> and <code>max_depth = c(5)</code> would give me the optimal parameter for one iteration/loop through the training model, i.e. an <code>eta = c(0.1)</code> mapped onto a <code>max_depth = c(5)</code>. Adding an additional value to the <code>eta = c(0.1, 0.3)</code> and <code>max_depth = c(5)</code> would map <code>eta = 0.1</code> onto <code>max_depth = 5</code> and <code>eta = 0.3</code> on to <code>max_depth = 5</code>. If I add another value such that <code>eta = c(0.1, 0.3, 0.4)</code> then all 3 of these values will be mapped to <code>max_depth = c(5)</code>. Adding values to the <code>max_depth = c(5)</code> parameter would add an extra layer of complexity to the grid search. This added into the fact that there are many parameters to optimize in an XGBoost model can drastically increase computational complexity. Thus, understanding the statistics behind the models in Machine Learning is important when trying to avoid getting stuck in a local minimum (which any greedy algorithm using gradient descent optimisation can do: <a href="https://en.wikipedia.org/wiki/Greedy_algorithm">greedy algorithm</a>).</p>
 <pre class="r"><code>######################################################################
 ################# XGBoost Grid Search to locate Optimal Parameters ###
 
@@ -8419,7 +8419,6 @@ system.time(
     hypemeans &lt;- which.max(AUCHyperparameters[[1]]$test_auc_mean)
     output2 &lt;- return(hypemeans)
     }))</code></pre>
-<p>The problem with the <code>AUCHyperparameters()</code> function is that I just take the <code>tail()</code> results when I should be extracting the optimal parameters better.</p>
 <p>The output of the grid search can be set into a nice data frame using the following code. However I did not save this output to file and therefore cannot read it in. You can view the output on the original Jupyter Notebook <code>In [49]</code> <a href="https://nbviewer.jupyter.org/github/msmith01/time_series_detection/blob/master/Time_Series_Classification_Financial_Markets.ipynb">here</a></p>
 <pre class="r"><code># 3)
 output &lt;- as.data.frame(t(sapply(AUCHyperparameters, &#39;[&#39;, c(1:6, 20:29))))
@@ -8433,7 +8432,9 @@ data.table(output)</code></pre>
 <li>max_depth = 5,</li>
 </ul>
 <p>With the other parameters left to default settings for simplicity.</p>
-<p>Now that I have the optimal parameters from the grid search I can train an XGBoost model on the training data set and plug these optimal values into the <code>params</code> list:</p>
+</div>
+<div id="plug-the-optimal-parameters-into-the-model." class="section level1">
+<h1>Plug the optimal parameters into the model.</h1>
 <pre class="r"><code>#################################################################################
 ################# XGBoost Optimal Parameters from Cross Validation ##############
 
@@ -8451,112 +8452,111 @@ nround &lt;- 95</code></pre>
 <pre class="r"><code># Train the XGBoost model
 
 xgb.model &lt;- xgb.train(params, dtrain, nround, watchlist)</code></pre>
-<pre><code>## [1]  train-auc:0.714426 
-## [2]  train-auc:0.729142 
-## [3]  train-auc:0.736365 
-## [4]  train-auc:0.736480 
-## [5]  train-auc:0.740435 
-## [6]  train-auc:0.747570 
-## [7]  train-auc:0.750461 
-## [8]  train-auc:0.751053 
-## [9]  train-auc:0.753416 
-## [10] train-auc:0.754922 
-## [11] train-auc:0.758318 
-## [12] train-auc:0.762715 
-## [13] train-auc:0.768562 
-## [14] train-auc:0.771517 
-## [15] train-auc:0.777371 
-## [16] train-auc:0.781109 
-## [17] train-auc:0.786178 
-## [18] train-auc:0.787234 
-## [19] train-auc:0.789113 
-## [20] train-auc:0.789895 
-## [21] train-auc:0.793477 
-## [22] train-auc:0.797145 
-## [23] train-auc:0.801051 
-## [24] train-auc:0.802369 
-## [25] train-auc:0.804017 
-## [26] train-auc:0.806691 
-## [27] train-auc:0.809834 
-## [28] train-auc:0.810924 
-## [29] train-auc:0.813256 
-## [30] train-auc:0.815922 
-## [31] train-auc:0.818918 
-## [32] train-auc:0.822677 
-## [33] train-auc:0.823239 
-## [34] train-auc:0.826781 
-## [35] train-auc:0.828596 
-## [36] train-auc:0.830481 
-## [37] train-auc:0.832719 
-## [38] train-auc:0.833975 
-## [39] train-auc:0.835065 
-## [40] train-auc:0.837999 
-## [41] train-auc:0.838804 
-## [42] train-auc:0.840867 
-## [43] train-auc:0.842305 
-## [44] train-auc:0.845838 
-## [45] train-auc:0.846856 
-## [46] train-auc:0.847804 
-## [47] train-auc:0.848753 
-## [48] train-auc:0.850509 
-## [49] train-auc:0.852288 
-## [50] train-auc:0.853215 
-## [51] train-auc:0.855375 
-## [52] train-auc:0.856389 
-## [53] train-auc:0.857311 
-## [54] train-auc:0.859108 
-## [55] train-auc:0.860308 
-## [56] train-auc:0.862775 
-## [57] train-auc:0.863775 
-## [58] train-auc:0.864729 
-## [59] train-auc:0.866562 
-## [60] train-auc:0.869064 
-## [61] train-auc:0.869937 
-## [62] train-auc:0.872062 
-## [63] train-auc:0.874444 
-## [64] train-auc:0.874764 
-## [65] train-auc:0.875546 
-## [66] train-auc:0.878003 
-## [67] train-auc:0.878945 
-## [68] train-auc:0.880739 
-## [69] train-auc:0.881206 
-## [70] train-auc:0.882062 
-## [71] train-auc:0.884013 
-## [72] train-auc:0.884744 
-## [73] train-auc:0.885277 
-## [74] train-auc:0.885732 
-## [75] train-auc:0.886967 
-## [76] train-auc:0.887653 
-## [77] train-auc:0.889016 
-## [78] train-auc:0.890733 
-## [79] train-auc:0.892101 
-## [80] train-auc:0.892657 
-## [81] train-auc:0.894606 
-## [82] train-auc:0.895111 
-## [83] train-auc:0.895790 
-## [84] train-auc:0.896699 
-## [85] train-auc:0.897570 
-## [86] train-auc:0.897915 
-## [87] train-auc:0.898833 
-## [88] train-auc:0.900800 
-## [89] train-auc:0.901483 
-## [90] train-auc:0.902972 
-## [91] train-auc:0.903630 
-## [92] train-auc:0.903967 
-## [93] train-auc:0.905149 
-## [94] train-auc:0.906120 
-## [95] train-auc:0.907548</code></pre>
+<pre><code>## [1]  train-auc:0.700790 
+## [2]  train-auc:0.720114 
+## [3]  train-auc:0.735281 
+## [4]  train-auc:0.741159 
+## [5]  train-auc:0.748016 
+## [6]  train-auc:0.752070 
+## [7]  train-auc:0.754637 
+## [8]  train-auc:0.759151 
+## [9]  train-auc:0.762538 
+## [10] train-auc:0.769652 
+## [11] train-auc:0.776582 
+## [12] train-auc:0.780015 
+## [13] train-auc:0.782065 
+## [14] train-auc:0.782815 
+## [15] train-auc:0.788966 
+## [16] train-auc:0.791026 
+## [17] train-auc:0.793545 
+## [18] train-auc:0.797363 
+## [19] train-auc:0.799069 
+## [20] train-auc:0.802015 
+## [21] train-auc:0.802583 
+## [22] train-auc:0.806938 
+## [23] train-auc:0.808239 
+## [24] train-auc:0.811255 
+## [25] train-auc:0.813142 
+## [26] train-auc:0.816767 
+## [27] train-auc:0.817697 
+## [28] train-auc:0.820239 
+## [29] train-auc:0.821589 
+## [30] train-auc:0.823343 
+## [31] train-auc:0.823939 
+## [32] train-auc:0.825701 
+## [33] train-auc:0.827316 
+## [34] train-auc:0.829365 
+## [35] train-auc:0.832646 
+## [36] train-auc:0.833297 
+## [37] train-auc:0.837006 
+## [38] train-auc:0.838857 
+## [39] train-auc:0.839923 
+## [40] train-auc:0.842968 
+## [41] train-auc:0.844877 
+## [42] train-auc:0.845940 
+## [43] train-auc:0.846583 
+## [44] train-auc:0.847330 
+## [45] train-auc:0.848292 
+## [46] train-auc:0.850215 
+## [47] train-auc:0.851641 
+## [48] train-auc:0.852670 
+## [49] train-auc:0.854706 
+## [50] train-auc:0.855752 
+## [51] train-auc:0.856772 
+## [52] train-auc:0.857806 
+## [53] train-auc:0.860245 
+## [54] train-auc:0.861337 
+## [55] train-auc:0.864178 
+## [56] train-auc:0.865290 
+## [57] train-auc:0.865808 
+## [58] train-auc:0.866386 
+## [59] train-auc:0.867751 
+## [60] train-auc:0.870032 
+## [61] train-auc:0.870500 
+## [62] train-auc:0.872442 
+## [63] train-auc:0.873391 
+## [64] train-auc:0.875188 
+## [65] train-auc:0.877767 
+## [66] train-auc:0.879196 
+## [67] train-auc:0.880079 
+## [68] train-auc:0.879969 
+## [69] train-auc:0.880638 
+## [70] train-auc:0.881389 
+## [71] train-auc:0.882066 
+## [72] train-auc:0.882515 
+## [73] train-auc:0.883854 
+## [74] train-auc:0.884654 
+## [75] train-auc:0.885104 
+## [76] train-auc:0.885922 
+## [77] train-auc:0.887100 
+## [78] train-auc:0.888646 
+## [79] train-auc:0.889833 
+## [80] train-auc:0.890387 
+## [81] train-auc:0.891815 
+## [82] train-auc:0.892281 
+## [83] train-auc:0.894417 
+## [84] train-auc:0.895006 
+## [85] train-auc:0.897079 
+## [86] train-auc:0.899254 
+## [87] train-auc:0.901114 
+## [88] train-auc:0.902460 
+## [89] train-auc:0.902939 
+## [90] train-auc:0.903763 
+## [91] train-auc:0.903792 
+## [92] train-auc:0.904433 
+## [93] train-auc:0.904986 
+## [94] train-auc:0.907339 
+## [95] train-auc:0.907761</code></pre>
 <pre class="r"><code># Note: Plot AUC on for the in-sample train / validation scores -  this was a note for me at the time of writing this R file - I never did get around to plotting the AUC for the in-sample train / validation scores...</code></pre>
 <p>What is nice about tree based models is that we can obtain <em>importance</em> scores from the model and find which variables contributed most to the <em>gain</em> in the model. The original paper explains more about the <em>gain</em> in <em>Algorithm 1</em> and <em>Algorithm 3</em> <a href="https://arxiv.org/pdf/1603.02754.pdf">here</a>.</p>
 <pre class="r"><code># We can obtain &quot;feature&quot; importance results from the model.
 xgb.imp &lt;- xgb.importance(model = xgb.model)
 xgb.plot.importance(xgb.imp, top_n = 10)</code></pre>
 <p><img src="/post/synth-real-time-series/synth_real_time_series_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
-<p>That is, the XGBoost model found that the <code>spike</code> was the most important variable. The <code>spike</code> comes from the <code>stl_features</code> function of the <code>tsfeatures</code> package in <code>R</code>. It computes various measures of trend and seasonality based on Seasonal and Trend Decomposition (STL) decomposition and measures the <code>spikiness</code> of a time series based on the variance of the leave-one-out variances of component <code>e_t</code>.</p>
+<p>That is, the XGBoost model found that the <code>spike</code> was the most important variable. The <code>spike</code> comes from the <code>stl_features</code> function of the <code>tsfeatures</code> package in <code>R</code>. It computes various measures of trend and seasonality based on Seasonal and Trend Decomposition (STL) and measures the <code>spikiness</code> of a time series based on the variance of the leave-one-out variances of component <code>e_t</code>.</p>
 <p>The second variable is interesting also and comes from the <code>compengine feature set</code> from the <a href="https://www.comp-engine.org/">CompEngine</a> database. It groups variables as <em>autocorrelation</em>, <em>prediction</em>, <em>stationarity</em>, <em>distribution</em> and <em>scaling</em>.</p>
 <p>The <code>ARCH.LM</code> comes from the <code>arch_stat</code> function of the <code>tsfeatures</code> package and is based on the Lagrange Multiplier for Autoregressive Conditional Heteroscedasticity (ARCH) <a href="https://www.jstor.org/stable/1912773?origin=crossref&amp;seq=1#page_scan_tab_contents">Engle 1982</a>.</p>
 <p>These are just a few of the variables the XGBoost model found to be the most <em>important</em>. A full overview and more information of the variables used in the model can be found <a href="https://cran.r-project.org/web/packages/tsfeatures/vignettes/tsfeatures.html">here</a>.</p>
-</div>
 <div id="predictions-using-the-in-sample-test-set" class="section level3">
 <h3>Predictions using the in-sample test set</h3>
 <p>Now that I have trained the model using the optimal parameters I want to see if it scores the same or better based on the cross validation phase using the <em>validation</em> data. I use the <code>dval</code> which is the <em>validation</em> data set from the <em>training split</em> to test the model.</p>
@@ -8595,28 +8595,28 @@ confusionMatrix(factor(results$pred), factor(results$y_val))</code></pre>
 ## 
 ##           Reference
 ## Prediction    0    1
-##          0 1087  564
-##          1  394  955
-##                                                
-##                Accuracy : 0.6807               
-##                  95% CI : (0.6636, 0.6973)     
-##     No Information Rate : 0.5063               
-##     P-Value [Acc &gt; NIR] : &lt; 0.00000000000000022
-##                                                
-##                   Kappa : 0.3621               
-##                                                
-##  Mcnemar&#39;s Test P-Value : 0.00000004758        
-##                                                
-##             Sensitivity : 0.7340               
-##             Specificity : 0.6287               
-##          Pos Pred Value : 0.6584               
-##          Neg Pred Value : 0.7079               
-##              Prevalence : 0.4937               
-##          Detection Rate : 0.3623               
-##    Detection Prevalence : 0.5503               
-##       Balanced Accuracy : 0.6813               
-##                                                
-##        &#39;Positive&#39; Class : 0                    
+##          0 1041  537
+##          1  465  957
+##                                              
+##                Accuracy : 0.666              
+##                  95% CI : (0.6488, 0.6829)   
+##     No Information Rate : 0.502              
+##     P-Value [Acc &gt; NIR] : &lt;0.0000000000000002
+##                                              
+##                   Kappa : 0.3319             
+##                                              
+##  Mcnemar&#39;s Test P-Value : 0.0249             
+##                                              
+##             Sensitivity : 0.6912             
+##             Specificity : 0.6406             
+##          Pos Pred Value : 0.6597             
+##          Neg Pred Value : 0.6730             
+##              Prevalence : 0.5020             
+##          Detection Rate : 0.3470             
+##    Detection Prevalence : 0.5260             
+##       Balanced Accuracy : 0.6659             
+##                                              
+##        &#39;Positive&#39; Class : 0                  
 ## </code></pre>
 <p>A balanced accuracy score of 67% isn’t so bad considering I threw the kitchen sink at the classification problem and that this is a time series (stock market) classification problem. By kitchen sink I refer to all the time series functions found in the <code>tsfeatures</code> package.</p>
 <p>From here I end the training and validation model. I have obtained the optimal values based on the training and validation data sets and now I want to test it on the unknown data the <code>test.csv</code> data.</p>
@@ -8737,6 +8737,7 @@ test_final &lt;- test_final %&gt;%
 <p>I have computed all the <code>tsfeatures</code> for the <code>train</code> data set and also for the <code>test</code> data set. I saved these two as <code>TSfeatures_train_val.csv</code> and <code>TSfeatures_test.csv</code>.</p>
 <div id="load-in-the-train-and-test-features-data-sets" class="section level4">
 <h4>Load in the train and test features data sets</h4>
+<p>I uploaded these files <a href="https://github.com/msmith01/financial_time_series">here</a></p>
 <pre class="r"><code># I have already created the features for the training dataset so I can just load them right back in as 
 train_final &lt;- read.csv(&quot;C:/Users/Matt/Desktop/Data Science Challenge/TSfeatures_train_val.csv&quot;)
 test_final &lt;- read.csv(&quot;C:/Users/Matt/Desktop/Data Science Challenge/TSfeatures_test.csv&quot;)</code></pre>
@@ -13524,14 +13525,10 @@ xgb.pred_final %&gt;%
 <p>Obtener entre 0.4-0.6 se considera un resultado aleatorio.</p>
 <p>A partir 0.6 el algoritmo clasifica correctamente y más de un 0.7 el algoritmo es genial.</p>
 <p>Por debajo de 0.4 son capaces de diferenciar series sintéticas de las reales, pero están intercambiadas.*</p>
-<p>I was informed that based on the held out test set I obtained a result of 0.649636 ~0.65% (a little lower than my 0.67% in-sample training set!) but still consistent with the correct methodology I was using (i.e. no leaking test data to the training data) along with the fact that I was just throwing the time series features book/kitchen sink at the problem. Further reading into time series features will strengthen this classification problem will certainly improve the prediction accuracy! Recall, that my feature selection consisted of applying every feature in the <code>tsfeatures</code> package… Using <code>functions &lt;- ls("package:tsfeatures")[1:42]</code> and then <code>mapping</code> over the data using <code>summarise(Statistics = map(data, ~ data.frame( bind_cols(tsfeatures(.x$value, functions))))) %&gt;%</code>. So there is plenty of improvements to the current model.</p>
-<p>I hope this post explains some of the inner workings of time series training and testing models. I understand it’s a little <em>involved</em> but I hope I provide some tools/code in order to build from.</p>
-<p>Otros:</p>
-<p>Another note I obtained from the interview process was the following:</p>
-<p>En el caso del reto, una de las características más importante de los datos es que provienen de una serie temporal, por lo que es de esperar que las relaciones intertemporales jueguen un papel fundamental. Por un lado, planteas una red neuronal con una arquitectura incapaz de capturar estas relaciones.</p>
-<p>I didn’t apply a neural netwrok but I understand how this might have been missed, the whole Notebook explored the data and I compactly applied an XGBoost model.</p>
-<p>Conclusion: A combination of time series feature selection and classifciation models and do pretty well on time series classification models such as this one I faced.</p>
+<p>I was informed that based on the held out test set I obtained a result of 0.649636 ~0.65% (a little lower than my 0.67% in-sample training set!) but still consistent with the correct methodology I was using (i.e. no leaking test data to the training data) along with the fact that I was just throwing the time series features book/kitchen sink at the problem. Further reading into time series features will strengthen this classification problem and will certainly improve the prediction accuracy! Recall, that my feature selection consisted of applying every feature in the <code>tsfeatures</code> package… Using <code>functions &lt;- ls("package:tsfeatures")[1:42]</code> and then <code>mapping</code> over the data using <code>summarise(Statistics = map(data, ~ data.frame( bind_cols(tsfeatures(.x$value, functions))))) %&gt;%</code>. So there is plenty of improvements to the current model.</p>
+<p>Conclusion: A combination of time series feature selection and classifciation models can do pretty well on time series classification models such as this one I faced.</p>
 <p>Any errors are my own!</p>
+</div>
 </div>
 
     </div>
