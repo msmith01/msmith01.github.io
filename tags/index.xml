@@ -5,12 +5,44 @@
     <link>/tags/</link>
       <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 29 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 03 Nov 2019 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
       <title>Tags</title>
       <link>/tags/</link>
     </image>
+    
+    <item>
+      <title>asset pricing</title>
+      <link>/tags/asset-pricing/</link>
+      <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/asset-pricing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>synthetic data</title>
+      <link>/tags/synthetic-data/</link>
+      <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/synthetic-data/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>time series</title>
+      <link>/tags/time-series/</link>
+      <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/time-series/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>xgboost</title>
+      <link>/tags/xgboost/</link>
+      <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/xgboost/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>backtesting</title>
@@ -97,30 +129,6 @@
       <link>/tags/machine-learning/</link>
       <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
       <guid>/tags/machine-learning/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>time series</title>
-      <link>/tags/time-series/</link>
-      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/time-series/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>xgboost</title>
-      <link>/tags/xgboost/</link>
-      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/xgboost/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>asset pricing</title>
-      <link>/tags/asset-pricing/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/asset-pricing/</guid>
       <description></description>
     </item>
     
