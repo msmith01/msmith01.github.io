@@ -33,13 +33,73 @@
   </url>
   
   <url>
+    <loc>/authors/admin/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/asset-pricing/</loc>
-    <lastmod>2019-11-03T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/authors/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2019-11-03T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/econometrics/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/factor-modeling-for-portfolio-optimisation/factor-modeling-portfolio-optimisation/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/factor-models/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/finance/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/mathematical-finance/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/quant-finance/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/time-series/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/yahoo-finance/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -48,22 +108,7 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
-    <lastmod>2019-11-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/synthetic-data/</loc>
-    <lastmod>2019-11-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
-    <lastmod>2019-11-03T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/time-series/</loc>
     <lastmod>2019-11-03T00:00:00+00:00</lastmod>
   </url>
   
@@ -79,11 +124,6 @@
   
   <url>
     <loc>/tags/backtesting/</loc>
-    <lastmod>2019-09-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/finance/</loc>
     <lastmod>2019-09-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -109,11 +149,6 @@
   
   <url>
     <loc>/tags/trading/</loc>
-    <lastmod>2019-09-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/yahoo-finance/</loc>
     <lastmod>2019-09-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -160,16 +195,6 @@
   <url>
     <loc>/post/hackerrank-competitions/hackerrank-compeitions/</loc>
     <lastmod>2019-09-24T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/authors/admin/</loc>
-    <lastmod>2019-09-22T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/authors/</loc>
-    <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>

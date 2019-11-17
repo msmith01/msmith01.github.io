@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>problem-solving | Matthew Smith R Shenanigans</title>
+    <link>/tags/problem-solving/</link>
+      <atom:link href="/tags/problem-solving/index.xml" rel="self" type="application/rss+xml" />
+    <description>problem-solving</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Fri, 15 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/icon-192.png</url>
+      <title>problem-solving</title>
+      <link>/tags/problem-solving/</link>
+    </image>
+    
+    <item>
+      <title>Hacker Rank Solutions and other Brain Teasers</title>
+      <link>/post/brain-teasers-in-r/hacker-rank-solutions-in-r/</link>
+      <pubDate>Fri, 15 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/post/brain-teasers-in-r/hacker-rank-solutions-in-r/</guid>
+      <description>
+
+
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(kableExtra)
+library(tidyquant)
+library(directlabels)
+library(tibble)
+library(tidyr)
+library(quantmod)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I quite like coming across problems which are solved in other languages but not yet solved in R and I tried to solve a number of Hacker Rank programming problems.&lt;/p&gt;
+&lt;p&gt;The first question is to find the number in where&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Find the Number, given an array of numbers find the number k
+findNumber &amp;lt;- function(arr, k){
+  if(k %in% arr){ print(&amp;quot;Yes&amp;quot;)
+  }else {print(&amp;quot;No&amp;quot;)
+  }
+}
+
+# Data / Answer 1 - to Question 1:
+arr &amp;lt;- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+findNumber(arr, k = 9)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Yes&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;findNumber(arr, k = 11)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;No&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
