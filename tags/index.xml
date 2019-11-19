@@ -5,7 +5,7 @@
     <link>/tags/</link>
       <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Thu, 14 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 18 Nov 2019 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
       <title>Tags</title>
@@ -15,8 +15,48 @@
     <item>
       <title>asset pricing</title>
       <link>/tags/asset-pricing/</link>
-      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
       <guid>/tags/asset-pricing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>finance</title>
+      <link>/tags/finance/</link>
+      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/finance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>portfolio optimisation</title>
+      <link>/tags/portfolio-optimisation/</link>
+      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/portfolio-optimisation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>quant finance</title>
+      <link>/tags/quant-finance/</link>
+      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/quant-finance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>time series</title>
+      <link>/tags/time-series/</link>
+      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/time-series/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>yahoo-finance</title>
+      <link>/tags/yahoo-finance/</link>
+      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
+      <guid>/tags/yahoo-finance/</guid>
       <description></description>
     </item>
     
@@ -25,38 +65,6 @@
       <link>/tags/factor-models/</link>
       <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
       <guid>/tags/factor-models/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>finance</title>
-      <link>/tags/finance/</link>
-      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>quant finance</title>
-      <link>/tags/quant-finance/</link>
-      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/quant-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>time series</title>
-      <link>/tags/time-series/</link>
-      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/time-series/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>yahoo-finance</title>
-      <link>/tags/yahoo-finance/</link>
-      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/yahoo-finance/</guid>
       <description></description>
     </item>
     
@@ -217,14 +225,6 @@
       <link>/tags/rstudio/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
       <guid>/tags/rstudio/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Source Themes</title>
-      <link>/tags/source-themes/</link>
-      <pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/source-themes/</guid>
       <description></description>
     </item>
     

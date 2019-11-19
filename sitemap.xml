@@ -34,27 +34,72 @@
   
   <url>
     <loc>/authors/admin/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/asset-pricing/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/econometrics/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/finance/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/mathematical-finance/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/portfolio-optimisation-models/portfolio-allocation/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/portfolio-optimisation/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/quant-finance/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/time-series/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/yahoo-finance/</loc>
+    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -64,41 +109,6 @@
   
   <url>
     <loc>/tags/factor-models/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/finance/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/mathematical-finance/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/quant-finance/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/time-series/</loc>
-    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/yahoo-finance/</loc>
     <lastmod>2019-11-14T00:00:00+00:00</lastmod>
   </url>
   
@@ -238,12 +248,12 @@
   </url>
   
   <url>
-    <loc>/tags/aws/</loc>
+    <loc>/categories/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/aws/</loc>
+    <loc>/tags/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
@@ -285,31 +295,6 @@
   <url>
     <loc>/post/nvidia-share-price/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/publication_types/3/</loc>
-    <lastmod>2019-04-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/publication/preprint/</loc>
-    <lastmod>2019-04-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/publication_types/</loc>
-    <lastmod>2019-04-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/publication/</loc>
-    <lastmod>2019-04-07T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/source-themes/</loc>
-    <lastmod>2019-04-07T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -358,32 +343,15 @@
   </url>
   
   <url>
-    <loc>/publication_types/2/</loc>
-    <lastmod>2015-09-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/publication/journal-article/</loc>
-    <lastmod>2015-09-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/authors/robert-ford/</loc>
-    <lastmod>2015-09-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/publication_types/1/</loc>
-    <lastmod>2013-07-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/publication/conference-paper/</loc>
-    <lastmod>2013-07-01T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/courses/</loc>
+  </url>
+  
+  <url>
+    <loc>/publication_types/</loc>
+  </url>
+  
+  <url>
+    <loc>/publication/</loc>
   </url>
   
 </urlset>
