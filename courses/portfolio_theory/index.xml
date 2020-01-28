@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Overview | Matthew Smith R Shenanigans</title>
+    <link>/courses/portfolio_theory/</link>
+      <atom:link href="/courses/portfolio_theory/index.xml" rel="self" type="application/rss+xml" />
+    <description>Overview</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 09 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/icon-192.png</url>
+      <title>Overview</title>
+      <link>/courses/portfolio_theory/</link>
+    </image>
+    
+    <item>
+      <title>Market Efficiency</title>
+      <link>/courses/portfolio_theory/chap1/</link>
+      <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      <guid>/courses/portfolio_theory/chap1/</guid>
+      <description>
+
+&lt;div id=&#34;TOC&#34;&gt;
+true
+&lt;/div&gt;
+
+&lt;div id=&#34;introduction-to-efficient-markets&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction to efficient markets&lt;/h2&gt;
+&lt;p&gt;Each market participant participant has differing views on what data is telling them. The market is thus a weighted average of investor views. In &lt;em&gt;efficient markets&lt;/em&gt; all relevant information is reflected in the current share price of a stock.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;citation&#34;&gt;Fama (&lt;a href=&#34;#ref-malkiel1970efficient&#34; role=&#34;doc-biblioref&#34;&gt;1970&lt;/a&gt;)&lt;/span&gt; suggested 3 types of market efficiency&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Weak form&lt;/em&gt;: In which the current market price reflects &lt;strong&gt;all information contained in past prices&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Semi-strong form&lt;/em&gt;: In which the current price reflects &lt;strong&gt;all publically avalable information&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Strong form&lt;/em&gt;: In which the current price relects &lt;strong&gt;all information, regardless of whether the information is public or not&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;random-walk&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Random Walk&lt;/h2&gt;
+&lt;p&gt;A random walk in the context of finance suggests that changes in stock prices have the same distribution and are independent of each other and thus past stock prices cannot be used to predict the future price or movement. That is, stock prices take a random and unpredictable path.&lt;/p&gt;
+&lt;p&gt;Let &lt;span class=&#34;math inline&#34;&gt;\(\epsilon_{t+1}\)&lt;/span&gt; be a sequence of independently and identically distributed (i.i.d) random variables with an expected value of 0. Then, &lt;span class=&#34;math inline&#34;&gt;\(P_{t+1} = P_{t} + \epsilon_{t+1}\)&lt;/span&gt; is a random walk and &lt;span class=&#34;math inline&#34;&gt;\(P_{t+1} = P_{t} + \mu + \epsilon_{t+1}\)&lt;/span&gt; is a random walk with a drift component &lt;span class=&#34;math inline&#34;&gt;\(\mu &amp;gt; 0\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Market efficiency implies that prices reflect all current available information. As new information is made public then prices will adjust accordingly. We cannot predict this new information but we can take expectations such that, &lt;span class=&#34;math inline&#34;&gt;\(E(P_{t+1}) = P_{t} + E(\epsilon_{t+1})\)&lt;/span&gt; where &lt;span class=&#34;math inline&#34;&gt;\(\epsilon_{t+1}\)&lt;/span&gt; is expected news about a given stock. The &lt;span class=&#34;math inline&#34;&gt;\(E(\epsilon_{t+1}) = 0\)&lt;/span&gt; so &lt;span class=&#34;math inline&#34;&gt;\(E(P_{t+1}) = P_{t}\)&lt;/span&gt; but investors should obtain some compensation for bearing risk which is reflected in &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt;, therefore &lt;span class=&#34;math inline&#34;&gt;\(E(P_{t+1}) = P_{t} + \mu + E(\epsilon_{t+1})\)&lt;/span&gt; becomes &lt;span class=&#34;math inline&#34;&gt;\(E(P_{t+1}) = P_{t} + \mu\)&lt;/span&gt; with &lt;span class=&#34;math inline&#34;&gt;\(E(\epsilon_{t+1})\)&lt;/span&gt; = 0.&lt;/p&gt;
+&lt;p&gt;There are a few market phenomena that researchers and academics try to answer, the &lt;em&gt;value premium&lt;/em&gt; and &lt;em&gt;momentum premium&lt;/em&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Value&lt;/strong&gt;: &lt;span class=&#34;citation&#34;&gt;Fama and Blume (&lt;a href=&#34;#ref-fama1966filter&#34; role=&#34;doc-biblioref&#34;&gt;1966&lt;/a&gt;)&lt;/span&gt; and &lt;span class=&#34;citation&#34;&gt;Alexander (&lt;a href=&#34;#ref-alexander1961price&#34; role=&#34;doc-biblioref&#34;&gt;1961&lt;/a&gt;)&lt;/span&gt; studied that some strategies can make money when transaction costs are not accounted for. Empirical findings have found that &lt;em&gt;value&lt;/em&gt; stocks (stocks with a high &lt;strong&gt;book-to-market&lt;/strong&gt; ratio) outperform &lt;em&gt;growth&lt;/em&gt; stocks (stocks with a low &lt;strong&gt;book-to-market&lt;/strong&gt; ratio) &lt;span class=&#34;citation&#34;&gt;Fama and French (&lt;a href=&#34;#ref-fama1992cross&#34; role=&#34;doc-biblioref&#34;&gt;1992&lt;/a&gt;)&lt;/span&gt;. Tech stocks are usually &lt;em&gt;growth&lt;/em&gt; stocks and have a low &lt;strong&gt;book value&lt;/strong&gt; since much of their value is in interlectual property and not in industrial/manufacturing plants, thus they have a lower relative &lt;strong&gt;book value&lt;/strong&gt; compared to their &lt;strong&gt;market value&lt;/strong&gt;. &lt;em&gt;Value&lt;/em&gt; stocks have a high book value relative to market value and would be manufacturing plants with large &lt;em&gt;fixed assets&lt;/em&gt; pushing the &lt;em&gt;book value&lt;/em&gt; up.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;Momentum&lt;/strong&gt;: Past winners outperform past losers over a time period of 3 - 12 months &lt;span class=&#34;citation&#34;&gt;Wermers (&lt;a href=&#34;#ref-wermers1997momentum&#34; role=&#34;doc-biblioref&#34;&gt;1997&lt;/a&gt;)&lt;/span&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Both premiums imply that markets are inefficient. Not all stocks are correctly priced all the time. Some stocks are overpriced whilst other stocks are underpriced, however on average stocks are correctly priced.&lt;/p&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-alexander1961price&#34;&gt;
+&lt;p&gt;Alexander, Sidney S. 1961. “Price Movements in Speculative Markets: Trends or Random Walks.” &lt;em&gt;Industrial Management Review (Pre-1986)&lt;/em&gt; 2 (2): 7.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-malkiel1970efficient&#34;&gt;
+&lt;p&gt;Fama, Eugene F. 1970. “Efficient Capital Markets: A Review of Theory and Empirical Work.” &lt;em&gt;The Journal of Finance&lt;/em&gt; 25 (2): 383–417.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-fama1966filter&#34;&gt;
+&lt;p&gt;Fama, Eugene F, and Marshall E Blume. 1966. “Filter Rules and Stock-Market Trading.” &lt;em&gt;The Journal of Business&lt;/em&gt; 39 (1): 226–41.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-fama1992cross&#34;&gt;
+&lt;p&gt;Fama, Eugene F, and Kenneth R French. 1992. “The Cross-Section of Expected Stock Returns.” &lt;em&gt;The Journal of Finance&lt;/em&gt; 47 (2): 427–65.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ref-wermers1997momentum&#34;&gt;
+&lt;p&gt;Wermers, Russ. 1997. “Momentum Investment Strategies of Mutual Funds, Performance Persistence, and Survivorship Bias.” &lt;em&gt;Unpublished Working Paper, University of Colorado,[downloaded from Http://Bus. Colorado. Edu/Faculty/Wermers/.]&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

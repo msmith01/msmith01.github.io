@@ -5,7 +5,7 @@
     <link>/categories/econometrics/</link>
       <atom:link href="/categories/econometrics/index.xml" rel="self" type="application/rss+xml" />
     <description>Econometrics</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 18 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 27 Jan 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
       <title>Econometrics</title>
@@ -13,114 +13,2959 @@
     </image>
     
     <item>
-      <title>Portfolio Allocation Optimisation</title>
-      <link>/post/portfolio-optimisation-models/portfolio-allocation/</link>
-      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/post/portfolio-optimisation-models/portfolio-allocation/</guid>
+      <title>Quantitative Analytics: Optimal Portfolio Allocation</title>
+      <link>/post/portfolio-optimisation-model/portfolio-optimisation-r/</link>
+      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/post/portfolio-optimisation-model/portfolio-optimisation-r/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
-&lt;p&gt;I construct a series of portfolio optimisation models and analyse the results.&lt;/p&gt;
-&lt;div id=&#34;minimum-variance-portfolio&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Minimum-Variance Portfolio&lt;/h3&gt;
-&lt;p&gt;The global minimum-variance portfolio &lt;span class=&#34;math inline&#34;&gt;\(w^{gmv}\)&lt;/span&gt; is a portfolio of assets with gives us the lowest possible return variance.&lt;/p&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level1 tabset tabset-fade tabset-pills&#34;&gt;
+&lt;h1&gt;Introduction:&lt;/h1&gt;
+&lt;p&gt;The literature in portfolio optimisation has been around for decades. In this post I cover a number of traditional portfolio optimisation models. The general aim is to select a portfolio of assets out of a set of all possible portfolios being considered with a defined objective function.&lt;/p&gt;
+&lt;div id=&#34;the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The data:&lt;/h2&gt;
+&lt;p&gt;The data is collected using the &lt;code&gt;tidyquant()&lt;/code&gt; package’s &lt;code&gt;tq_get()&lt;/code&gt; function. I then convert the daily asset prices to daily log returns using the &lt;code&gt;periodReturn&lt;/code&gt; function from the &lt;code&gt;quantmod()&lt;/code&gt; package. Next I construct &lt;code&gt;lists&lt;/code&gt; of 6 months worth of daily returns using the &lt;code&gt;rolling_origin()&lt;/code&gt; function from the &lt;code&gt;rsample()&lt;/code&gt; package. The objective is to compute on a rolling basis the 6 month mean returns &lt;code&gt;mus&lt;/code&gt; and the 6 month covariance matrices &lt;code&gt;Sigmas&lt;/code&gt; on the training sets (i.e. 6 months) and apply them on the test sets (i.e. 1 month later) - monthly rebalancing.&lt;/p&gt;
+&lt;p&gt;Just as with the returns data, the same is applied to the monthly prices data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;start_date &amp;lt;- &amp;quot;2013-01-01&amp;quot;
+end_date &amp;lt;- &amp;quot;2017-08-31&amp;quot;
+symbols &amp;lt;- c(&amp;quot;AAPL&amp;quot;, &amp;quot;ABBV&amp;quot;, &amp;quot;A&amp;quot;,  &amp;quot;APD&amp;quot;, &amp;quot;AA&amp;quot;, &amp;quot;CF&amp;quot;, &amp;quot;NVDA&amp;quot;, &amp;quot;HOG&amp;quot;, &amp;quot;WMT&amp;quot;, &amp;quot;AMZN&amp;quot;
+            #,&amp;quot;MSFT&amp;quot;, &amp;quot;F&amp;quot;, &amp;quot;INTC&amp;quot;, &amp;quot;ADBE&amp;quot;, &amp;quot;AMG&amp;quot;, &amp;quot;AKAM&amp;quot;, &amp;quot;ALB&amp;quot;, &amp;quot;ALK&amp;quot;
+            )
+
+portfolio_prices &amp;lt;- tq_get(
+  symbols,
+  from = start_date,
+  to = end_date,
+) %&amp;gt;% 
+  select(symbol, date, adjusted)
+
+
+portfolio_monthly_returns &amp;lt;- portfolio_prices %&amp;gt;% 
+  group_by(symbol) %&amp;gt;% 
+  tq_transmute(
+    select = adjusted,
+    mutate_fun = periodReturn,
+    period = &amp;quot;daily&amp;quot;,                              
+    type = &amp;quot;log&amp;quot;,
+  ) %&amp;gt;% 
+  pivot_wider(names_from = symbol, values_from = daily.returns) %&amp;gt;% 
+  mutate(year_month = yearmonth(date)) %&amp;gt;% 
+  nest(-year_month) %&amp;gt;% 
+  rolling_origin(
+    initial = 6,
+    assess = 1,
+    skip = 0,
+    cumulative = FALSE)
+
+
+portfolio_monthly_prices &amp;lt;- portfolio_prices %&amp;gt;%
+  pivot_wider(names_from = symbol, values_from = adjusted) %&amp;gt;% 
+  mutate(year_month = yearmonth(date)) %&amp;gt;% 
+  nest(-year_month) %&amp;gt;% 
+  rolling_origin(
+    initial = 6,
+    assess = 1,
+    skip = 0,
+    cumulative = FALSE)
+
+ListNamesDates &amp;lt;- map(portfolio_monthly_returns$splits, ~assessment(.x) %&amp;gt;%
+                        select(year_month)) %&amp;gt;%
+  plyr::ldply(., data.frame) %&amp;gt;% 
+  pull(year_month)
+
+#########
+
+# Goal is to define the mean and covariance matrix on the training sets and apply them on the test sets - monthly rebalancing
+
+mus &amp;lt;- map(portfolio_monthly_returns$splits, ~ analysis(.x) %&amp;gt;% 
+             unnest(data) %&amp;gt;%
+             select(-year_month, -date) %&amp;gt;%
+             colMeans) %&amp;gt;%
+  setNames(c(ListNamesDates))
+
+Sigmas &amp;lt;- map(portfolio_monthly_returns$splits, ~ analysis(.x) %&amp;gt;%
+                unnest() %&amp;gt;%
+                tk_xts(., date_var = date) %&amp;gt;%
+                cov(.)) %&amp;gt;% 
+  setNames(c(ListNamesDates))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;price-and-returns-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Price and Returns data&lt;/h2&gt;
+&lt;p&gt;The returns data for the first &lt;code&gt;split&lt;/code&gt; looks like the following:&lt;/p&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+ABBV
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+A
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+APD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+CF
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+HOG
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMZN
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.012702708
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.008291331
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.003575412
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0035002417
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.008859253
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.004740086
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0007860485
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.020819530
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0063746748
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0045367882
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.028249939
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.012713395
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.019555411
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0133515376
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.020731797
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.022151612
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0324601827
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.005529864
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0037720098
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0025886574
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.005899428
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.002033327
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.007259372
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0009230752
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.017429792
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.003753198
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0293228286
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.006958715
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0096029606
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0352948721
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.002687379
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.022004791
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.008022622
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0018451781
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.014768451
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0221704307
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.003063936
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0027737202
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0077780140
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.015752246
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.005620792
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.026649604
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0133906716
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.002200109
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.034376015
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0226730363
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.038724890
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0002916231
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0001126237
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-statistics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The statistics&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;Mus&lt;/code&gt; (mean returns) data looks like:&lt;/p&gt;
+&lt;table class=&#34;kable_wrapper table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+x
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AAPL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0025241
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ABBV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0014847
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0002314
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+APD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0006546
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0010700
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CF
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0013681
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NVDA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0008864
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HOG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0008061
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+WMT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0006895
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AMZN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0006147
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The &lt;code&gt;Sigmas&lt;/code&gt; (covariance matrix) data looks like:&lt;/p&gt;
+&lt;table class=&#34;kable_wrapper table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+ABBV
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+A
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+APD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+CF
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+HOG
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMZN
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AAPL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0004166
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000220
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000112
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000388
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000528
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000277
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000408
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000116
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000038
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000366
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ABBV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000220
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0003128
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000490
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000393
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000137
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000472
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000511
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000732
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000258
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000295
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000112
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000490
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0002061
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000720
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000741
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000885
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000930
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0001175
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000371
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0001139
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+APD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000388
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000393
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000720
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000993
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000523
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000687
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000578
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000744
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000107
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000511
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000528
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000137
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000741
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000523
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0001485
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000874
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000685
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000674
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000012
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000383
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CF
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000277
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000472
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000885
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000687
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000874
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0002271
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000706
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000900
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000112
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000606
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NVDA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000408
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000511
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000930
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000578
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000685
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000706
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0002092
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000706
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000127
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000853
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HOG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000116
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000732
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0001175
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000744
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000674
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000900
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000706
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0002393
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000214
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000895
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+WMT
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000038
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000258
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000371
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000107
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000012
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000112
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000127
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000214
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000682
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000236
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AMZN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000366
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000295
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0001139
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000511
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000383
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000606
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000853
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000895
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000236
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0003118
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;comparing-portfolio-optimisation&#34; class=&#34;section level1 tabset tabset-fade tabset-pills&#34;&gt;
+&lt;h1&gt;Comparing Portfolio Optimisation&lt;/h1&gt;
+&lt;div id=&#34;global-minimum-variance-portfolio&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Global Minimum Variance Portfolio&lt;/h2&gt;
+&lt;p&gt;The global minimum-variance portfolio &lt;span class=&#34;math inline&#34;&gt;\(w^{gmv}\)&lt;/span&gt; is a portfolio of assets with gives us the lowest possible return variance or portfolio volatility. Volatility here is used as a replacement for risk, thus with less variance in volatility correlates to less risk in an asset. The portfolio focuses only on risk and ignores expected returns.&lt;/p&gt;
 &lt;p&gt;The objective function is;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\begin{eqnarray} \min_{w} \sum_{m,n = 1}^k \dfrac{1}{2} W_{m}W_{n} \Sigma_{mn} \\ \text{subject to } \sum_{n = 1}^k w_{n} = 1 \end{eqnarray}\]&lt;/span&gt;
-Where &lt;span class=&#34;math inline&#34;&gt;\(\Sigma{mn}\)&lt;/span&gt; is the variance covariance matrix.&lt;/p&gt;
-&lt;p&gt;We set the lagrangian function up using the objective function and the constraints.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\mathcal{L} = \dfrac{1}{2} W_{m}W_{n} \Sigma_{mn} - \lambda[\sum_{m,n = 1}^k w_{n} - 1]\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Taking the derivatives of the lagrangian function:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{1}} = \sum_{n = 1}^k \Sigma_{1n}w_{n} - \lambda = 0\]&lt;/span&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{2}} = \sum_{n = 1}^k \Sigma_{2n}w_{n} - \lambda = 0\]&lt;/span&gt;
-We do this up to &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt; assets.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{k}} = \sum_{n = 1}^k \Sigma_{kn}w_{n} - \lambda = 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;And finally take the derivative with respect to the lagrange.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial \lambda} = \sum_{n = 1}^kw_{n} -1 = 0\]&lt;/span&gt;&lt;/p&gt;
-$$
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; Var &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Cov &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Mat &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; 1 &amp;amp; ...&amp;amp; 1 &amp;amp; 0 \\
-\end{bmatrix}\]&lt;/span&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\begin{eqnarray} \min_{w} w^{T} \Sigma w \\
+\text{subject to } 1^{T}w = 1 \\
+w \ge 0 \end{eqnarray}\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Since &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; is unknown we can estimate it as &lt;span class=&#34;math inline&#34;&gt;\(\hat{\Sigma}\)&lt;/span&gt; with the covariance matrix. In which the convex solution becomes:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[W = \dfrac{1}{1^{T}\hat{\Sigma}^{-1}1}\hat{\Sigma}^{-1}1\]&lt;/span&gt;
+The objective is that we want to find the optimial weights from the model such that our risk is minimised.&lt;/p&gt;
+&lt;p&gt;The below problem consists of our &lt;span class=&#34;math inline&#34;&gt;\(Minimisation\)&lt;/span&gt; problem &lt;span class=&#34;math inline&#34;&gt;\(\min_{w} w^{T} \Sigma w\)&lt;/span&gt;. The &lt;code&gt;quad_form&lt;/code&gt; function takes the quadratic form &lt;span class=&#34;math inline&#34;&gt;\(x^T Px\)&lt;/span&gt; where &lt;span class=&#34;math inline&#34;&gt;\(x\)&lt;/span&gt; is a vector and &lt;span class=&#34;math inline&#34;&gt;\(P\)&lt;/span&gt; is a matrix or in our case &lt;span class=&#34;math inline&#34;&gt;\(w\)&lt;/span&gt; is our weights vector and &lt;span class=&#34;math inline&#34;&gt;\(\Sigma\)&lt;/span&gt; is the covariance matrix for &lt;span class=&#34;math inline&#34;&gt;\(A_{1}, \dots, A_{5}\)&lt;/span&gt;. The &lt;code&gt;constraints&lt;/code&gt; correspond to &lt;span class=&#34;math inline&#34;&gt;\(1^{T}w = 1\)&lt;/span&gt; in which we cannot assign negative weights to our assets and that we invest all our capital in the portfolio.&lt;/p&gt;
+&lt;p&gt;We can use the Disciplined Convex Programming (&lt;code&gt;CVXR&lt;/code&gt;) package in R, which;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Analyses the problem,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Verifies the convexity,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Converts the problem into canonical form,&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Solves the problem.&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;\begin{bmatrix}
-w_{1} \
-… \
-… \
-… \
-w_{k} \
+&lt;p&gt;We want to find the optimial weights from the model such that our risk is minimised. We can do this by solving the optimisation problem, bind the lists into a single data frame and use &lt;code&gt;ggplot2&lt;/code&gt; to plot the rolling one month out of sample optimal portfolio weights - based on the previous 6 months rolled &lt;code&gt;mus&lt;/code&gt; and &lt;code&gt;Sigmas&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 1) Function: Global Minimum Variance Portfolio
+GMVPportolioFunction &amp;lt;- function(Sigma) {
+  w &amp;lt;- Variable(nrow(Sigma))
+  problem &amp;lt;- Problem(               # Initialise the problem
+    Minimize(                       # minimse or maximise objective function
+      quad_form(
+        w, Sigma                    # Model inputs, the number of weights to consider and the covariance matrix
+        )
+      ), 
+    constraints = list(
+      w &amp;gt;= 0,                       # First model constraint
+      sum(w) == 1))                 # Second model constrain
+  Solution &amp;lt;- solve(problem, solver=&amp;quot;SCS&amp;quot;)        # Solves the problem
+  return(as.vector(Solution$getValue(w)))
+}
 
-\end{bmatrix}&lt;/p&gt;
-&lt;p&gt;=&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-0 \\
-... \\
-... \\
-... \\
-0 \\
-1
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;Which represents the variance covariance of the assets. If we can invert the first matrix then we have a solution to the system.&lt;/p&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;\begin{bmatrix}
-w_{1} \
-… \
-… \
-… \
-w_{k} \
+# 1a) Portfolio GMVP
+GMVPPortfolio &amp;lt;- map(
+  .x = Sigmas,
+  GMVPportolioFunction)
 
-\end{bmatrix}&lt;/p&gt;
-&lt;p&gt;=&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; Var &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Cov &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Mat &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; 1 &amp;amp; ...&amp;amp; 1 &amp;amp; 0 \\
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;^{-1}&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-0 \\
-... \\
-... \\
-... \\
-0 \\
+# 1b) Portfolio GMVP
+GMVPPortfolioWeights &amp;lt;- setNames(GMVPPortfolio, ListNamesDates) %&amp;gt;% 
+  map(.,  ~setNames(., c(symbols))) %&amp;gt;% 
+  map_dfr(., ~bind_rows(.), .id = &amp;quot;date&amp;quot;) %&amp;gt;% 
+  mutate(date = as.Date(paste(date, &amp;quot;01&amp;quot;), format = &amp;quot;%Y %b %d&amp;quot;))
+
+GMVPPortfolioWeights %&amp;gt;%
+  head() %&amp;gt;% 
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+ABBV
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+A
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+APD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+CF
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+HOG
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMZN
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-07-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0600839
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0335474
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1487696
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1258907
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0727920
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0095631
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5208891
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0284642
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-08-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1046817
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0404000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000009
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0917765
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1592918
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0299729
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0364528
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5374240
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000007
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-09-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1183896
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000005
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000006
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0844454
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1683526
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0246106
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0635569
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000002
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5406430
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000004
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-10-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0975699
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0024139
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0742437
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1166939
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0431297
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0968248
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5691241
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-11-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1480922
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000003
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0620407
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0449223
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000003
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0279869
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1613035
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0376022
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5014187
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0166323
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-12-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1135468
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000007
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0678773
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0560224
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000005
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0062812
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1195510
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0779063
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5588149
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000001
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 1c) Portfolio GMVP
+GMVPPortfolioWeights %&amp;gt;% 
+  select(date, everything()) %&amp;gt;% 
+  pivot_longer(cols = 2:ncol(.), values_to = &amp;quot;weights&amp;quot;) %&amp;gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &amp;quot;stack&amp;quot;, stat = &amp;quot;identity&amp;quot;, width = 100) +
+  scale_fill_viridis(option = &amp;quot;magma&amp;quot;, discrete = TRUE, name = &amp;quot;Asset&amp;quot;) +
+  theme_bw() +
+  ggtitle(&amp;quot;GMVP Rolling Portfolio Adjustments&amp;quot;) +
+  xlab(&amp;quot;Date&amp;quot;) +
+  ylab(&amp;quot;Weights&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;markowitz-portfolio&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Markowitz Portfolio&lt;/h2&gt;
+&lt;p&gt;The Markowitz Mean-Variance Portfolio is constructed as follows:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\begin{eqnarray} \max_{w} \mu^{T}w - \lambda w^{T}\Sigma w \\
+\text{subject to } 1^{T}w = 1 \\
+w \ge 0 \end{eqnarray}\]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;We can set different risk parameters by adjusting &lt;span class=&#34;math inline&#34;&gt;\(\lambda\)&lt;/span&gt; and see how the returns are affected. This can be done by running multiple optimisation problems on the data with different &lt;span class=&#34;math inline&#34;&gt;\(\lambda\)&lt;/span&gt; values. Higher &lt;span class=&#34;math inline&#34;&gt;\(\lambda\)&lt;/span&gt; values places emphasis on the right hand side of the equation and thus the more risk adverse the investor is.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 2) Function: Markowitz Portfolio
+MarkowitzportolioFunction &amp;lt;- function(mu, Sigma, lmd) {
+  w &amp;lt;- Variable(nrow(Sigma))
+  problem &amp;lt;- Problem(
+    Maximize(t(mu) %*% w - lmd*quad_form(w, Sigma)),
+    constraints = list(
+      w &amp;gt;= 0, 
+      sum(w) == 1)
+  )
+  Solution &amp;lt;- solve(problem)
+  return(as.vector(Solution$getValue(w)))
+}
+
+# 2a) Portfolio Markowitz
+lmd &amp;lt;- c(0.25, 0.5, 0.75)
+MarkowitzPortfolio &amp;lt;- map(lmd,
+                          ~map2(
+                            .x = mus,
+                            .y = Sigmas,
+                            MarkowitzportolioFunction, lmd = .x))
+
+# 2b) Portfolio Markowitz
+MarkowitzPortfolioWeights &amp;lt;- setNames(MarkowitzPortfolio, lmd) %&amp;gt;% 
+  map(., ~setNames(., c(ListNamesDates))) %&amp;gt;% 
+  map(., ~map(., ~setNames(., c(symbols)))) %&amp;gt;% 
+  map(., ~map_dfr(., ~bind_rows(.), .id = &amp;quot;date&amp;quot;)) %&amp;gt;% 
+  map_dfr(., ~bind_rows(.), .id = &amp;quot;lambda&amp;quot;) %&amp;gt;% 
+  mutate(date = as.Date(paste(date, &amp;quot;01&amp;quot;), format = &amp;quot;%Y %b %d&amp;quot;))
+
+MarkowitzPortfolioWeights %&amp;gt;%
+  head() %&amp;gt;% 
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+lambda
+&lt;/th&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+ABBV
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+A
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+APD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+CF
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+HOG
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMZN
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-07-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-08-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2938168
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7061832
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-09-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-10-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000001
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9999984
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000004
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000001
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-11-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
 1
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;Which gives us the unique solution to the optimisation of the minimum variance portfolio problem.&lt;/p&gt;
-&lt;p&gt;Taking a simple 2 asset example:&lt;/p&gt;
-&lt;p&gt;Suppse we have 2 risky assets which give expected returns and subsequent variance&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(E(R_{A}) = 20\%\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma_{A} = 10\%\)&lt;/span&gt;
-&lt;span class=&#34;math inline&#34;&gt;\(E(R_{B}) = 30\%\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma_{B} = 20\%\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Where both assets have a correlation of &lt;span class=&#34;math inline&#34;&gt;\(\rho_{AB} = 0.4\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;The objective is to find the expected return and volatility of the minimum variance portfolio such that;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\sigma^2 = \sigma_{A}^2 (W_{A})^2 + \sigma_{B}^2(W_{B})^2 + 2\sigma_{A}\sigma_{B}W_{A}W_{B}\rho_{AB}\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Where;
-&lt;span class=&#34;math display&#34;&gt;\[\sum w_{A} + w_{B} = 1\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \sigma^2 = (0.1)^2w_{A}^2 + (0.2)^2(1-W_{A})^2 + 2(0.1)(0.2)w_{A}(1-w_{A}(0.4)\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \sigma^2 = 0.034w_{A}^2 - 0.064W_{A} + 0.04\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \sigma^2} {\partial w_{A}} = 0.068w_{A} - 0.064 = 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[w_{A} = 0.94\]&lt;/span&gt;
-&lt;span class=&#34;math display&#34;&gt;\[w_{B} = 1 - 0.94 = 0.06\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;We check if the variance is the minimum by taking the second derivative.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial^2 \sigma^2} {\partial^2 w_{A}^2} = 0.068 &amp;gt; 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Therefore expected returns is cmputed as:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[E(R) = E(R_{A})w_{A} + E(R_{B})w_{B}\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[E(R) = (0.2)(0.94) + (0.3)(0.06) = 0.206\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;The variance is computed as:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\sigma^2 = 0.034(0.94)^2 - 0.064(0.94) + 0.04 = 0.00988\]&lt;/span&gt;
-To estimate the volatility we can take the square root of the variance.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \textrm{volatility} = \sqrt{\sigma^2} = 0.0994\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Therefore the portfolio has a &lt;span class=&#34;math inline&#34;&gt;\(9.94\%\)&lt;/span&gt; volatility and an expected return of &lt;span class=&#34;math inline&#34;&gt;\(20.6\%\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;We can solve this in R using:&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-12-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We can see how the risk and return is affected by the changes in the &lt;span class=&#34;math inline&#34;&gt;\(\lambda\)&lt;/span&gt; values in the following plot. As the &lt;span class=&#34;math inline&#34;&gt;\(\lambda\)&lt;/span&gt; values increase the less risk we take on but also we assume less returns. Low values of &lt;span class=&#34;math inline&#34;&gt;\(\lambda\)&lt;/span&gt; makes us invest in a signle asset with the weight on asset &lt;span class=&#34;math inline&#34;&gt;\(A_{5}\)&lt;/span&gt;, increasing the &lt;span class=&#34;math inline&#34;&gt;\(\lambda\)&lt;/span&gt; values increases the weights in other assets &lt;span class=&#34;math inline&#34;&gt;\(A_{i}\)&lt;/span&gt; spreading our risk.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 2c) Portfolio Markowitz
+MarkowitzPortfolioWeights %&amp;gt;% 
+  select(date, lambda, everything()) %&amp;gt;% 
+  pivot_longer(cols = 3:ncol(.), values_to = &amp;quot;weights&amp;quot;) %&amp;gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &amp;quot;stack&amp;quot;, stat = &amp;quot;identity&amp;quot;, width = 100) +
+  facet_wrap(~lambda, ncol = 1) +
+  scale_fill_viridis(option = &amp;quot;magma&amp;quot;, discrete = TRUE, name = &amp;quot;Asset&amp;quot;) +
+  theme_bw() +
+  ggtitle(&amp;quot;Markowitz Rolling Portfolio Adjustments&amp;quot;,
+          subtitle = &amp;quot;For different Lambda Risk Values&amp;quot;) +
+  xlab(&amp;quot;Date&amp;quot;) +
+  ylab(&amp;quot;Weights&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;max-sharpe-ratio&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Max Sharpe Ratio&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; I originally made this post a few months back and when I went back to it some of the parts for the Max-Sharpe Ratio portfolio did not work as before - I think this is due to the recent update in the &lt;code&gt;tidyr&lt;/code&gt; package. I made some minor adjustments, however this part of the post is incorrect (just look at the portfolio weights plot). I hightlight in the code when I made the minor adjustments - when I have the opportunity to go back through the code more carefully I will -&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 2) Function: Max Sharpe Ratio 
+#NOTE::: When we have all negative mus for a given month we obtain an NA value - the function 
+# cannot find a maximum when all mus are negative compare the MaxSharpePortfolio$`2015 Sep` and
+# MaxSharpePortfolio$`2015 Oct` along with the mus$`2015 Sep` and mus$`2015 Oct` we invests 99% of the portfolio
+# in Sept in ABBV since its positive. In Oct ABBV mu is negative and we cannot invest at all.
+# Increasing the universe of Assets may overcome this problem.
+MaxSharpeportolioFunction &amp;lt;- function(mu, Sigma) {
+  w &amp;lt;- Variable(nrow(Sigma))
+  problem &amp;lt;- Problem(
+    Minimize(quad_form(w, Sigma)),
+    constraints = list(
+      w &amp;gt;= 0, t(mu) %*% w == 1)
+  )
+  Solution &amp;lt;- solve(problem, solver=&amp;quot;SCS&amp;quot;)
+  return(as.vector(Solution$getValue(w)/sum(Solution$getValue(w))))
+}
+
+# 3a) Portfolio Max Sharpe Ratio                                 
+MaxSharpePortfolio &amp;lt;- purrr::map2(.x = mus,
+                                  .y = Sigmas,
+                                  .f = ~MaxSharpeportolioFunction(.x, .y))
+
+# 3b) Portfolio Max Sharpe Ratio
+  MaxSharpePortfolioWeights &amp;lt;- setNames(MaxSharpePortfolio, ListNamesDates) %&amp;gt;%
+    as_tibble(.) %&amp;gt;%               # Made an adjustment here
+    map(.,  ~setNames(., c(symbols))) %&amp;gt;% 
+    map_dfr(., ~bind_rows(.), .id = &amp;quot;date&amp;quot;) %&amp;gt;% 
+    mutate(date = as.Date(paste(date, &amp;quot;01&amp;quot;), format = &amp;quot;%Y %b %d&amp;quot;))
+
+MaxSharpePortfolioWeights %&amp;gt;%
+  head() %&amp;gt;% 
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+ABBV
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+A
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+APD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+CF
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+HOG
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMZN
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-07-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0149061
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2114414
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0113890
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2432642
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0390656
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0398034
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1473514
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0177759
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4853595
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-0.0000282
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-08-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1376876
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3329830
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1197141
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.4096154
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-09-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1217206
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1246626
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0087004
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3421645
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2414533
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0002820
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1610166
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-10-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0270424
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2268393
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3427932
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2653166
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1283026
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0097059
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-11-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2061378
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1890217
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2234738
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0533257
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3280410
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-12-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2252115
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0306324
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0724210
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0325000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0000000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1907157
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1192396
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3292797
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 3c) Portfolio Max Sharpe Ratio
+MaxSharpePortfolioWeights %&amp;gt;% 
+  select(date, everything()) %&amp;gt;%      # Made an adjustment here
+  pivot_longer(cols = 2:ncol(.), values_to = &amp;quot;weights&amp;quot;) %&amp;gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &amp;quot;stack&amp;quot;, stat = &amp;quot;identity&amp;quot;, width = 100) +
+  scale_fill_viridis(option = &amp;quot;magma&amp;quot;, discrete = TRUE, name = &amp;quot;Asset&amp;quot;) +
+  theme_bw() +
+  ggtitle(&amp;quot;Maximum Sharpe Ratio Rolling Portfolio Adjustments&amp;quot;) +
+  xlab(&amp;quot;Date&amp;quot;) +
+  ylab(&amp;quot;Weights&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mu-quintile-portfolio&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Mu Quintile Portfolio&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 1a)
+mu_quintiles &amp;lt;- map(mus, ~ntile(., 5) %&amp;gt;% 
+                      setNames(c(symbols))) %&amp;gt;% 
+  map(., ~sort(., decreasing = TRUE))
+
+# 2)       
+mu_diag_sigma &amp;lt;- map2(
+  .x = mus,
+  .y = Sigmas,
+  ~.x / diag(.y)) 
+
+mu_diag_sigma_quintiles &amp;lt;- mu_diag_sigma %&amp;gt;% 
+  map(., ~ntile(., 5)) %&amp;gt;% 
+  map(., ~setNames(., c(symbols))) %&amp;gt;% 
+  map(., ~sort(., decreasing = TRUE))
+
+# 1b) rank the quintiles by mu
+quintiles_mu &amp;lt;- map2(
+  .x = mus,
+  .y = mu_quintiles,
+  ~bind_rows(.x, .y))
+
+quintiles_mu_weights &amp;lt;- map(quintiles_mu, ~ .x %&amp;gt;%
+                              mutate_all(~ case_when(. %in% c(5, 1) ~ .5, 
+                                                     TRUE ~ 0)) %&amp;gt;%
+                              pmap_dfr(., ~ 
+                                         {v1 &amp;lt;- c(...)
+                                         v2 &amp;lt;- if(sum(v1) &amp;gt; 1) replace(v1, v1 != 0, 1/sum(v1!=0)) else v1
+                                         as.list(v2)}))
+
+
+quintiles_mu_weights &amp;lt;- map(quintiles_mu_weights, ~.x[-1,]) %&amp;gt;% 
+  map2(.x = quintiles_mu, .y = ., ~bind_rows(.x, .y))
+
+QuintileMuWeights &amp;lt;- map(quintiles_mu_weights, ~.x[3, ]) %&amp;gt;%  # The weights are stored in row 3.
+  map_dfr(., ~bind_rows(.), .id = &amp;quot;date&amp;quot;) %&amp;gt;% 
+  mutate(date = as.Date(paste(date, &amp;quot;01&amp;quot;), format = &amp;quot;%Y %b %d&amp;quot;))
+
+QuintileMuWeights %&amp;gt;%
+  head() %&amp;gt;% 
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+ABBV
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+A
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+APD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+CF
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+HOG
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMZN
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-07-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-08-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-09-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-10-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-11-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-12-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;QuintileMuWeights %&amp;gt;% 
+    select(date, everything()) %&amp;gt;%
+  pivot_longer(cols = 2:ncol(.), values_to = &amp;quot;weights&amp;quot;) %&amp;gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &amp;quot;stack&amp;quot;, stat = &amp;quot;identity&amp;quot;, width = 100) +
+  scale_fill_viridis(option = &amp;quot;magma&amp;quot;, discrete = TRUE, name = &amp;quot;Asset&amp;quot;) +
+  theme_bw() +
+  ggtitle(&amp;quot;Quintile MU Rolling Portfolio Adjustments&amp;quot;) +
+  xlab(&amp;quot;Date&amp;quot;) +
+  ylab(&amp;quot;Weights&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mu-diagsigma-portfolio&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Mu / Diag(Sigma) Portfolio&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 2a) 
+mu_diag_sigma &amp;lt;- map2(
+  .x = mus,
+  .y = Sigmas,
+  ~.x / diag(.y)) 
+
+mu_diag_sigma_quintiles &amp;lt;- mu_diag_sigma %&amp;gt;% 
+  map(., ~ntile(., 5)) %&amp;gt;% 
+  map(., ~setNames(., c(symbols))) %&amp;gt;% 
+  map(., ~sort(., decreasing = TRUE))
+
+# 2b) rank the quintiles by mu / diag(Sigma)
+quintiles_mu_diag_sigma &amp;lt;- map2(
+  .x = mu_diag_sigma,
+  .y = mu_diag_sigma_quintiles,
+  ~bind_rows(.x, .y))
+
+quintiles_mu_diag_sigma_weights &amp;lt;- map(quintiles_mu_diag_sigma, ~ .x %&amp;gt;%
+                                         mutate_all(~ case_when(. %in% c(5, 1) ~ .5, 
+                                                                TRUE ~ 0)) %&amp;gt;%
+                                         pmap_dfr(., ~ 
+                                                    {v1 &amp;lt;- c(...)
+                                                    v2 &amp;lt;- if(sum(v1) &amp;gt; 1) replace(v1, v1 != 0, 1/sum(v1!=0)) else v1
+                                                    as.list(v2)}))
+
+quintiles_mu_diag_sigma_weights &amp;lt;- map(quintiles_mu_diag_sigma_weights, ~.x[-1,]) %&amp;gt;% 
+  map2(.x = quintiles_mu_diag_sigma, .y = ., ~bind_rows(.x, .y))
+
+QuintileMuDiagSigmaWeights &amp;lt;- map(quintiles_mu_diag_sigma_weights, ~.x[3, ]) %&amp;gt;% # The weights are stored in row 3.
+  map_dfr(., ~bind_rows(.), .id = &amp;quot;date&amp;quot;) %&amp;gt;% 
+  mutate(date = as.Date(paste(date, &amp;quot;01&amp;quot;), format = &amp;quot;%Y %b %d&amp;quot;))
+
+QuintileMuDiagSigmaWeights %&amp;gt;%
+  head() %&amp;gt;% 
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+ABBV
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+A
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+APD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+CF
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+HOG
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMZN
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-07-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-08-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-09-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-10-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-11-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-12-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;QuintileMuDiagSigmaWeights %&amp;gt;% 
+  select(date, everything()) %&amp;gt;%
+  pivot_longer(cols = 2:ncol(.), values_to = &amp;quot;weights&amp;quot;) %&amp;gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &amp;quot;stack&amp;quot;, stat = &amp;quot;identity&amp;quot;, width = 100) +
+  scale_fill_viridis(option = &amp;quot;magma&amp;quot;, discrete = TRUE, name = &amp;quot;Asset&amp;quot;) +
+  theme_bw() +
+  ggtitle(&amp;quot;Quintile MU Diag Sigma Rolling Portfolio Adjustments&amp;quot;) +
+  xlab(&amp;quot;Date&amp;quot;) +
+  ylab(&amp;quot;Weights&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;mu-diagsqrtsigma-portfolio&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Mu / Diag(sqrt(Sigma)) Portfolio&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 3a)
+mu_diag_sqrt_sigma &amp;lt;- map2(
+  .x = mus,
+  .y = Sigmas,
+  ~.x / sqrt(diag(.y)))  
+
+mu_diag_sqrt_sigma_quintiles &amp;lt;- mu_diag_sqrt_sigma %&amp;gt;% 
+  map(., ~ntile(., 5)) %&amp;gt;% 
+  map(., ~setNames(., c(symbols))) %&amp;gt;% 
+  map(., ~sort(., decreasing = TRUE))
+
+# 3b) rank the quintiles by mu / sqrt(diag(sigma))
+
+quintiles_mu_diag_sqrt_sigma &amp;lt;- map2(
+  .x = mu_diag_sqrt_sigma,
+  .y = mu_diag_sqrt_sigma_quintiles,
+  ~bind_rows(.x, .y))
+
+quintiles_mu_diag_sqrt_sigma_weights &amp;lt;- map(quintiles_mu_diag_sqrt_sigma, ~ .x %&amp;gt;%
+                                         mutate_all(~ case_when(. %in% c(5, 1) ~ .5, 
+                                                                TRUE ~ 0)) %&amp;gt;%
+                                         pmap_dfr(., ~ 
+                                                    {v1 &amp;lt;- c(...)
+                                                    v2 &amp;lt;- if(sum(v1) &amp;gt; 1) replace(v1, v1 != 0, 1/sum(v1!=0)) else v1
+                                                    as.list(v2)}))
+
+quintiles_mu_diag_sqrt_sigma_weights &amp;lt;- map(quintiles_mu_diag_sqrt_sigma_weights, ~.x[-1,]) %&amp;gt;% 
+  map2(.x = quintiles_mu_diag_sqrt_sigma, .y = ., ~bind_rows(.x, .y))
+
+QuintileMuDiagSqrtSigmaWeights &amp;lt;- map(quintiles_mu_diag_sqrt_sigma_weights, ~.x[3, ]) %&amp;gt;% # The weights are stored in row 3.
+  map_dfr(., ~bind_rows(.), .id = &amp;quot;date&amp;quot;) %&amp;gt;% 
+  mutate(date = as.Date(paste(date, &amp;quot;01&amp;quot;), format = &amp;quot;%Y %b %d&amp;quot;))
+
+QuintileMuDiagSqrtSigmaWeights %&amp;gt;%
+  head() %&amp;gt;% 
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+date
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+ABBV
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+A
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+APD
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+CF
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+NVDA
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+HOG
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AMZN
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-07-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-08-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-09-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-10-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-11-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-12-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.25
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;QuintileMuDiagSqrtSigmaWeights %&amp;gt;% 
+  select(date, everything()) %&amp;gt;%
+  pivot_longer(cols = 2:ncol(.), values_to = &amp;quot;weights&amp;quot;) %&amp;gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &amp;quot;stack&amp;quot;, stat = &amp;quot;identity&amp;quot;, width = 100) +
+  scale_fill_viridis(option = &amp;quot;magma&amp;quot;, discrete = TRUE, name = &amp;quot;Asset&amp;quot;) +
+  theme_bw() +
+  ggtitle(&amp;quot;Quintile MU Diag Sqrt(Sigma) Rolling Portfolio Adjustments&amp;quot;) +
+  xlab(&amp;quot;Date&amp;quot;) +
+  ylab(&amp;quot;Weights&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;analysis-of-results&#34; class=&#34;section level1 tabset tabset-fade tabset-pills&#34;&gt;
+&lt;h1&gt;Analysis of Results&lt;/h1&gt;
+&lt;p&gt;There are 8 different portfolio optimisation models. Putting all the data together, it’s easier to inspect the results.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;############################# Assess the Returns ##################################
+MonthlyReturns &amp;lt;- map(portfolio_monthly_prices$splits, ~assessment(.x)) %&amp;gt;% 
+  map(., ~unnest(.x, data) %&amp;gt;% 
+        select(-year_month) %&amp;gt;% 
+        tk_xts(date_var = date) %&amp;gt;% 
+        lapply(., periodReturn, period = &amp;quot;monthly&amp;quot;)) %&amp;gt;% 
+  setNames(., ListNamesDates) %&amp;gt;% 
+  map(., ~data.frame(.)) %&amp;gt;% 
+  bind_rows(., .id = &amp;quot;date&amp;quot;) %&amp;gt;% 
+  mutate(date = as.Date(paste(date, &amp;quot;01&amp;quot;), format = &amp;quot;%Y %b %d&amp;quot;)) %&amp;gt;% 
+  tk_xts(., date_var = date)
+
+############# Assess the Monthly Portfolio Returns Depeninding on Weights #########
+
+# 1d)
+TS_GMVPPortfolioWeights &amp;lt;- GMVPPortfolioWeights %&amp;gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_GMVP &amp;lt;- Return.portfolio(MonthlyReturns, weights = TS_GMVPPortfolioWeights) %&amp;gt;% 
+  setNames(c(&amp;quot;GMVP&amp;quot;))
+
+
+# 2d)
+TS_MarkowitzPortfolioWeights &amp;lt;- MarkowitzPortfolioWeights %&amp;gt;% 
+  group_split(lambda) %&amp;gt;% 
+  setNames(c(lmd)) %&amp;gt;% 
+  map(., ~tk_xts(., select = -lambda, date_var = date))
+
+MarkowitzWeightedPortfolioReturnsFunction &amp;lt;- function(lmd){
+  WeightedReturns = Return.portfolio(MonthlyReturns, weights = TS_MarkowitzPortfolioWeights[[lmd]])
+  return(fortify.zoo(WeightedReturns))
+}
+
+PortRets_Markowitz &amp;lt;- lapply(seq(1:length(lmd)), MarkowitzWeightedPortfolioReturnsFunction) %&amp;gt;% 
+  setNames(c(lmd)) %&amp;gt;%
+  bind_rows(., .id = &amp;quot;lmd&amp;quot;) %&amp;gt;% 
+  #column_to_rownames(&amp;quot;Index&amp;quot;) %&amp;gt;% 
+  #select(-matches(&amp;quot;Index&amp;quot;)) %&amp;gt;% 
+  #rownames_to_column(&amp;quot;Index&amp;quot;) %&amp;gt;% 
+  mutate(Index = as.Date(Index),
+         lmd = as.numeric(lmd)) %&amp;gt;% 
+  pivot_wider(names_from = lmd, values_from = portfolio.returns) %&amp;gt;% 
+  tk_xts(date_var = Index) %&amp;gt;% 
+  setNames(c(paste(&amp;quot;Markowitz Lambda&amp;quot;, lmd)))
+
+# 3d)
+TS_MaxSharpePortfolioWeights &amp;lt;- MaxSharpePortfolioWeights %&amp;gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_MaxSharpe &amp;lt;- Return.portfolio(MonthlyReturns, weights = TS_MaxSharpePortfolioWeights) %&amp;gt;% 
+  setNames(c(&amp;quot;MaxSharpe&amp;quot;))
+
+
+# 4) quintile mu
+
+TS_QuintileMuWeights &amp;lt;- QuintileMuWeights %&amp;gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_Mu_Quintiles &amp;lt;- Return.portfolio(MonthlyReturns, weights = TS_QuintileMuWeights) %&amp;gt;% 
+  setNames(c(&amp;quot;Mu_Quintiles&amp;quot;))
+
+# 4) quintile mu diag sigma
+
+TS_QuintileMuDiagSigmaWeights &amp;lt;- QuintileMuDiagSigmaWeights %&amp;gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_MuDiagSigma_Quintiles &amp;lt;- Return.portfolio(MonthlyReturns, weights = TS_QuintileMuDiagSigmaWeights) %&amp;gt;% 
+  setNames(c(&amp;quot;MuDiagSigma_Quintiles&amp;quot;))
+
+# 4) Quintile mu diga sqrt sigma
+
+TS_QuintileMuDiagSqrtSigmaWeights &amp;lt;- QuintileMuDiagSqrtSigmaWeights %&amp;gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_MuDiagSqrtSigma_Quintiles &amp;lt;- Return.portfolio(MonthlyReturns, weights = TS_QuintileMuDiagSqrtSigmaWeights) %&amp;gt;% 
+  setNames(c(&amp;quot;MuDiagSqrtSigma_Quintiles&amp;quot;))
+
+#####################################################################################&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Looking at the plots the Global Minimum Variance Portfolio shows the lowest volatility in the portfolio returns. The Max Sharpe portfolio is clearly wrong here (see, previous point on Max Sharpe Ratio section). The annaulised performance metrics are also displayed at the bottom for each portfolio over the period.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;########## Assess the Annualised Returns based on portfolio weights ##################
+AllReturns &amp;lt;- cbind(PortRets_GMVP, PortRets_Markowitz, PortRets_MaxSharpe, PortRets_Mu_Quintiles,
+                    PortRets_MuDiagSigma_Quintiles, PortRets_MuDiagSqrtSigma_Quintiles)
+                    
+library(data.table)
+AllReturns %&amp;gt;%
+  data.table(keep.rownames = TRUE) %&amp;gt;%
+  as_tibble() %&amp;gt;% 
+  pivot_longer(cols = 2:ncol(.)) %&amp;gt;% 
+  ggplot(aes(x = index, y = value, color = name)) +
+  geom_line() +
+  facet_wrap(~name, ncol = 2) +
+  ggtitle(&amp;quot;Portfolio Returns&amp;quot;, subtitle = &amp;quot;With portfolio optimised weights&amp;quot;) +
+  xlab(&amp;quot;Returns&amp;quot;) +
+  ylab(&amp;quot;Date&amp;quot;) +
+  theme_tq()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;AnnualMetrics &amp;lt;- bind_cols(table.AnnualizedReturns(PortRets_GMVP) %&amp;gt;% 
+                          rownames_to_column(&amp;quot;Metric&amp;quot;),
+                        table.AnnualizedReturns(PortRets_Markowitz),
+                        table.AnnualizedReturns(PortRets_MaxSharpe),
+                        table.AnnualizedReturns(PortRets_Mu_Quintiles),
+                        table.AnnualizedReturns(PortRets_MuDiagSigma_Quintiles),
+                        table.AnnualizedReturns(PortRets_MuDiagSqrtSigma_Quintiles)
+                        )
+
+AnnualMetrics %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Metric
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+GMVP
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Markowitz Lambda 0.25
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Markowitz Lambda 0.5
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Markowitz Lambda 0.75
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MaxSharpe
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Mu_Quintiles
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MuDiagSigma_Quintiles
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MuDiagSqrtSigma_Quintiles
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Annualized Return
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1009
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8441
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8142
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7712
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0944
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1948
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2599
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.2700
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Annualized Std Dev
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1127
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3617
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3516
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.3353
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1364
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1806
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1492
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1541
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Annualized Sharpe (Rf=0%)
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8953
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.3340
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.3157
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+2.2999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6922
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0787
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.7420
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.7515
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Plotting the cumulative returns shows that the Markowitz lambda portfolios have the highest returns over the period, however they also have the highest standard deviation over the same period.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chart.CumReturns(AllReturns, main = &amp;quot;Weighted Returns by Objective Function and Risk Tolerance&amp;quot;,
+                 wealth.index = TRUE, legend.loc = &amp;quot;topleft&amp;quot;, colorset = rich6equal)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;charts.PerformanceSummary(AllReturns, main = &amp;quot;Performance for Different Weighted Assets&amp;quot;, 
+                          wealth.index = TRUE, colorset = rich6equal)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-20-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;additional&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Additional&lt;/h3&gt;
+&lt;p&gt;(Some additional test data I leave here for future reference)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data &amp;lt;- data.frame(
+  A_1 = c(2.3, 0.93, 0.62, 0.74, -0.23),
+  A_2 = c(0.93, 1.40, 0.2, 0.56, 0.26),
+  A_3 = c(0.62, 0.2, 1.80, 0.78, -0.27),
+  A_4 = c(0.74, 0.56, 0.78, 3.4, -0.56),
+  A_5 = c(-0.23, 0.26, -0.27, -0.56, 2.60),
+  Security = c(1, 2, 3, 4, 5),
+  R_i = c(15.1, 12.5, 14.7, 9.02, 17.68)
+)
+
+Sigma &amp;lt;- data[, 1:5]
+w &amp;lt;- Variable(nrow(data))
+mu &amp;lt;- data[, 7]
+n_samples = 10
+lambdas &amp;lt;- 10^seq(-2, 3, length.out = n_samples)
+
+ret_data &amp;lt;- rep(0, n_samples)
+risk_data &amp;lt;- rep(0, n_samples)
+w_data &amp;lt;- matrix(0, nrow = n_samples, ncol = nrow(data))
+
+for(i in seq_along(lambdas)) {
+  lambda &amp;lt;- lambdas[i]
+  problem &amp;lt;- Problem(
+    Maximize(
+      t(mu) %*% w - lambda*quad_form(w, Sigma)
+    ),
+    constraints = list(w &amp;gt;= 0, sum(w) == 1))
+  solution &amp;lt;- solve(problem)
+  w_data[i,] &amp;lt;- solution$getValue(w)
+  risk_data[i] &amp;lt;- solution$getValue(sqrt(quad_form(w, Sigma)))
+  ret_data[i] &amp;lt;- solution$getValue(t(mu) %*% w)
+}
+
+ggplot() +
+  geom_line(mapping = aes(x = risk_data, y = ret_data), color = &amp;quot;blue&amp;quot;) +
+  geom_point(mapping = aes(x = sqrt(diag(as.matrix(Sigma))), y = mu), color = &amp;quot;red&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-21-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>

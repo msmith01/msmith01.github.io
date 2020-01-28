@@ -5,7 +5,7 @@
     <link>/categories/</link>
       <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 18 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 27 Jan 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
       <title>Categories</title>
@@ -15,15 +15,55 @@
     <item>
       <title>Econometrics</title>
       <link>/categories/econometrics/</link>
-      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
       <guid>/categories/econometrics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Portfolio Optimisation</title>
+      <link>/categories/portfolio-optimisation/</link>
+      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/portfolio-optimisation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>algorithmic trading</title>
+      <link>/categories/algorithmic-trading/</link>
+      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
+      <guid>/categories/algorithmic-trading/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>systematic trading</title>
+      <link>/categories/systematic-trading/</link>
+      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
+      <guid>/categories/systematic-trading/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>technical trading</title>
+      <link>/categories/technical-trading/</link>
+      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
+      <guid>/categories/technical-trading/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Trading</title>
+      <link>/categories/trading/</link>
+      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
+      <guid>/categories/trading/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Mathematical Finance</title>
       <link>/categories/mathematical-finance/</link>
-      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
       <guid>/categories/mathematical-finance/</guid>
       <description></description>
     </item>
@@ -33,14 +73,6 @@
       <link>/categories/financial-time-series/</link>
       <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
       <guid>/categories/financial-time-series/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Trading</title>
-      <link>/categories/trading/</link>
-      <pubDate>Sun, 29 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/trading/</guid>
       <description></description>
     </item>
     

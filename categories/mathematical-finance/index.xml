@@ -5,125 +5,12 @@
     <link>/categories/mathematical-finance/</link>
       <atom:link href="/categories/mathematical-finance/index.xml" rel="self" type="application/rss+xml" />
     <description>Mathematical Finance</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 18 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Thu, 14 Nov 2019 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
       <title>Mathematical Finance</title>
       <link>/categories/mathematical-finance/</link>
     </image>
-    
-    <item>
-      <title>Portfolio Allocation Optimisation</title>
-      <link>/post/portfolio-optimisation-models/portfolio-allocation/</link>
-      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/post/portfolio-optimisation-models/portfolio-allocation/</guid>
-      <description>
-
-
-&lt;p&gt;I construct a series of portfolio optimisation models and analyse the results.&lt;/p&gt;
-&lt;div id=&#34;minimum-variance-portfolio&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Minimum-Variance Portfolio&lt;/h3&gt;
-&lt;p&gt;The global minimum-variance portfolio &lt;span class=&#34;math inline&#34;&gt;\(w^{gmv}\)&lt;/span&gt; is a portfolio of assets with gives us the lowest possible return variance.&lt;/p&gt;
-&lt;p&gt;The objective function is;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\begin{eqnarray} \min_{w} \sum_{m,n = 1}^k \dfrac{1}{2} W_{m}W_{n} \Sigma_{mn} \\ \text{subject to } \sum_{n = 1}^k w_{n} = 1 \end{eqnarray}\]&lt;/span&gt;
-Where &lt;span class=&#34;math inline&#34;&gt;\(\Sigma{mn}\)&lt;/span&gt; is the variance covariance matrix.&lt;/p&gt;
-&lt;p&gt;We set the lagrangian function up using the objective function and the constraints.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\mathcal{L} = \dfrac{1}{2} W_{m}W_{n} \Sigma_{mn} - \lambda[\sum_{m,n = 1}^k w_{n} - 1]\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Taking the derivatives of the lagrangian function:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{1}} = \sum_{n = 1}^k \Sigma_{1n}w_{n} - \lambda = 0\]&lt;/span&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{2}} = \sum_{n = 1}^k \Sigma_{2n}w_{n} - \lambda = 0\]&lt;/span&gt;
-We do this up to &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt; assets.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{k}} = \sum_{n = 1}^k \Sigma_{kn}w_{n} - \lambda = 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;And finally take the derivative with respect to the lagrange.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial \lambda} = \sum_{n = 1}^kw_{n} -1 = 0\]&lt;/span&gt;&lt;/p&gt;
-$$
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; Var &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Cov &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Mat &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; 1 &amp;amp; ...&amp;amp; 1 &amp;amp; 0 \\
-\end{bmatrix}\]&lt;/span&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;\begin{bmatrix}
-w_{1} \
-… \
-… \
-… \
-w_{k} \
-
-\end{bmatrix}&lt;/p&gt;
-&lt;p&gt;=&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-0 \\
-... \\
-... \\
-... \\
-0 \\
-1
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;Which represents the variance covariance of the assets. If we can invert the first matrix then we have a solution to the system.&lt;/p&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;\begin{bmatrix}
-w_{1} \
-… \
-… \
-… \
-w_{k} \
-
-\end{bmatrix}&lt;/p&gt;
-&lt;p&gt;=&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; Var &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Cov &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Mat &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; 1 &amp;amp; ...&amp;amp; 1 &amp;amp; 0 \\
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;^{-1}&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-0 \\
-... \\
-... \\
-... \\
-0 \\
-1
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;Which gives us the unique solution to the optimisation of the minimum variance portfolio problem.&lt;/p&gt;
-&lt;p&gt;Taking a simple 2 asset example:&lt;/p&gt;
-&lt;p&gt;Suppse we have 2 risky assets which give expected returns and subsequent variance&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(E(R_{A}) = 20\%\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma_{A} = 10\%\)&lt;/span&gt;
-&lt;span class=&#34;math inline&#34;&gt;\(E(R_{B}) = 30\%\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma_{B} = 20\%\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Where both assets have a correlation of &lt;span class=&#34;math inline&#34;&gt;\(\rho_{AB} = 0.4\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;The objective is to find the expected return and volatility of the minimum variance portfolio such that;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\sigma^2 = \sigma_{A}^2 (W_{A})^2 + \sigma_{B}^2(W_{B})^2 + 2\sigma_{A}\sigma_{B}W_{A}W_{B}\rho_{AB}\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Where;
-&lt;span class=&#34;math display&#34;&gt;\[\sum w_{A} + w_{B} = 1\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \sigma^2 = (0.1)^2w_{A}^2 + (0.2)^2(1-W_{A})^2 + 2(0.1)(0.2)w_{A}(1-w_{A}(0.4)\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \sigma^2 = 0.034w_{A}^2 - 0.064W_{A} + 0.04\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \sigma^2} {\partial w_{A}} = 0.068w_{A} - 0.064 = 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[w_{A} = 0.94\]&lt;/span&gt;
-&lt;span class=&#34;math display&#34;&gt;\[w_{B} = 1 - 0.94 = 0.06\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;We check if the variance is the minimum by taking the second derivative.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial^2 \sigma^2} {\partial^2 w_{A}^2} = 0.068 &amp;gt; 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Therefore expected returns is cmputed as:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[E(R) = E(R_{A})w_{A} + E(R_{B})w_{B}\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[E(R) = (0.2)(0.94) + (0.3)(0.06) = 0.206\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;The variance is computed as:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\sigma^2 = 0.034(0.94)^2 - 0.064(0.94) + 0.04 = 0.00988\]&lt;/span&gt;
-To estimate the volatility we can take the square root of the variance.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \textrm{volatility} = \sqrt{\sigma^2} = 0.0994\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Therefore the portfolio has a &lt;span class=&#34;math inline&#34;&gt;\(9.94\%\)&lt;/span&gt; volatility and an expected return of &lt;span class=&#34;math inline&#34;&gt;\(20.6\%\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;We can solve this in R using:&lt;/p&gt;
-&lt;/div&gt;
-</description>
-    </item>
     
     <item>
       <title>Factor Modeling in R</title>

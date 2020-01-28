@@ -1,0 +1,3923 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Matthew Smith">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="I cover a number of portfolio optimisation models using R from the literature.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/portfolio-optimisation-model/portfolio-optimisation-r/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#3f51b5">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.5949897e171a43c4edc8bc03336e8676.css">
+
+  
+
+  
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-151949400-1', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="https://www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/portfolio-optimisation-model/portfolio-optimisation-r/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@MatthewSmith786">
+  <meta property="twitter:creator" content="@MatthewSmith786">
+  
+  <meta property="og:site_name" content="Matthew Smith R Shenanigans">
+  <meta property="og:url" content="/post/portfolio-optimisation-model/portfolio-optimisation-r/">
+  <meta property="og:title" content="Quantitative Analytics: Optimal Portfolio Allocation | Matthew Smith R Shenanigans">
+  <meta property="og:description" content="I cover a number of portfolio optimisation models using R from the literature."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="twitter:image" content="/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2020-01-27T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2020-01-27T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/post/portfolio-optimisation-model/portfolio-optimisation-r/"
+  },
+  "headline": "Quantitative Analytics: Optimal Portfolio Allocation",
+  
+  "datePublished": "2020-01-27T00:00:00Z",
+  "dateModified": "2020-01-27T00:00:00Z",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Matthew Smith"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Matthew Smith R Shenanigans",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/img/icon-512.png"
+    }
+  },
+  "description": "I cover a number of portfolio optimisation models using R from the literature."
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Quantitative Analytics: Optimal Portfolio Allocation | Matthew Smith R Shenanigans</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Matthew Smith R Shenanigans</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/courses/"><span>Courses</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Quantitative Analytics: Optimal Portfolio Allocation</h1>
+
+  
+  <p class="page-subtitle">A number of portfolio optimisation models in R</p>
+  
+
+  
+    
+
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+
+
+  <span><a href="/authors/admin/">Matthew Smith</a></span>
+
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Jan 27, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    17 min read
+  </span>
+  
+
+  
+  
+  
+  <span class="middot-divider"></span>
+  <a href="/post/portfolio-optimisation-model/portfolio-optimisation-r/#disqus_thread"></a>
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/portfolio-optimisation/">Portfolio Optimisation</a>, <a href="/categories/econometrics/">Econometrics</a></span>
+  
+
+  
+    
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=/post/portfolio-optimisation-model/portfolio-optimisation-r/&amp;text=Quantitative%20Analytics:%20Optimal%20Portfolio%20Allocation" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=/post/portfolio-optimisation-model/portfolio-optimisation-r/&amp;t=Quantitative%20Analytics:%20Optimal%20Portfolio%20Allocation" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Quantitative%20Analytics:%20Optimal%20Portfolio%20Allocation&amp;body=/post/portfolio-optimisation-model/portfolio-optimisation-r/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=/post/portfolio-optimisation-model/portfolio-optimisation-r/&amp;title=Quantitative%20Analytics:%20Optimal%20Portfolio%20Allocation" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=Quantitative%20Analytics:%20Optimal%20Portfolio%20Allocation%20/post/portfolio-optimisation-model/portfolio-optimisation-r/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=/post/portfolio-optimisation-model/portfolio-optimisation-r/&amp;title=Quantitative%20Analytics:%20Optimal%20Portfolio%20Allocation" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="btn-links mb-3">
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<div id="introduction" class="section level1 tabset tabset-fade tabset-pills">
+<h1>Introduction:</h1>
+<p>The literature in portfolio optimisation has been around for decades. In this post I cover a number of traditional portfolio optimisation models. The general aim is to select a portfolio of assets out of a set of all possible portfolios being considered with a defined objective function.</p>
+<div id="the-data" class="section level2">
+<h2>The data:</h2>
+<p>The data is collected using the <code>tidyquant()</code> package’s <code>tq_get()</code> function. I then convert the daily asset prices to daily log returns using the <code>periodReturn</code> function from the <code>quantmod()</code> package. Next I construct <code>lists</code> of 6 months worth of daily returns using the <code>rolling_origin()</code> function from the <code>rsample()</code> package. The objective is to compute on a rolling basis the 6 month mean returns <code>mus</code> and the 6 month covariance matrices <code>Sigmas</code> on the training sets (i.e. 6 months) and apply them on the test sets (i.e. 1 month later) - monthly rebalancing.</p>
+<p>Just as with the returns data, the same is applied to the monthly prices data.</p>
+<pre class="r"><code>start_date &lt;- &quot;2013-01-01&quot;
+end_date &lt;- &quot;2017-08-31&quot;
+symbols &lt;- c(&quot;AAPL&quot;, &quot;ABBV&quot;, &quot;A&quot;,  &quot;APD&quot;, &quot;AA&quot;, &quot;CF&quot;, &quot;NVDA&quot;, &quot;HOG&quot;, &quot;WMT&quot;, &quot;AMZN&quot;
+            #,&quot;MSFT&quot;, &quot;F&quot;, &quot;INTC&quot;, &quot;ADBE&quot;, &quot;AMG&quot;, &quot;AKAM&quot;, &quot;ALB&quot;, &quot;ALK&quot;
+            )
+
+portfolio_prices &lt;- tq_get(
+  symbols,
+  from = start_date,
+  to = end_date,
+) %&gt;% 
+  select(symbol, date, adjusted)
+
+
+portfolio_monthly_returns &lt;- portfolio_prices %&gt;% 
+  group_by(symbol) %&gt;% 
+  tq_transmute(
+    select = adjusted,
+    mutate_fun = periodReturn,
+    period = &quot;daily&quot;,                              
+    type = &quot;log&quot;,
+  ) %&gt;% 
+  pivot_wider(names_from = symbol, values_from = daily.returns) %&gt;% 
+  mutate(year_month = yearmonth(date)) %&gt;% 
+  nest(-year_month) %&gt;% 
+  rolling_origin(
+    initial = 6,
+    assess = 1,
+    skip = 0,
+    cumulative = FALSE)
+
+
+portfolio_monthly_prices &lt;- portfolio_prices %&gt;%
+  pivot_wider(names_from = symbol, values_from = adjusted) %&gt;% 
+  mutate(year_month = yearmonth(date)) %&gt;% 
+  nest(-year_month) %&gt;% 
+  rolling_origin(
+    initial = 6,
+    assess = 1,
+    skip = 0,
+    cumulative = FALSE)
+
+ListNamesDates &lt;- map(portfolio_monthly_returns$splits, ~assessment(.x) %&gt;%
+                        select(year_month)) %&gt;%
+  plyr::ldply(., data.frame) %&gt;% 
+  pull(year_month)
+
+#########
+
+# Goal is to define the mean and covariance matrix on the training sets and apply them on the test sets - monthly rebalancing
+
+mus &lt;- map(portfolio_monthly_returns$splits, ~ analysis(.x) %&gt;% 
+             unnest(data) %&gt;%
+             select(-year_month, -date) %&gt;%
+             colMeans) %&gt;%
+  setNames(c(ListNamesDates))
+
+Sigmas &lt;- map(portfolio_monthly_returns$splits, ~ analysis(.x) %&gt;%
+                unnest() %&gt;%
+                tk_xts(., date_var = date) %&gt;%
+                cov(.)) %&gt;% 
+  setNames(c(ListNamesDates))</code></pre>
+</div>
+<div id="price-and-returns-data" class="section level2">
+<h2>Price and Returns data</h2>
+<p>The returns data for the first <code>split</code> looks like the following:</p>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;">
+AAPL
+</th>
+<th style="text-align:right;">
+ABBV
+</th>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+APD
+</th>
+<th style="text-align:right;">
+AA
+</th>
+<th style="text-align:right;">
+CF
+</th>
+<th style="text-align:right;">
+NVDA
+</th>
+<th style="text-align:right;">
+HOG
+</th>
+<th style="text-align:right;">
+WMT
+</th>
+<th style="text-align:right;">
+AMZN
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.000000000
+</td>
+<td style="text-align:right;">
+0.000000000
+</td>
+<td style="text-align:right;">
+0.000000000
+</td>
+<td style="text-align:right;">
+0.0000000000
+</td>
+<td style="text-align:right;">
+0.000000000
+</td>
+<td style="text-align:right;">
+0.000000000
+</td>
+<td style="text-align:right;">
+0.0000000000
+</td>
+<td style="text-align:right;">
+0.000000000
+</td>
+<td style="text-align:right;">
+0.0000000000
+</td>
+<td style="text-align:right;">
+0.0000000000
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+-0.012702708
+</td>
+<td style="text-align:right;">
+-0.008291331
+</td>
+<td style="text-align:right;">
+0.003575412
+</td>
+<td style="text-align:right;">
+-0.0035002417
+</td>
+<td style="text-align:right;">
+0.008859253
+</td>
+<td style="text-align:right;">
+-0.004740086
+</td>
+<td style="text-align:right;">
+0.0007860485
+</td>
+<td style="text-align:right;">
+-0.020819530
+</td>
+<td style="text-align:right;">
+-0.0063746748
+</td>
+<td style="text-align:right;">
+0.0045367882
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+-0.028249939
+</td>
+<td style="text-align:right;">
+-0.012713395
+</td>
+<td style="text-align:right;">
+0.019555411
+</td>
+<td style="text-align:right;">
+0.0133515376
+</td>
+<td style="text-align:right;">
+0.020731797
+</td>
+<td style="text-align:right;">
+0.022151612
+</td>
+<td style="text-align:right;">
+0.0324601827
+</td>
+<td style="text-align:right;">
+-0.005529864
+</td>
+<td style="text-align:right;">
+0.0037720098
+</td>
+<td style="text-align:right;">
+0.0025886574
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+-0.005899428
+</td>
+<td style="text-align:right;">
+0.002033327
+</td>
+<td style="text-align:right;">
+-0.007259372
+</td>
+<td style="text-align:right;">
+-0.0009230752
+</td>
+<td style="text-align:right;">
+-0.017429792
+</td>
+<td style="text-align:right;">
+-0.003753198
+</td>
+<td style="text-align:right;">
+-0.0293228286
+</td>
+<td style="text-align:right;">
+0.006958715
+</td>
+<td style="text-align:right;">
+-0.0096029606
+</td>
+<td style="text-align:right;">
+0.0352948721
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.002687379
+</td>
+<td style="text-align:right;">
+-0.022004791
+</td>
+<td style="text-align:right;">
+-0.008022622
+</td>
+<td style="text-align:right;">
+0.0018451781
+</td>
+<td style="text-align:right;">
+0.000000000
+</td>
+<td style="text-align:right;">
+-0.014768451
+</td>
+<td style="text-align:right;">
+-0.0221704307
+</td>
+<td style="text-align:right;">
+-0.003063936
+</td>
+<td style="text-align:right;">
+0.0027737202
+</td>
+<td style="text-align:right;">
+-0.0077780140
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+-0.015752246
+</td>
+<td style="text-align:right;">
+0.005620792
+</td>
+<td style="text-align:right;">
+0.026649604
+</td>
+<td style="text-align:right;">
+0.0133906716
+</td>
+<td style="text-align:right;">
+-0.002200109
+</td>
+<td style="text-align:right;">
+0.034376015
+</td>
+<td style="text-align:right;">
+-0.0226730363
+</td>
+<td style="text-align:right;">
+0.038724890
+</td>
+<td style="text-align:right;">
+-0.0002916231
+</td>
+<td style="text-align:right;">
+-0.0001126237
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="the-statistics" class="section level2">
+<h2>The statistics</h2>
+<p>The <code>Mus</code> (mean returns) data looks like:</p>
+<table class="kable_wrapper table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+<td>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+x
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+AAPL
+</td>
+<td style="text-align:right;">
+-0.0025241
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ABBV
+</td>
+<td style="text-align:right;">
+0.0014847
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+0.0002314
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+APD
+</td>
+<td style="text-align:right;">
+0.0006546
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AA
+</td>
+<td style="text-align:right;">
+-0.0010700
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CF
+</td>
+<td style="text-align:right;">
+-0.0013681
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NVDA
+</td>
+<td style="text-align:right;">
+0.0008864
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HOG
+</td>
+<td style="text-align:right;">
+0.0008061
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WMT
+</td>
+<td style="text-align:right;">
+0.0006895
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AMZN
+</td>
+<td style="text-align:right;">
+0.0006147
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>Sigmas</code> (covariance matrix) data looks like:</p>
+<table class="kable_wrapper table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<tbody>
+<tr>
+<td>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+AAPL
+</th>
+<th style="text-align:right;">
+ABBV
+</th>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+APD
+</th>
+<th style="text-align:right;">
+AA
+</th>
+<th style="text-align:right;">
+CF
+</th>
+<th style="text-align:right;">
+NVDA
+</th>
+<th style="text-align:right;">
+HOG
+</th>
+<th style="text-align:right;">
+WMT
+</th>
+<th style="text-align:right;">
+AMZN
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+AAPL
+</td>
+<td style="text-align:right;">
+0.0004166
+</td>
+<td style="text-align:right;">
+0.0000220
+</td>
+<td style="text-align:right;">
+0.0000112
+</td>
+<td style="text-align:right;">
+0.0000388
+</td>
+<td style="text-align:right;">
+0.0000528
+</td>
+<td style="text-align:right;">
+0.0000277
+</td>
+<td style="text-align:right;">
+0.0000408
+</td>
+<td style="text-align:right;">
+0.0000116
+</td>
+<td style="text-align:right;">
+-0.0000038
+</td>
+<td style="text-align:right;">
+-0.0000366
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ABBV
+</td>
+<td style="text-align:right;">
+0.0000220
+</td>
+<td style="text-align:right;">
+0.0003128
+</td>
+<td style="text-align:right;">
+0.0000490
+</td>
+<td style="text-align:right;">
+0.0000393
+</td>
+<td style="text-align:right;">
+0.0000137
+</td>
+<td style="text-align:right;">
+0.0000472
+</td>
+<td style="text-align:right;">
+0.0000511
+</td>
+<td style="text-align:right;">
+0.0000732
+</td>
+<td style="text-align:right;">
+0.0000258
+</td>
+<td style="text-align:right;">
+0.0000295
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:right;">
+0.0000112
+</td>
+<td style="text-align:right;">
+0.0000490
+</td>
+<td style="text-align:right;">
+0.0002061
+</td>
+<td style="text-align:right;">
+0.0000720
+</td>
+<td style="text-align:right;">
+0.0000741
+</td>
+<td style="text-align:right;">
+0.0000885
+</td>
+<td style="text-align:right;">
+0.0000930
+</td>
+<td style="text-align:right;">
+0.0001175
+</td>
+<td style="text-align:right;">
+0.0000371
+</td>
+<td style="text-align:right;">
+0.0001139
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+APD
+</td>
+<td style="text-align:right;">
+0.0000388
+</td>
+<td style="text-align:right;">
+0.0000393
+</td>
+<td style="text-align:right;">
+0.0000720
+</td>
+<td style="text-align:right;">
+0.0000993
+</td>
+<td style="text-align:right;">
+0.0000523
+</td>
+<td style="text-align:right;">
+0.0000687
+</td>
+<td style="text-align:right;">
+0.0000578
+</td>
+<td style="text-align:right;">
+0.0000744
+</td>
+<td style="text-align:right;">
+0.0000107
+</td>
+<td style="text-align:right;">
+0.0000511
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AA
+</td>
+<td style="text-align:right;">
+0.0000528
+</td>
+<td style="text-align:right;">
+0.0000137
+</td>
+<td style="text-align:right;">
+0.0000741
+</td>
+<td style="text-align:right;">
+0.0000523
+</td>
+<td style="text-align:right;">
+0.0001485
+</td>
+<td style="text-align:right;">
+0.0000874
+</td>
+<td style="text-align:right;">
+0.0000685
+</td>
+<td style="text-align:right;">
+0.0000674
+</td>
+<td style="text-align:right;">
+-0.0000012
+</td>
+<td style="text-align:right;">
+0.0000383
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CF
+</td>
+<td style="text-align:right;">
+0.0000277
+</td>
+<td style="text-align:right;">
+0.0000472
+</td>
+<td style="text-align:right;">
+0.0000885
+</td>
+<td style="text-align:right;">
+0.0000687
+</td>
+<td style="text-align:right;">
+0.0000874
+</td>
+<td style="text-align:right;">
+0.0002271
+</td>
+<td style="text-align:right;">
+0.0000706
+</td>
+<td style="text-align:right;">
+0.0000900
+</td>
+<td style="text-align:right;">
+-0.0000112
+</td>
+<td style="text-align:right;">
+0.0000606
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NVDA
+</td>
+<td style="text-align:right;">
+0.0000408
+</td>
+<td style="text-align:right;">
+0.0000511
+</td>
+<td style="text-align:right;">
+0.0000930
+</td>
+<td style="text-align:right;">
+0.0000578
+</td>
+<td style="text-align:right;">
+0.0000685
+</td>
+<td style="text-align:right;">
+0.0000706
+</td>
+<td style="text-align:right;">
+0.0002092
+</td>
+<td style="text-align:right;">
+0.0000706
+</td>
+<td style="text-align:right;">
+0.0000127
+</td>
+<td style="text-align:right;">
+0.0000853
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HOG
+</td>
+<td style="text-align:right;">
+0.0000116
+</td>
+<td style="text-align:right;">
+0.0000732
+</td>
+<td style="text-align:right;">
+0.0001175
+</td>
+<td style="text-align:right;">
+0.0000744
+</td>
+<td style="text-align:right;">
+0.0000674
+</td>
+<td style="text-align:right;">
+0.0000900
+</td>
+<td style="text-align:right;">
+0.0000706
+</td>
+<td style="text-align:right;">
+0.0002393
+</td>
+<td style="text-align:right;">
+0.0000214
+</td>
+<td style="text-align:right;">
+0.0000895
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WMT
+</td>
+<td style="text-align:right;">
+-0.0000038
+</td>
+<td style="text-align:right;">
+0.0000258
+</td>
+<td style="text-align:right;">
+0.0000371
+</td>
+<td style="text-align:right;">
+0.0000107
+</td>
+<td style="text-align:right;">
+-0.0000012
+</td>
+<td style="text-align:right;">
+-0.0000112
+</td>
+<td style="text-align:right;">
+0.0000127
+</td>
+<td style="text-align:right;">
+0.0000214
+</td>
+<td style="text-align:right;">
+0.0000682
+</td>
+<td style="text-align:right;">
+0.0000236
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AMZN
+</td>
+<td style="text-align:right;">
+-0.0000366
+</td>
+<td style="text-align:right;">
+0.0000295
+</td>
+<td style="text-align:right;">
+0.0001139
+</td>
+<td style="text-align:right;">
+0.0000511
+</td>
+<td style="text-align:right;">
+0.0000383
+</td>
+<td style="text-align:right;">
+0.0000606
+</td>
+<td style="text-align:right;">
+0.0000853
+</td>
+<td style="text-align:right;">
+0.0000895
+</td>
+<td style="text-align:right;">
+0.0000236
+</td>
+<td style="text-align:right;">
+0.0003118
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="comparing-portfolio-optimisation" class="section level1 tabset tabset-fade tabset-pills">
+<h1>Comparing Portfolio Optimisation</h1>
+<div id="global-minimum-variance-portfolio" class="section level2">
+<h2>Global Minimum Variance Portfolio</h2>
+<p>The global minimum-variance portfolio <span class="math inline">\(w^{gmv}\)</span> is a portfolio of assets with gives us the lowest possible return variance or portfolio volatility. Volatility here is used as a replacement for risk, thus with less variance in volatility correlates to less risk in an asset. The portfolio focuses only on risk and ignores expected returns.</p>
+<p>The objective function is;</p>
+<p><span class="math display">\[\begin{eqnarray} \min_{w} w^{T} \Sigma w \\
+\text{subject to } 1^{T}w = 1 \\
+w \ge 0 \end{eqnarray}\]</span></p>
+<p>Since <span class="math inline">\(\Sigma\)</span> is unknown we can estimate it as <span class="math inline">\(\hat{\Sigma}\)</span> with the covariance matrix. In which the convex solution becomes:</p>
+<p><span class="math display">\[W = \dfrac{1}{1^{T}\hat{\Sigma}^{-1}1}\hat{\Sigma}^{-1}1\]</span>
+The objective is that we want to find the optimial weights from the model such that our risk is minimised.</p>
+<p>The below problem consists of our <span class="math inline">\(Minimisation\)</span> problem <span class="math inline">\(\min_{w} w^{T} \Sigma w\)</span>. The <code>quad_form</code> function takes the quadratic form <span class="math inline">\(x^T Px\)</span> where <span class="math inline">\(x\)</span> is a vector and <span class="math inline">\(P\)</span> is a matrix or in our case <span class="math inline">\(w\)</span> is our weights vector and <span class="math inline">\(\Sigma\)</span> is the covariance matrix for <span class="math inline">\(A_{1}, \dots, A_{5}\)</span>. The <code>constraints</code> correspond to <span class="math inline">\(1^{T}w = 1\)</span> in which we cannot assign negative weights to our assets and that we invest all our capital in the portfolio.</p>
+<p>We can use the Disciplined Convex Programming (<code>CVXR</code>) package in R, which;</p>
+<ul>
+<li><p>Analyses the problem,</p></li>
+<li><p>Verifies the convexity,</p></li>
+<li><p>Converts the problem into canonical form,</p></li>
+<li><p>Solves the problem.</p></li>
+</ul>
+<p>We want to find the optimial weights from the model such that our risk is minimised. We can do this by solving the optimisation problem, bind the lists into a single data frame and use <code>ggplot2</code> to plot the rolling one month out of sample optimal portfolio weights - based on the previous 6 months rolled <code>mus</code> and <code>Sigmas</code>.</p>
+<pre class="r"><code># 1) Function: Global Minimum Variance Portfolio
+GMVPportolioFunction &lt;- function(Sigma) {
+  w &lt;- Variable(nrow(Sigma))
+  problem &lt;- Problem(               # Initialise the problem
+    Minimize(                       # minimse or maximise objective function
+      quad_form(
+        w, Sigma                    # Model inputs, the number of weights to consider and the covariance matrix
+        )
+      ), 
+    constraints = list(
+      w &gt;= 0,                       # First model constraint
+      sum(w) == 1))                 # Second model constrain
+  Solution &lt;- solve(problem, solver=&quot;SCS&quot;)        # Solves the problem
+  return(as.vector(Solution$getValue(w)))
+}
+
+# 1a) Portfolio GMVP
+GMVPPortfolio &lt;- map(
+  .x = Sigmas,
+  GMVPportolioFunction)
+
+# 1b) Portfolio GMVP
+GMVPPortfolioWeights &lt;- setNames(GMVPPortfolio, ListNamesDates) %&gt;% 
+  map(.,  ~setNames(., c(symbols))) %&gt;% 
+  map_dfr(., ~bind_rows(.), .id = &quot;date&quot;) %&gt;% 
+  mutate(date = as.Date(paste(date, &quot;01&quot;), format = &quot;%Y %b %d&quot;))
+
+GMVPPortfolioWeights %&gt;%
+  head() %&gt;% 
+  kable() %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+AAPL
+</th>
+<th style="text-align:right;">
+ABBV
+</th>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+APD
+</th>
+<th style="text-align:right;">
+AA
+</th>
+<th style="text-align:right;">
+CF
+</th>
+<th style="text-align:right;">
+NVDA
+</th>
+<th style="text-align:right;">
+HOG
+</th>
+<th style="text-align:right;">
+WMT
+</th>
+<th style="text-align:right;">
+AMZN
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2013-07-01
+</td>
+<td style="text-align:right;">
+0.0600839
+</td>
+<td style="text-align:right;">
+0.0335474
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.1487696
+</td>
+<td style="text-align:right;">
+0.1258907
+</td>
+<td style="text-align:right;">
+0.0727920
+</td>
+<td style="text-align:right;">
+0.0095631
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.5208891
+</td>
+<td style="text-align:right;">
+0.0284642
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-08-01
+</td>
+<td style="text-align:right;">
+0.1046817
+</td>
+<td style="text-align:right;">
+0.0404000
+</td>
+<td style="text-align:right;">
+-0.0000009
+</td>
+<td style="text-align:right;">
+0.0917765
+</td>
+<td style="text-align:right;">
+0.1592918
+</td>
+<td style="text-align:right;">
+0.0299729
+</td>
+<td style="text-align:right;">
+0.0364528
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.5374240
+</td>
+<td style="text-align:right;">
+0.0000007
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-09-01
+</td>
+<td style="text-align:right;">
+0.1183896
+</td>
+<td style="text-align:right;">
+0.0000005
+</td>
+<td style="text-align:right;">
+0.0000006
+</td>
+<td style="text-align:right;">
+0.0844454
+</td>
+<td style="text-align:right;">
+0.1683526
+</td>
+<td style="text-align:right;">
+0.0246106
+</td>
+<td style="text-align:right;">
+0.0635569
+</td>
+<td style="text-align:right;">
+0.0000002
+</td>
+<td style="text-align:right;">
+0.5406430
+</td>
+<td style="text-align:right;">
+0.0000004
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-10-01
+</td>
+<td style="text-align:right;">
+0.0975699
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0024139
+</td>
+<td style="text-align:right;">
+0.0742437
+</td>
+<td style="text-align:right;">
+0.1166939
+</td>
+<td style="text-align:right;">
+0.0431297
+</td>
+<td style="text-align:right;">
+0.0968248
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.5691241
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-11-01
+</td>
+<td style="text-align:right;">
+0.1480922
+</td>
+<td style="text-align:right;">
+0.0000003
+</td>
+<td style="text-align:right;">
+0.0620407
+</td>
+<td style="text-align:right;">
+0.0449223
+</td>
+<td style="text-align:right;">
+-0.0000003
+</td>
+<td style="text-align:right;">
+0.0279869
+</td>
+<td style="text-align:right;">
+0.1613035
+</td>
+<td style="text-align:right;">
+0.0376022
+</td>
+<td style="text-align:right;">
+0.5014187
+</td>
+<td style="text-align:right;">
+0.0166323
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-12-01
+</td>
+<td style="text-align:right;">
+0.1135468
+</td>
+<td style="text-align:right;">
+0.0000007
+</td>
+<td style="text-align:right;">
+0.0678773
+</td>
+<td style="text-align:right;">
+0.0560224
+</td>
+<td style="text-align:right;">
+-0.0000005
+</td>
+<td style="text-align:right;">
+0.0062812
+</td>
+<td style="text-align:right;">
+0.1195510
+</td>
+<td style="text-align:right;">
+0.0779063
+</td>
+<td style="text-align:right;">
+0.5588149
+</td>
+<td style="text-align:right;">
+0.0000001
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># 1c) Portfolio GMVP
+GMVPPortfolioWeights %&gt;% 
+  select(date, everything()) %&gt;% 
+  pivot_longer(cols = 2:ncol(.), values_to = &quot;weights&quot;) %&gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;, width = 100) +
+  scale_fill_viridis(option = &quot;magma&quot;, discrete = TRUE, name = &quot;Asset&quot;) +
+  theme_bw() +
+  ggtitle(&quot;GMVP Rolling Portfolio Adjustments&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Weights&quot;)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="markowitz-portfolio" class="section level2">
+<h2>Markowitz Portfolio</h2>
+<p>The Markowitz Mean-Variance Portfolio is constructed as follows:</p>
+<p><span class="math display">\[\begin{eqnarray} \max_{w} \mu^{T}w - \lambda w^{T}\Sigma w \\
+\text{subject to } 1^{T}w = 1 \\
+w \ge 0 \end{eqnarray}\]</span></p>
+<p>We can set different risk parameters by adjusting <span class="math inline">\(\lambda\)</span> and see how the returns are affected. This can be done by running multiple optimisation problems on the data with different <span class="math inline">\(\lambda\)</span> values. Higher <span class="math inline">\(\lambda\)</span> values places emphasis on the right hand side of the equation and thus the more risk adverse the investor is.</p>
+<pre class="r"><code># 2) Function: Markowitz Portfolio
+MarkowitzportolioFunction &lt;- function(mu, Sigma, lmd) {
+  w &lt;- Variable(nrow(Sigma))
+  problem &lt;- Problem(
+    Maximize(t(mu) %*% w - lmd*quad_form(w, Sigma)),
+    constraints = list(
+      w &gt;= 0, 
+      sum(w) == 1)
+  )
+  Solution &lt;- solve(problem)
+  return(as.vector(Solution$getValue(w)))
+}
+
+# 2a) Portfolio Markowitz
+lmd &lt;- c(0.25, 0.5, 0.75)
+MarkowitzPortfolio &lt;- map(lmd,
+                          ~map2(
+                            .x = mus,
+                            .y = Sigmas,
+                            MarkowitzportolioFunction, lmd = .x))
+
+# 2b) Portfolio Markowitz
+MarkowitzPortfolioWeights &lt;- setNames(MarkowitzPortfolio, lmd) %&gt;% 
+  map(., ~setNames(., c(ListNamesDates))) %&gt;% 
+  map(., ~map(., ~setNames(., c(symbols)))) %&gt;% 
+  map(., ~map_dfr(., ~bind_rows(.), .id = &quot;date&quot;)) %&gt;% 
+  map_dfr(., ~bind_rows(.), .id = &quot;lambda&quot;) %&gt;% 
+  mutate(date = as.Date(paste(date, &quot;01&quot;), format = &quot;%Y %b %d&quot;))
+
+MarkowitzPortfolioWeights %&gt;%
+  head() %&gt;% 
+  kable() %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+lambda
+</th>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+AAPL
+</th>
+<th style="text-align:right;">
+ABBV
+</th>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+APD
+</th>
+<th style="text-align:right;">
+AA
+</th>
+<th style="text-align:right;">
+CF
+</th>
+<th style="text-align:right;">
+NVDA
+</th>
+<th style="text-align:right;">
+HOG
+</th>
+<th style="text-align:right;">
+WMT
+</th>
+<th style="text-align:right;">
+AMZN
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+0.25
+</td>
+<td style="text-align:left;">
+2013-07-01
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+0.25
+</td>
+<td style="text-align:left;">
+2013-08-01
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.2938168
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.7061832
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+0.25
+</td>
+<td style="text-align:left;">
+2013-09-01
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+1.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+0.25
+</td>
+<td style="text-align:left;">
+2013-10-01
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.000001
+</td>
+<td style="text-align:right;">
+0.9999984
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000004
+</td>
+<td style="text-align:right;">
+0.0000001
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+0.25
+</td>
+<td style="text-align:left;">
+2013-11-01
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+0.25
+</td>
+<td style="text-align:left;">
+2013-12-01
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
+<p>We can see how the risk and return is affected by the changes in the <span class="math inline">\(\lambda\)</span> values in the following plot. As the <span class="math inline">\(\lambda\)</span> values increase the less risk we take on but also we assume less returns. Low values of <span class="math inline">\(\lambda\)</span> makes us invest in a signle asset with the weight on asset <span class="math inline">\(A_{5}\)</span>, increasing the <span class="math inline">\(\lambda\)</span> values increases the weights in other assets <span class="math inline">\(A_{i}\)</span> spreading our risk.</p>
+<pre class="r"><code># 2c) Portfolio Markowitz
+MarkowitzPortfolioWeights %&gt;% 
+  select(date, lambda, everything()) %&gt;% 
+  pivot_longer(cols = 3:ncol(.), values_to = &quot;weights&quot;) %&gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;, width = 100) +
+  facet_wrap(~lambda, ncol = 1) +
+  scale_fill_viridis(option = &quot;magma&quot;, discrete = TRUE, name = &quot;Asset&quot;) +
+  theme_bw() +
+  ggtitle(&quot;Markowitz Rolling Portfolio Adjustments&quot;,
+          subtitle = &quot;For different Lambda Risk Values&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Weights&quot;)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="max-sharpe-ratio" class="section level2">
+<h2>Max Sharpe Ratio</h2>
+<p><strong>Note:</strong> I originally made this post a few months back and when I went back to it some of the parts for the Max-Sharpe Ratio portfolio did not work as before - I think this is due to the recent update in the <code>tidyr</code> package. I made some minor adjustments, however this part of the post is incorrect (just look at the portfolio weights plot). I hightlight in the code when I made the minor adjustments - when I have the opportunity to go back through the code more carefully I will -</p>
+<pre class="r"><code># 2) Function: Max Sharpe Ratio 
+#NOTE::: When we have all negative mus for a given month we obtain an NA value - the function 
+# cannot find a maximum when all mus are negative compare the MaxSharpePortfolio$`2015 Sep` and
+# MaxSharpePortfolio$`2015 Oct` along with the mus$`2015 Sep` and mus$`2015 Oct` we invests 99% of the portfolio
+# in Sept in ABBV since its positive. In Oct ABBV mu is negative and we cannot invest at all.
+# Increasing the universe of Assets may overcome this problem.
+MaxSharpeportolioFunction &lt;- function(mu, Sigma) {
+  w &lt;- Variable(nrow(Sigma))
+  problem &lt;- Problem(
+    Minimize(quad_form(w, Sigma)),
+    constraints = list(
+      w &gt;= 0, t(mu) %*% w == 1)
+  )
+  Solution &lt;- solve(problem, solver=&quot;SCS&quot;)
+  return(as.vector(Solution$getValue(w)/sum(Solution$getValue(w))))
+}
+
+# 3a) Portfolio Max Sharpe Ratio                                 
+MaxSharpePortfolio &lt;- purrr::map2(.x = mus,
+                                  .y = Sigmas,
+                                  .f = ~MaxSharpeportolioFunction(.x, .y))
+
+# 3b) Portfolio Max Sharpe Ratio
+  MaxSharpePortfolioWeights &lt;- setNames(MaxSharpePortfolio, ListNamesDates) %&gt;%
+    as_tibble(.) %&gt;%               # Made an adjustment here
+    map(.,  ~setNames(., c(symbols))) %&gt;% 
+    map_dfr(., ~bind_rows(.), .id = &quot;date&quot;) %&gt;% 
+    mutate(date = as.Date(paste(date, &quot;01&quot;), format = &quot;%Y %b %d&quot;))
+
+MaxSharpePortfolioWeights %&gt;%
+  head() %&gt;% 
+  kable() %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+AAPL
+</th>
+<th style="text-align:right;">
+ABBV
+</th>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+APD
+</th>
+<th style="text-align:right;">
+AA
+</th>
+<th style="text-align:right;">
+CF
+</th>
+<th style="text-align:right;">
+NVDA
+</th>
+<th style="text-align:right;">
+HOG
+</th>
+<th style="text-align:right;">
+WMT
+</th>
+<th style="text-align:right;">
+AMZN
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2013-07-01
+</td>
+<td style="text-align:right;">
+-0.0149061
+</td>
+<td style="text-align:right;">
+0.2114414
+</td>
+<td style="text-align:right;">
+-0.0113890
+</td>
+<td style="text-align:right;">
+0.2432642
+</td>
+<td style="text-align:right;">
+-0.0390656
+</td>
+<td style="text-align:right;">
+-0.0398034
+</td>
+<td style="text-align:right;">
+0.1473514
+</td>
+<td style="text-align:right;">
+0.0177759
+</td>
+<td style="text-align:right;">
+0.4853595
+</td>
+<td style="text-align:right;">
+-0.0000282
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-08-01
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.1376876
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.3329830
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.1197141
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.4096154
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-09-01
+</td>
+<td style="text-align:right;">
+0.1217206
+</td>
+<td style="text-align:right;">
+0.1246626
+</td>
+<td style="text-align:right;">
+0.0087004
+</td>
+<td style="text-align:right;">
+0.3421645
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.2414533
+</td>
+<td style="text-align:right;">
+0.0002820
+</td>
+<td style="text-align:right;">
+0.1610166
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-10-01
+</td>
+<td style="text-align:right;">
+0.0270424
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.2268393
+</td>
+<td style="text-align:right;">
+0.3427932
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.2653166
+</td>
+<td style="text-align:right;">
+0.1283026
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0097059
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-11-01
+</td>
+<td style="text-align:right;">
+0.2061378
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.1890217
+</td>
+<td style="text-align:right;">
+0.2234738
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0533257
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.3280410
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-12-01
+</td>
+<td style="text-align:right;">
+0.2252115
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0306324
+</td>
+<td style="text-align:right;">
+0.0724210
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0325000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.1907157
+</td>
+<td style="text-align:right;">
+0.1192396
+</td>
+<td style="text-align:right;">
+0.3292797
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># 3c) Portfolio Max Sharpe Ratio
+MaxSharpePortfolioWeights %&gt;% 
+  select(date, everything()) %&gt;%      # Made an adjustment here
+  pivot_longer(cols = 2:ncol(.), values_to = &quot;weights&quot;) %&gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;, width = 100) +
+  scale_fill_viridis(option = &quot;magma&quot;, discrete = TRUE, name = &quot;Asset&quot;) +
+  theme_bw() +
+  ggtitle(&quot;Maximum Sharpe Ratio Rolling Portfolio Adjustments&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Weights&quot;)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="mu-quintile-portfolio" class="section level2">
+<h2>Mu Quintile Portfolio</h2>
+<pre class="r"><code># 1a)
+mu_quintiles &lt;- map(mus, ~ntile(., 5) %&gt;% 
+                      setNames(c(symbols))) %&gt;% 
+  map(., ~sort(., decreasing = TRUE))
+
+# 2)       
+mu_diag_sigma &lt;- map2(
+  .x = mus,
+  .y = Sigmas,
+  ~.x / diag(.y)) 
+
+mu_diag_sigma_quintiles &lt;- mu_diag_sigma %&gt;% 
+  map(., ~ntile(., 5)) %&gt;% 
+  map(., ~setNames(., c(symbols))) %&gt;% 
+  map(., ~sort(., decreasing = TRUE))
+
+# 1b) rank the quintiles by mu
+quintiles_mu &lt;- map2(
+  .x = mus,
+  .y = mu_quintiles,
+  ~bind_rows(.x, .y))
+
+quintiles_mu_weights &lt;- map(quintiles_mu, ~ .x %&gt;%
+                              mutate_all(~ case_when(. %in% c(5, 1) ~ .5, 
+                                                     TRUE ~ 0)) %&gt;%
+                              pmap_dfr(., ~ 
+                                         {v1 &lt;- c(...)
+                                         v2 &lt;- if(sum(v1) &gt; 1) replace(v1, v1 != 0, 1/sum(v1!=0)) else v1
+                                         as.list(v2)}))
+
+
+quintiles_mu_weights &lt;- map(quintiles_mu_weights, ~.x[-1,]) %&gt;% 
+  map2(.x = quintiles_mu, .y = ., ~bind_rows(.x, .y))
+
+QuintileMuWeights &lt;- map(quintiles_mu_weights, ~.x[3, ]) %&gt;%  # The weights are stored in row 3.
+  map_dfr(., ~bind_rows(.), .id = &quot;date&quot;) %&gt;% 
+  mutate(date = as.Date(paste(date, &quot;01&quot;), format = &quot;%Y %b %d&quot;))
+
+QuintileMuWeights %&gt;%
+  head() %&gt;% 
+  kable() %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+AAPL
+</th>
+<th style="text-align:right;">
+ABBV
+</th>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+APD
+</th>
+<th style="text-align:right;">
+AA
+</th>
+<th style="text-align:right;">
+CF
+</th>
+<th style="text-align:right;">
+NVDA
+</th>
+<th style="text-align:right;">
+HOG
+</th>
+<th style="text-align:right;">
+WMT
+</th>
+<th style="text-align:right;">
+AMZN
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2013-07-01
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-08-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-09-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-10-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-11-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-12-01
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>QuintileMuWeights %&gt;% 
+    select(date, everything()) %&gt;%
+  pivot_longer(cols = 2:ncol(.), values_to = &quot;weights&quot;) %&gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;, width = 100) +
+  scale_fill_viridis(option = &quot;magma&quot;, discrete = TRUE, name = &quot;Asset&quot;) +
+  theme_bw() +
+  ggtitle(&quot;Quintile MU Rolling Portfolio Adjustments&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Weights&quot;)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+<div id="mu-diagsigma-portfolio" class="section level2">
+<h2>Mu / Diag(Sigma) Portfolio</h2>
+<pre class="r"><code># 2a) 
+mu_diag_sigma &lt;- map2(
+  .x = mus,
+  .y = Sigmas,
+  ~.x / diag(.y)) 
+
+mu_diag_sigma_quintiles &lt;- mu_diag_sigma %&gt;% 
+  map(., ~ntile(., 5)) %&gt;% 
+  map(., ~setNames(., c(symbols))) %&gt;% 
+  map(., ~sort(., decreasing = TRUE))
+
+# 2b) rank the quintiles by mu / diag(Sigma)
+quintiles_mu_diag_sigma &lt;- map2(
+  .x = mu_diag_sigma,
+  .y = mu_diag_sigma_quintiles,
+  ~bind_rows(.x, .y))
+
+quintiles_mu_diag_sigma_weights &lt;- map(quintiles_mu_diag_sigma, ~ .x %&gt;%
+                                         mutate_all(~ case_when(. %in% c(5, 1) ~ .5, 
+                                                                TRUE ~ 0)) %&gt;%
+                                         pmap_dfr(., ~ 
+                                                    {v1 &lt;- c(...)
+                                                    v2 &lt;- if(sum(v1) &gt; 1) replace(v1, v1 != 0, 1/sum(v1!=0)) else v1
+                                                    as.list(v2)}))
+
+quintiles_mu_diag_sigma_weights &lt;- map(quintiles_mu_diag_sigma_weights, ~.x[-1,]) %&gt;% 
+  map2(.x = quintiles_mu_diag_sigma, .y = ., ~bind_rows(.x, .y))
+
+QuintileMuDiagSigmaWeights &lt;- map(quintiles_mu_diag_sigma_weights, ~.x[3, ]) %&gt;% # The weights are stored in row 3.
+  map_dfr(., ~bind_rows(.), .id = &quot;date&quot;) %&gt;% 
+  mutate(date = as.Date(paste(date, &quot;01&quot;), format = &quot;%Y %b %d&quot;))
+
+QuintileMuDiagSigmaWeights %&gt;%
+  head() %&gt;% 
+  kable() %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+AAPL
+</th>
+<th style="text-align:right;">
+ABBV
+</th>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+APD
+</th>
+<th style="text-align:right;">
+AA
+</th>
+<th style="text-align:right;">
+CF
+</th>
+<th style="text-align:right;">
+NVDA
+</th>
+<th style="text-align:right;">
+HOG
+</th>
+<th style="text-align:right;">
+WMT
+</th>
+<th style="text-align:right;">
+AMZN
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2013-07-01
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-08-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-09-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-10-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-11-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-12-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>QuintileMuDiagSigmaWeights %&gt;% 
+  select(date, everything()) %&gt;%
+  pivot_longer(cols = 2:ncol(.), values_to = &quot;weights&quot;) %&gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;, width = 100) +
+  scale_fill_viridis(option = &quot;magma&quot;, discrete = TRUE, name = &quot;Asset&quot;) +
+  theme_bw() +
+  ggtitle(&quot;Quintile MU Diag Sigma Rolling Portfolio Adjustments&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Weights&quot;)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="mu-diagsqrtsigma-portfolio" class="section level2">
+<h2>Mu / Diag(sqrt(Sigma)) Portfolio</h2>
+<pre class="r"><code># 3a)
+mu_diag_sqrt_sigma &lt;- map2(
+  .x = mus,
+  .y = Sigmas,
+  ~.x / sqrt(diag(.y)))  
+
+mu_diag_sqrt_sigma_quintiles &lt;- mu_diag_sqrt_sigma %&gt;% 
+  map(., ~ntile(., 5)) %&gt;% 
+  map(., ~setNames(., c(symbols))) %&gt;% 
+  map(., ~sort(., decreasing = TRUE))
+
+# 3b) rank the quintiles by mu / sqrt(diag(sigma))
+
+quintiles_mu_diag_sqrt_sigma &lt;- map2(
+  .x = mu_diag_sqrt_sigma,
+  .y = mu_diag_sqrt_sigma_quintiles,
+  ~bind_rows(.x, .y))
+
+quintiles_mu_diag_sqrt_sigma_weights &lt;- map(quintiles_mu_diag_sqrt_sigma, ~ .x %&gt;%
+                                         mutate_all(~ case_when(. %in% c(5, 1) ~ .5, 
+                                                                TRUE ~ 0)) %&gt;%
+                                         pmap_dfr(., ~ 
+                                                    {v1 &lt;- c(...)
+                                                    v2 &lt;- if(sum(v1) &gt; 1) replace(v1, v1 != 0, 1/sum(v1!=0)) else v1
+                                                    as.list(v2)}))
+
+quintiles_mu_diag_sqrt_sigma_weights &lt;- map(quintiles_mu_diag_sqrt_sigma_weights, ~.x[-1,]) %&gt;% 
+  map2(.x = quintiles_mu_diag_sqrt_sigma, .y = ., ~bind_rows(.x, .y))
+
+QuintileMuDiagSqrtSigmaWeights &lt;- map(quintiles_mu_diag_sqrt_sigma_weights, ~.x[3, ]) %&gt;% # The weights are stored in row 3.
+  map_dfr(., ~bind_rows(.), .id = &quot;date&quot;) %&gt;% 
+  mutate(date = as.Date(paste(date, &quot;01&quot;), format = &quot;%Y %b %d&quot;))
+
+QuintileMuDiagSqrtSigmaWeights %&gt;%
+  head() %&gt;% 
+  kable() %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+AAPL
+</th>
+<th style="text-align:right;">
+ABBV
+</th>
+<th style="text-align:right;">
+A
+</th>
+<th style="text-align:right;">
+APD
+</th>
+<th style="text-align:right;">
+AA
+</th>
+<th style="text-align:right;">
+CF
+</th>
+<th style="text-align:right;">
+NVDA
+</th>
+<th style="text-align:right;">
+HOG
+</th>
+<th style="text-align:right;">
+WMT
+</th>
+<th style="text-align:right;">
+AMZN
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2013-07-01
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-08-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-09-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-10-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-11-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2013-12-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.25
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>QuintileMuDiagSqrtSigmaWeights %&gt;% 
+  select(date, everything()) %&gt;%
+  pivot_longer(cols = 2:ncol(.), values_to = &quot;weights&quot;) %&gt;% 
+  ggplot(aes(fill = name, y = weights, x = date)) + 
+  geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;, width = 100) +
+  scale_fill_viridis(option = &quot;magma&quot;, discrete = TRUE, name = &quot;Asset&quot;) +
+  theme_bw() +
+  ggtitle(&quot;Quintile MU Diag Sqrt(Sigma) Rolling Portfolio Adjustments&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Weights&quot;)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+</div>
+<div id="analysis-of-results" class="section level1 tabset tabset-fade tabset-pills">
+<h1>Analysis of Results</h1>
+<p>There are 8 different portfolio optimisation models. Putting all the data together, it’s easier to inspect the results.</p>
+<pre class="r"><code>############################# Assess the Returns ##################################
+MonthlyReturns &lt;- map(portfolio_monthly_prices$splits, ~assessment(.x)) %&gt;% 
+  map(., ~unnest(.x, data) %&gt;% 
+        select(-year_month) %&gt;% 
+        tk_xts(date_var = date) %&gt;% 
+        lapply(., periodReturn, period = &quot;monthly&quot;)) %&gt;% 
+  setNames(., ListNamesDates) %&gt;% 
+  map(., ~data.frame(.)) %&gt;% 
+  bind_rows(., .id = &quot;date&quot;) %&gt;% 
+  mutate(date = as.Date(paste(date, &quot;01&quot;), format = &quot;%Y %b %d&quot;)) %&gt;% 
+  tk_xts(., date_var = date)
+
+############# Assess the Monthly Portfolio Returns Depeninding on Weights #########
+
+# 1d)
+TS_GMVPPortfolioWeights &lt;- GMVPPortfolioWeights %&gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_GMVP &lt;- Return.portfolio(MonthlyReturns, weights = TS_GMVPPortfolioWeights) %&gt;% 
+  setNames(c(&quot;GMVP&quot;))
+
+
+# 2d)
+TS_MarkowitzPortfolioWeights &lt;- MarkowitzPortfolioWeights %&gt;% 
+  group_split(lambda) %&gt;% 
+  setNames(c(lmd)) %&gt;% 
+  map(., ~tk_xts(., select = -lambda, date_var = date))
+
+MarkowitzWeightedPortfolioReturnsFunction &lt;- function(lmd){
+  WeightedReturns = Return.portfolio(MonthlyReturns, weights = TS_MarkowitzPortfolioWeights[[lmd]])
+  return(fortify.zoo(WeightedReturns))
+}
+
+PortRets_Markowitz &lt;- lapply(seq(1:length(lmd)), MarkowitzWeightedPortfolioReturnsFunction) %&gt;% 
+  setNames(c(lmd)) %&gt;%
+  bind_rows(., .id = &quot;lmd&quot;) %&gt;% 
+  #column_to_rownames(&quot;Index&quot;) %&gt;% 
+  #select(-matches(&quot;Index&quot;)) %&gt;% 
+  #rownames_to_column(&quot;Index&quot;) %&gt;% 
+  mutate(Index = as.Date(Index),
+         lmd = as.numeric(lmd)) %&gt;% 
+  pivot_wider(names_from = lmd, values_from = portfolio.returns) %&gt;% 
+  tk_xts(date_var = Index) %&gt;% 
+  setNames(c(paste(&quot;Markowitz Lambda&quot;, lmd)))
+
+# 3d)
+TS_MaxSharpePortfolioWeights &lt;- MaxSharpePortfolioWeights %&gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_MaxSharpe &lt;- Return.portfolio(MonthlyReturns, weights = TS_MaxSharpePortfolioWeights) %&gt;% 
+  setNames(c(&quot;MaxSharpe&quot;))
+
+
+# 4) quintile mu
+
+TS_QuintileMuWeights &lt;- QuintileMuWeights %&gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_Mu_Quintiles &lt;- Return.portfolio(MonthlyReturns, weights = TS_QuintileMuWeights) %&gt;% 
+  setNames(c(&quot;Mu_Quintiles&quot;))
+
+# 4) quintile mu diag sigma
+
+TS_QuintileMuDiagSigmaWeights &lt;- QuintileMuDiagSigmaWeights %&gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_MuDiagSigma_Quintiles &lt;- Return.portfolio(MonthlyReturns, weights = TS_QuintileMuDiagSigmaWeights) %&gt;% 
+  setNames(c(&quot;MuDiagSigma_Quintiles&quot;))
+
+# 4) Quintile mu diga sqrt sigma
+
+TS_QuintileMuDiagSqrtSigmaWeights &lt;- QuintileMuDiagSqrtSigmaWeights %&gt;% 
+  tk_xts(., date_var = date)
+
+PortRets_MuDiagSqrtSigma_Quintiles &lt;- Return.portfolio(MonthlyReturns, weights = TS_QuintileMuDiagSqrtSigmaWeights) %&gt;% 
+  setNames(c(&quot;MuDiagSqrtSigma_Quintiles&quot;))
+
+#####################################################################################</code></pre>
+<p>Looking at the plots the Global Minimum Variance Portfolio shows the lowest volatility in the portfolio returns. The Max Sharpe portfolio is clearly wrong here (see, previous point on Max Sharpe Ratio section). The annaulised performance metrics are also displayed at the bottom for each portfolio over the period.</p>
+<pre class="r"><code>########## Assess the Annualised Returns based on portfolio weights ##################
+AllReturns &lt;- cbind(PortRets_GMVP, PortRets_Markowitz, PortRets_MaxSharpe, PortRets_Mu_Quintiles,
+                    PortRets_MuDiagSigma_Quintiles, PortRets_MuDiagSqrtSigma_Quintiles)
+                    
+library(data.table)
+AllReturns %&gt;%
+  data.table(keep.rownames = TRUE) %&gt;%
+  as_tibble() %&gt;% 
+  pivot_longer(cols = 2:ncol(.)) %&gt;% 
+  ggplot(aes(x = index, y = value, color = name)) +
+  geom_line() +
+  facet_wrap(~name, ncol = 2) +
+  ggtitle(&quot;Portfolio Returns&quot;, subtitle = &quot;With portfolio optimised weights&quot;) +
+  xlab(&quot;Returns&quot;) +
+  ylab(&quot;Date&quot;) +
+  theme_tq()</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre class="r"><code>AnnualMetrics &lt;- bind_cols(table.AnnualizedReturns(PortRets_GMVP) %&gt;% 
+                          rownames_to_column(&quot;Metric&quot;),
+                        table.AnnualizedReturns(PortRets_Markowitz),
+                        table.AnnualizedReturns(PortRets_MaxSharpe),
+                        table.AnnualizedReturns(PortRets_Mu_Quintiles),
+                        table.AnnualizedReturns(PortRets_MuDiagSigma_Quintiles),
+                        table.AnnualizedReturns(PortRets_MuDiagSqrtSigma_Quintiles)
+                        )
+
+AnnualMetrics %&gt;%
+  kable() %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Metric
+</th>
+<th style="text-align:right;">
+GMVP
+</th>
+<th style="text-align:right;">
+Markowitz Lambda 0.25
+</th>
+<th style="text-align:right;">
+Markowitz Lambda 0.5
+</th>
+<th style="text-align:right;">
+Markowitz Lambda 0.75
+</th>
+<th style="text-align:right;">
+MaxSharpe
+</th>
+<th style="text-align:right;">
+Mu_Quintiles
+</th>
+<th style="text-align:right;">
+MuDiagSigma_Quintiles
+</th>
+<th style="text-align:right;">
+MuDiagSqrtSigma_Quintiles
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Annualized Return
+</td>
+<td style="text-align:right;">
+0.1009
+</td>
+<td style="text-align:right;">
+0.8441
+</td>
+<td style="text-align:right;">
+0.8142
+</td>
+<td style="text-align:right;">
+0.7712
+</td>
+<td style="text-align:right;">
+0.0944
+</td>
+<td style="text-align:right;">
+0.1948
+</td>
+<td style="text-align:right;">
+0.2599
+</td>
+<td style="text-align:right;">
+0.2700
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Annualized Std Dev
+</td>
+<td style="text-align:right;">
+0.1127
+</td>
+<td style="text-align:right;">
+0.3617
+</td>
+<td style="text-align:right;">
+0.3516
+</td>
+<td style="text-align:right;">
+0.3353
+</td>
+<td style="text-align:right;">
+0.1364
+</td>
+<td style="text-align:right;">
+0.1806
+</td>
+<td style="text-align:right;">
+0.1492
+</td>
+<td style="text-align:right;">
+0.1541
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Annualized Sharpe (Rf=0%)
+</td>
+<td style="text-align:right;">
+0.8953
+</td>
+<td style="text-align:right;">
+2.3340
+</td>
+<td style="text-align:right;">
+2.3157
+</td>
+<td style="text-align:right;">
+2.2999
+</td>
+<td style="text-align:right;">
+0.6922
+</td>
+<td style="text-align:right;">
+1.0787
+</td>
+<td style="text-align:right;">
+1.7420
+</td>
+<td style="text-align:right;">
+1.7515
+</td>
+</tr>
+</tbody>
+</table>
+<p>Plotting the cumulative returns shows that the Markowitz lambda portfolios have the highest returns over the period, however they also have the highest standard deviation over the same period.</p>
+<pre class="r"><code>chart.CumReturns(AllReturns, main = &quot;Weighted Returns by Objective Function and Risk Tolerance&quot;,
+                 wealth.index = TRUE, legend.loc = &quot;topleft&quot;, colorset = rich6equal)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre class="r"><code>charts.PerformanceSummary(AllReturns, main = &quot;Performance for Different Weighted Assets&quot;, 
+                          wealth.index = TRUE, colorset = rich6equal)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-20-2.png" width="672" /></p>
+<div id="additional" class="section level3">
+<h3>Additional</h3>
+<p>(Some additional test data I leave here for future reference)</p>
+<pre class="r"><code>data &lt;- data.frame(
+  A_1 = c(2.3, 0.93, 0.62, 0.74, -0.23),
+  A_2 = c(0.93, 1.40, 0.2, 0.56, 0.26),
+  A_3 = c(0.62, 0.2, 1.80, 0.78, -0.27),
+  A_4 = c(0.74, 0.56, 0.78, 3.4, -0.56),
+  A_5 = c(-0.23, 0.26, -0.27, -0.56, 2.60),
+  Security = c(1, 2, 3, 4, 5),
+  R_i = c(15.1, 12.5, 14.7, 9.02, 17.68)
+)
+
+Sigma &lt;- data[, 1:5]
+w &lt;- Variable(nrow(data))
+mu &lt;- data[, 7]
+n_samples = 10
+lambdas &lt;- 10^seq(-2, 3, length.out = n_samples)
+
+ret_data &lt;- rep(0, n_samples)
+risk_data &lt;- rep(0, n_samples)
+w_data &lt;- matrix(0, nrow = n_samples, ncol = nrow(data))
+
+for(i in seq_along(lambdas)) {
+  lambda &lt;- lambdas[i]
+  problem &lt;- Problem(
+    Maximize(
+      t(mu) %*% w - lambda*quad_form(w, Sigma)
+    ),
+    constraints = list(w &gt;= 0, sum(w) == 1))
+  solution &lt;- solve(problem)
+  w_data[i,] &lt;- solution$getValue(w)
+  risk_data[i] &lt;- solution$getValue(sqrt(quad_form(w, Sigma)))
+  ret_data[i] &lt;- solution$getValue(t(mu) %*% w)
+}
+
+ggplot() +
+  geom_line(mapping = aes(x = risk_data, y = ret_data), color = &quot;blue&quot;) +
+  geom_point(mapping = aes(x = sqrt(diag(as.matrix(Sigma))), y = mu), color = &quot;red&quot;)</code></pre>
+<p><img src="/post/portfolio-optimisation-model/portfolio-optimisation-R_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+</div>
+</div>
+
+    </div>
+
+    
+
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/finance/">finance</a>
+  
+  <a class="badge badge-light" href="/tags/quant-finance/">quant finance</a>
+  
+  <a class="badge badge-light" href="/tags/yahoo-finance/">yahoo-finance</a>
+  
+  <a class="badge badge-light" href="/tags/portfolio-optimisation/">portfolio optimisation</a>
+  
+  <a class="badge badge-light" href="/tags/asset-pricing/">asset pricing</a>
+  
+  <a class="badge badge-light" href="/tags/quantstrat/">quantstrat</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  <div class="media author-card">
+    
+      
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu88685f9f250f5c15d78dab2d9552b11c_15179_250x250_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="/">Matthew Smith</a></h5>
+      <h6 class="card-subtitle">Researcher</h6>
+      <p class="card-text">I am a researcher with a focus on Machine Learning methods applied to economics and finance.</p>
+      <ul class="network-icon" aria-hidden="true">
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="/#contact" >
+              <i class="fas fa-envelope"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://twitter.com/MatthewSmith786" target="_blank" rel="noopener">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://scholar.google.co.uk/" target="_blank" rel="noopener">
+              <i class="ai ai-google-scholar"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://github.com/msmith01" target="_blank" rel="noopener">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/post/factor-modeling-for-portfolio-optimisation/factor-modeling-portfolio-optimisation/">Factor Modeling in R</a></li>
+          
+          <li><a href="/post/understanding-ttr-package/technical-trading-rules/">Quantitative Trading Strategies using quantmod</a></li>
+          
+          <li><a href="/post/quantstrat-rolling-logistic/quantstrat/">Learning the Quantstrat and Blotter packages</a></li>
+          
+          <li><a href="/post/yahoo-finance-ipo/">Scraping Yahoo Finance IPO Data</a></li>
+          
+          <li><a href="/post/nvidia-share-price/">Tracking NVDA&#39;s share price</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+<section id="comments">
+  
+    
+<div id="disqus_thread"></div>
+<script>
+  let disqus_config = function () {
+    
+    
+    
+  };
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+      return;
+    }
+    var d = document, s = d.createElement('script'); s.async = true;
+    s.src = 'https://' + "lf0-com" + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+  
+</section>
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    <script id="dsq-count-scr" src="https://lf0-com.disqus.com/count.js" async></script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.130521ecfc6f534c52c158217bbff718.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+        
+  </p>
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

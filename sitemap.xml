@@ -3,18 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/courses/example/example1/</loc>
+    <loc>/courses/portfolio_theory/chap1/</loc>
     <lastmod>2019-05-05T00:00:00+01:00</lastmod>
   </url>
   
   <url>
-    <loc>/courses/example/</loc>
+    <loc>/courses/portfolio_theory/</loc>
     <lastmod>2018-09-09T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/courses/example/example2/</loc>
-    <lastmod>2019-05-05T00:00:00+01:00</lastmod>
   </url>
   
   <url>
@@ -34,72 +29,117 @@
   
   <url>
     <loc>/authors/admin/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/asset-pricing/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/authors/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/econometrics/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/finance/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/mathematical-finance/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/post/portfolio-optimisation-models/portfolio-allocation/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <loc>/categories/portfolio-optimisation/</loc>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/portfolio-optimisation/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/quant-finance/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/portfolio-optimisation-model/portfolio-optimisation-r/</loc>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/quantstrat/</loc>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/time-series/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/yahoo-finance/</loc>
-    <lastmod>2019-11-18T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-27T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/algo-trading/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/algorithmic-trading/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/understanding-ttr-package/technical-trading-rules/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/systematic-trading/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/systematic-trading/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/technical-analysis/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/technical-trading/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/time-series/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/trading/</loc>
+    <lastmod>2019-12-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -109,6 +149,11 @@
   
   <url>
     <loc>/tags/factor-models/</loc>
+    <lastmod>2019-11-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/mathematical-finance/</loc>
     <lastmod>2019-11-14T00:00:00+00:00</lastmod>
   </url>
   
@@ -139,21 +184,6 @@
   
   <url>
     <loc>/post/quantstrat-rolling-logistic/quantstrat/</loc>
-    <lastmod>2019-09-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/quantstrat/</loc>
-    <lastmod>2019-09-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/technical-analysis/</loc>
-    <lastmod>2019-09-29T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/trading/</loc>
     <lastmod>2019-09-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -248,12 +278,12 @@
   </url>
   
   <url>
-    <loc>/categories/aws/</loc>
+    <loc>/tags/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/aws/</loc>
+    <loc>/categories/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   

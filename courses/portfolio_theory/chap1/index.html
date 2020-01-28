@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Matthew Smith">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="trueIntroduction to efficient marketsEach market participant participant has differing views on what data is telling them. The market is thus a weighted average of investor views. In efficient markets all relevant information is reflected in the current share price of a stock.
+Fama (1970) suggested 3 types of market efficiency
+Weak form: In which the current market price reflects all information contained in past pricesSemi-strong form: In which the current price reflects all publically avalable informationStrong form: In which the current price relects all information, regardless of whether the information is public or notRandom WalkA random walk in the context of finance suggests that changes in stock prices have the same distribution and are independent of each other and thus past stock prices cannot be used to predict the future price or movement.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/courses/portfolio_theory/chap1/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#3f51b5">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.5949897e171a43c4edc8bc03336e8676.css">
+
+  
+
+  
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-151949400-1', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="https://www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/courses/portfolio_theory/chap1/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@MatthewSmith786">
+  <meta property="twitter:creator" content="@MatthewSmith786">
+  
+  <meta property="og:site_name" content="Matthew Smith R Shenanigans">
+  <meta property="og:url" content="/courses/portfolio_theory/chap1/">
+  <meta property="og:title" content="Market Efficiency | Matthew Smith R Shenanigans">
+  <meta property="og:description" content="trueIntroduction to efficient marketsEach market participant participant has differing views on what data is telling them. The market is thus a weighted average of investor views. In efficient markets all relevant information is reflected in the current share price of a stock.
+Fama (1970) suggested 3 types of market efficiency
+Weak form: In which the current market price reflects all information contained in past pricesSemi-strong form: In which the current price reflects all publically avalable informationStrong form: In which the current price relects all information, regardless of whether the information is public or notRandom WalkA random walk in the context of finance suggests that changes in stock prices have the same distribution and are independent of each other and thus past stock prices cannot be used to predict the future price or movement."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="twitter:image" content="/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-05-05T00:00:00&#43;01:00">
+    
+    <meta property="article:modified_time" content="2019-05-05T00:00:00&#43;01:00">
+  
+
+  
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Market Efficiency | Matthew Smith R Shenanigans</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Matthew Smith R Shenanigans</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/courses/"><span>Courses</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      
+
+
+
+
+
+<form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-3" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <span><i class="fas fa-bars"></i></span>
+  </button>
+
+  
+  <input name="q" type="search" class="form-control" placeholder="Search..." autocomplete="off">
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  <div class="docs-toc-item">
+    <a class="docs-toc-link" href="/courses/portfolio_theory/chap1/">Portfolio Theory</a>
+    <ul class="nav docs-sidenav">
+      
+      <li class="active">
+        <a href="/courses/portfolio_theory/chap1/">Market Efficiency</a>
+      </li>
+      
+    </ul>
+    
+
+  </div>
+  
+  
+</nav>
+
+    </div>
+
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article">
+
+        <div class="docs-article-container">
+          <h1>Market Efficiency</h1>
+
+          <div class="article-style">
+            
+
+<div id="TOC">
+true
+</div>
+
+<div id="introduction-to-efficient-markets" class="section level2">
+<h2>Introduction to efficient markets</h2>
+<p>Each market participant participant has differing views on what data is telling them. The market is thus a weighted average of investor views. In <em>efficient markets</em> all relevant information is reflected in the current share price of a stock.</p>
+<p><span class="citation">Fama (<a href="#ref-malkiel1970efficient" role="doc-biblioref">1970</a>)</span> suggested 3 types of market efficiency</p>
+<ul>
+<li><em>Weak form</em>: In which the current market price reflects <strong>all information contained in past prices</strong></li>
+<li><em>Semi-strong form</em>: In which the current price reflects <strong>all publically avalable information</strong></li>
+<li><em>Strong form</em>: In which the current price relects <strong>all information, regardless of whether the information is public or not</strong></li>
+</ul>
+</div>
+<div id="random-walk" class="section level2">
+<h2>Random Walk</h2>
+<p>A random walk in the context of finance suggests that changes in stock prices have the same distribution and are independent of each other and thus past stock prices cannot be used to predict the future price or movement. That is, stock prices take a random and unpredictable path.</p>
+<p>Let <span class="math inline">\(\epsilon_{t+1}\)</span> be a sequence of independently and identically distributed (i.i.d) random variables with an expected value of 0. Then, <span class="math inline">\(P_{t+1} = P_{t} + \epsilon_{t+1}\)</span> is a random walk and <span class="math inline">\(P_{t+1} = P_{t} + \mu + \epsilon_{t+1}\)</span> is a random walk with a drift component <span class="math inline">\(\mu &gt; 0\)</span>.</p>
+<p>Market efficiency implies that prices reflect all current available information. As new information is made public then prices will adjust accordingly. We cannot predict this new information but we can take expectations such that, <span class="math inline">\(E(P_{t+1}) = P_{t} + E(\epsilon_{t+1})\)</span> where <span class="math inline">\(\epsilon_{t+1}\)</span> is expected news about a given stock. The <span class="math inline">\(E(\epsilon_{t+1}) = 0\)</span> so <span class="math inline">\(E(P_{t+1}) = P_{t}\)</span> but investors should obtain some compensation for bearing risk which is reflected in <span class="math inline">\(\mu\)</span>, therefore <span class="math inline">\(E(P_{t+1}) = P_{t} + \mu + E(\epsilon_{t+1})\)</span> becomes <span class="math inline">\(E(P_{t+1}) = P_{t} + \mu\)</span> with <span class="math inline">\(E(\epsilon_{t+1})\)</span> = 0.</p>
+<p>There are a few market phenomena that researchers and academics try to answer, the <em>value premium</em> and <em>momentum premium</em>.</p>
+<ul>
+<li><p><strong>Value</strong>: <span class="citation">Fama and Blume (<a href="#ref-fama1966filter" role="doc-biblioref">1966</a>)</span> and <span class="citation">Alexander (<a href="#ref-alexander1961price" role="doc-biblioref">1961</a>)</span> studied that some strategies can make money when transaction costs are not accounted for. Empirical findings have found that <em>value</em> stocks (stocks with a high <strong>book-to-market</strong> ratio) outperform <em>growth</em> stocks (stocks with a low <strong>book-to-market</strong> ratio) <span class="citation">Fama and French (<a href="#ref-fama1992cross" role="doc-biblioref">1992</a>)</span>. Tech stocks are usually <em>growth</em> stocks and have a low <strong>book value</strong> since much of their value is in interlectual property and not in industrial/manufacturing plants, thus they have a lower relative <strong>book value</strong> compared to their <strong>market value</strong>. <em>Value</em> stocks have a high book value relative to market value and would be manufacturing plants with large <em>fixed assets</em> pushing the <em>book value</em> up.</p></li>
+<li><p><strong>Momentum</strong>: Past winners outperform past losers over a time period of 3 - 12 months <span class="citation">Wermers (<a href="#ref-wermers1997momentum" role="doc-biblioref">1997</a>)</span>.</p></li>
+</ul>
+<p>Both premiums imply that markets are inefficient. Not all stocks are correctly priced all the time. Some stocks are overpriced whilst other stocks are underpriced, however on average stocks are correctly priced.</p>
+<div id="refs" class="references">
+<div id="ref-alexander1961price">
+<p>Alexander, Sidney S. 1961. “Price Movements in Speculative Markets: Trends or Random Walks.” <em>Industrial Management Review (Pre-1986)</em> 2 (2): 7.</p>
+</div>
+<div id="ref-malkiel1970efficient">
+<p>Fama, Eugene F. 1970. “Efficient Capital Markets: A Review of Theory and Empirical Work.” <em>The Journal of Finance</em> 25 (2): 383–417.</p>
+</div>
+<div id="ref-fama1966filter">
+<p>Fama, Eugene F, and Marshall E Blume. 1966. “Filter Rules and Stock-Market Trading.” <em>The Journal of Business</em> 39 (1): 226–41.</p>
+</div>
+<div id="ref-fama1992cross">
+<p>Fama, Eugene F, and Kenneth R French. 1992. “The Cross-Section of Expected Stock Returns.” <em>The Journal of Finance</em> 47 (2): 427–65.</p>
+</div>
+<div id="ref-wermers1997momentum">
+<p>Wermers, Russ. 1997. “Momentum Investment Strategies of Mutual Funds, Performance Persistence, and Survivorship Bias.” <em>Unpublished Working Paper, University of Colorado,[downloaded from Http://Bus. Colorado. Edu/Faculty/Wermers/.]</em>.</p>
+</div>
+</div>
+</div>
+
+          </div>
+
+          
+
+
+
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on May 5, 2019</p>
+
+          
+<p class="edit-page">
+  <a href="https://github.com/gcushen/hugo-academic/edit/master/content/courses%5cportfolio_theory%5cchap1.html">
+    <i class="fas fa-pen pr-2"></i>Edit this page
+  </a>
+</p>
+
+
+
+          
+<section id="comments">
+  
+    
+<div id="disqus_thread"></div>
+<script>
+  let disqus_config = function () {
+    
+    
+    
+  };
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+      return;
+    }
+    var d = document, s = d.createElement('script'); s.async = true;
+    s.src = 'https://' + "lf0-com" + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+  
+</section>
+
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+        
+  </p>
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.1/anchor.min.js" integrity="sha256-pB/deHc9CGfFpJRjC43imB29Rse8tak+5eXqntO94ck=" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    <script id="dsq-count-scr" src="https://lf0-com.disqus.com/count.js" async></script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.130521ecfc6f534c52c158217bbff718.js"></script>
+
+    
+
+
+
+
+
+
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

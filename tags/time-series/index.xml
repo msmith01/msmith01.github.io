@@ -5,7 +5,7 @@
     <link>/tags/time-series/</link>
       <atom:link href="/tags/time-series/index.xml" rel="self" type="application/rss+xml" />
     <description>time series</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 18 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 29 Dec 2019 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
       <title>time series</title>
@@ -13,114 +13,2610 @@
     </image>
     
     <item>
-      <title>Portfolio Allocation Optimisation</title>
-      <link>/post/portfolio-optimisation-models/portfolio-allocation/</link>
-      <pubDate>Mon, 18 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/post/portfolio-optimisation-models/portfolio-allocation/</guid>
+      <title>Quantitative Trading Strategies using quantmod</title>
+      <link>/post/understanding-ttr-package/technical-trading-rules/</link>
+      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
+      <guid>/post/understanding-ttr-package/technical-trading-rules/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
-&lt;p&gt;I construct a series of portfolio optimisation models and analyse the results.&lt;/p&gt;
-&lt;div id=&#34;minimum-variance-portfolio&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Minimum-Variance Portfolio&lt;/h3&gt;
-&lt;p&gt;The global minimum-variance portfolio &lt;span class=&#34;math inline&#34;&gt;\(w^{gmv}\)&lt;/span&gt; is a portfolio of assets with gives us the lowest possible return variance.&lt;/p&gt;
-&lt;p&gt;The objective function is;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\begin{eqnarray} \min_{w} \sum_{m,n = 1}^k \dfrac{1}{2} W_{m}W_{n} \Sigma_{mn} \\ \text{subject to } \sum_{n = 1}^k w_{n} = 1 \end{eqnarray}\]&lt;/span&gt;
-Where &lt;span class=&#34;math inline&#34;&gt;\(\Sigma{mn}\)&lt;/span&gt; is the variance covariance matrix.&lt;/p&gt;
-&lt;p&gt;We set the lagrangian function up using the objective function and the constraints.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\mathcal{L} = \dfrac{1}{2} W_{m}W_{n} \Sigma_{mn} - \lambda[\sum_{m,n = 1}^k w_{n} - 1]\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Taking the derivatives of the lagrangian function:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{1}} = \sum_{n = 1}^k \Sigma_{1n}w_{n} - \lambda = 0\]&lt;/span&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{2}} = \sum_{n = 1}^k \Sigma_{2n}w_{n} - \lambda = 0\]&lt;/span&gt;
-We do this up to &lt;span class=&#34;math inline&#34;&gt;\(k\)&lt;/span&gt; assets.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial w_{k}} = \sum_{n = 1}^k \Sigma_{kn}w_{n} - \lambda = 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;And finally take the derivative with respect to the lagrange.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \mathcal{L}} {\partial \lambda} = \sum_{n = 1}^kw_{n} -1 = 0\]&lt;/span&gt;&lt;/p&gt;
-$$
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; Var &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Cov &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Mat &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; 1 &amp;amp; ...&amp;amp; 1 &amp;amp; 0 \\
-\end{bmatrix}\]&lt;/span&gt;
+&lt;div id=&#34;strategies&#34; class=&#34;section level1 tabset tabset-fade tabset-pills&#34;&gt;
+&lt;h1&gt;Strategies&lt;/h1&gt;
+&lt;div id=&#34;introduction&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Introduction:&lt;/h2&gt;
+&lt;p&gt;This post goes through a number of the technical trading functions in the &lt;code&gt;TTR&lt;/code&gt; package &lt;a href=&#34;https://cran.r-project.org/web/packages/TTR/TTR.pdf&#34;&gt;here&lt;/a&gt;. I add definitions and show examples of how the functions work.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(quantmod)
+library(tidyquant)
+library(TTR)
+library(timetk)
+library(tidyr)
+library(ggplot2) 
+library(directlabels)
+library(data.table)
+library(quantstrat)
+library(purrr)
+library(quantstrat)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can download some data using the &lt;code&gt;quantmod&lt;/code&gt; package which stores the different assets into our Global Environment.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;start_date &amp;lt;- &amp;quot;2013-01-01&amp;quot;
+end_date &amp;lt;- &amp;quot;2017-08-31&amp;quot;
+symbols &amp;lt;- c(&amp;quot;AAPL&amp;quot;, &amp;quot;AMD&amp;quot;, &amp;quot;ADI&amp;quot;,  &amp;quot;ABBV&amp;quot;, &amp;quot;A&amp;quot;,  &amp;quot;APD&amp;quot;, &amp;quot;AA&amp;quot;, &amp;quot;CF&amp;quot;, &amp;quot;NVDA&amp;quot;, &amp;quot;HOG&amp;quot;, &amp;quot;WMT&amp;quot;, &amp;quot;AMZN&amp;quot;
+             #,&amp;quot;MSFT&amp;quot;, &amp;quot;F&amp;quot;, &amp;quot;INTC&amp;quot;, &amp;quot;ADBE&amp;quot;, &amp;quot;AMG&amp;quot;, &amp;quot;AKAM&amp;quot;, &amp;quot;ALB&amp;quot;, &amp;quot;ALK&amp;quot;
+)
+
+getSymbols(symbols, 
+           from = start_date,
+           to = end_date)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;AAPL&amp;quot; &amp;quot;AMD&amp;quot;  &amp;quot;ADI&amp;quot;  &amp;quot;ABBV&amp;quot; &amp;quot;A&amp;quot;    &amp;quot;APD&amp;quot;  &amp;quot;AA&amp;quot;   &amp;quot;CF&amp;quot;   &amp;quot;NVDA&amp;quot; &amp;quot;HOG&amp;quot; 
+## [11] &amp;quot;WMT&amp;quot;  &amp;quot;AMZN&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The first few observations for &lt;code&gt;AAPL&lt;/code&gt; looks like:&lt;/p&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL.Open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL.High
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL.Low
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL.Close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL.Volume
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+AAPL.Adjusted
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-01-02
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+79.11714
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+79.28571
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+77.37572
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+78.43285
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+140129500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.85055
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-01-03
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+78.26857
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+78.52428
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+77.28571
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+77.44286
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+88241300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+67.98149
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-01-04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+76.71000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+76.94714
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+75.11857
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+75.28571
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+148583400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+66.08789
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-01-07
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+74.57143
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+75.61429
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.60000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+74.84286
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+121039100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+65.69916
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-01-08
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+75.60143
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+75.98428
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+74.46429
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+75.04429
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+114676800
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+65.87595
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-01-09
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+74.64286
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+75.00143
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.71286
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.87143
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+101901100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+64.84639
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bollinger-bands-strategy&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Bollinger Bands Strategy&lt;/h2&gt;
+&lt;p&gt;The idea of this strategy is&lt;/p&gt;
+&lt;p&gt;Definition: A Bollinger Band consists of 3 lines. A simple moving average (SMA) and two additional lines plotted 2 standard deviations above and below the SMA. The standard deviation measures a stocks volatility and so when the markers are more volatile then the Bollinger Bands become wider. When the market is flat the Bollinger Banks contract.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chartSeries(NVDA,
+            theme = chartTheme(&amp;quot;white&amp;quot;),
+            TA = c(addBBands(n = 20, sd = 2, ma = &amp;quot;SMA&amp;quot;, draw = &amp;#39;bands&amp;#39;, on = -1))) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chartSeries(AMZN,
+            theme = chartTheme(&amp;quot;white&amp;quot;),
+            TA = c(addBBands(n = 20, sd = 2, ma = &amp;quot;SMA&amp;quot;, draw = &amp;#39;bands&amp;#39;, on = -1))) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-4-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;We set the initial quantstrat parameters and initialise the strategy.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;rm.strat(&amp;quot;BollingerBandsStrat&amp;quot;)
+currency(&amp;#39;USD&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;USD&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;stock(symbols, currency = &amp;#39;USD&amp;#39;, multiplier = 1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;AAPL&amp;quot; &amp;quot;AMD&amp;quot;  &amp;quot;ADI&amp;quot;  &amp;quot;ABBV&amp;quot; &amp;quot;A&amp;quot;    &amp;quot;APD&amp;quot;  &amp;quot;AA&amp;quot;   &amp;quot;CF&amp;quot;   &amp;quot;NVDA&amp;quot; &amp;quot;HOG&amp;quot; 
+## [11] &amp;quot;WMT&amp;quot;  &amp;quot;AMZN&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;init_date = as.Date(start_date) - 1
+init_equity = 1000
+portfolio.st &amp;lt;- account.st &amp;lt;- &amp;#39;BollingerBandsStrat&amp;#39;
+initPortf(portfolio.st,
+          symbols = symbols,
+          initDate = init_date)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;BollingerBandsStrat&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initAcct(account.st,
+         portfolios = &amp;#39;BollingerBandsStrat&amp;#39;,
+         initDate = init_date)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;BollingerBandsStrat&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initOrders(portfolio = portfolio.st,
+           initDate = init_date)
+BBands_Strategy &amp;lt;- strategy(&amp;quot;BollingerBandsStrat&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;adding-indicators&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Adding indicators:&lt;/h3&gt;
+&lt;p&gt;We add the Bollinger Bands indicator from the &lt;code&gt;TTR&lt;/code&gt; package to the strategy. It takes a Simple Moving Average (SMA) and the High Low Close data from each of our stocks, add the indicator to the defined &lt;code&gt;BBands_Strategy&lt;/code&gt; and creates a new column in our data alled &lt;code&gt;BollingerBands_Label&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Add indicators
+BBands_Strategy &amp;lt;- add.indicator(
+  strategy = BBands_Strategy,
+  name = &amp;quot;BBands&amp;quot;,
+  arguments = list(
+    HLC = quote(HLC(mktdata)),
+    maType = &amp;#39;SMA&amp;#39;),
+  label = &amp;#39;BollingerBands_Label&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;adding-signals&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Adding signals:&lt;/h3&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The first signal states that when the &lt;strong&gt;close&lt;/strong&gt; is greater than the &lt;strong&gt;upper Bollinger Band&lt;/strong&gt;, add a value of 1 into a column called &lt;strong&gt;Close.gt.LowerBBand&lt;/strong&gt;. The &lt;code&gt;sigCrossover&lt;/code&gt; function only returns the first occurence of the relationship switching from false to true. Replacing with &lt;code&gt;sigComparison&lt;/code&gt; here would return all occurences of the relationship being greater than the upper band.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The second signal states that when the &lt;strong&gt;close&lt;/strong&gt; is less than the &lt;strong&gt;lower Bollinger Band&lt;/strong&gt; add a value of 1 into a column called &lt;strong&gt;Close.lt.LowerBBand&lt;/strong&gt;. Again using the &lt;code&gt;sigCrossover&lt;/code&gt; function to only return the first occurence.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;The third signal&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;\begin{bmatrix}
-w_{1} \
-… \
-… \
-… \
-w_{k} \
+&lt;p&gt;The below code creates 3 new columns in our &lt;code&gt;mktdata&lt;/code&gt;. &lt;strong&gt;dn.BollingerBands_Label&lt;/strong&gt;, &lt;strong&gt;mavg.BollingerBands_Label&lt;/strong&gt;, &lt;strong&gt;up.BollingerBands_Label&lt;/strong&gt;. Which are the &lt;strong&gt;lower&lt;/strong&gt;, &lt;strong&gt;middle&lt;/strong&gt; and &lt;strong&gt;upper&lt;/strong&gt; Bollinger Band values. It also creates the following: &lt;strong&gt;Close.gt.UpperBBand&lt;/strong&gt;, &lt;strong&gt;Close.lt.LowerBBand&lt;/strong&gt;, &lt;strong&gt;Cross.MiddleBBand&lt;/strong&gt;. Which takes on the values according to whether the `sigCrossover’ has occured.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Add Signals
 
-\end{bmatrix}&lt;/p&gt;
-&lt;p&gt;=&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-0 \\
-... \\
-... \\
-... \\
-0 \\
-1
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;Which represents the variance covariance of the assets. If we can invert the first matrix then we have a solution to the system.&lt;/p&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;\begin{bmatrix}
-w_{1} \
-… \
-… \
-… \
-w_{k} \
+BBands_Strategy &amp;lt;- add.signal(
+  BBands_Strategy, 
+  name = &amp;quot;sigCrossover&amp;quot;,
+  arguments = list(
+    columns = c(&amp;quot;Close&amp;quot;,&amp;quot;up&amp;quot;),
+    relationship = &amp;quot;gt&amp;quot;),
+  label = &amp;quot;Close.gt.UpperBBand&amp;quot;)
 
-\end{bmatrix}&lt;/p&gt;
-&lt;p&gt;=&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; Var &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Cov &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp; Mat &amp;amp; ... &amp;amp;  &amp;amp; . \\
-&amp;amp;  &amp;amp; ... &amp;amp;  &amp;amp; -1 \\
-&amp;amp; 1 &amp;amp; ...&amp;amp; 1 &amp;amp; 0 \\
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;^{-1}&lt;/p&gt;
-&lt;span class=&#34;math display&#34;&gt;\[\begin{bmatrix}
-0 \\
-... \\
-... \\
-... \\
-0 \\
+BBands_Strategy &amp;lt;- add.signal(
+  BBands_Strategy,
+  name = &amp;quot;sigCrossover&amp;quot;,
+  arguments = list(
+    columns = c(&amp;quot;Close&amp;quot;,&amp;quot;dn&amp;quot;),
+    relationship = &amp;quot;lt&amp;quot;),
+  label = &amp;quot;Close.lt.LowerBBand&amp;quot;)
+
+BBands_Strategy &amp;lt;- add.signal(
+  BBands_Strategy,
+  name = &amp;quot;sigCrossover&amp;quot;,
+  arguments = list(
+    columns = c(&amp;quot;High&amp;quot;,&amp;quot;Low&amp;quot;,&amp;quot;mavg&amp;quot;),
+    relationship = &amp;quot;op&amp;quot;),
+  label = &amp;quot;Cross.MiddleBBand&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;mktdata&lt;/code&gt; (which gets presented after running &lt;code&gt;applyStrategy&lt;/code&gt; and &lt;code&gt;updatePortf&lt;/code&gt;) would look like:&lt;/p&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+index
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT.Open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT.High
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT.Low
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT.Close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT.Volume
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+WMT.Adjusted
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+dn.BollingerBands_Label
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+mavg.BollingerBands_Label
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+up.BollingerBands_Label
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+pctB.BollingerBands_Label
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Close.gt.UpperBBand
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Close.lt.LowerBBand
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Cross.MiddleBBand
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.29
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.70
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.21
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.39
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3968600
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.98333
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.71632
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.09250
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.46868
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.9871567
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.10
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.23
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.75
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.82
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6821000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.50441
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.82043
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.18133
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.54224
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7762866
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-15
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.54
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.30
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+25683700
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+58.22726
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.84929
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.19050
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.53171
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1096177
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
 1
-\end{bmatrix}\]&lt;/span&gt;
-&lt;p&gt;$$&lt;/p&gt;
-&lt;p&gt;Which gives us the unique solution to the optimisation of the minimum variance portfolio problem.&lt;/p&gt;
-&lt;p&gt;Taking a simple 2 asset example:&lt;/p&gt;
-&lt;p&gt;Suppse we have 2 risky assets which give expected returns and subsequent variance&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math inline&#34;&gt;\(E(R_{A}) = 20\%\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma_{A} = 10\%\)&lt;/span&gt;
-&lt;span class=&#34;math inline&#34;&gt;\(E(R_{B}) = 30\%\)&lt;/span&gt; and &lt;span class=&#34;math inline&#34;&gt;\(\sigma_{B} = 20\%\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Where both assets have a correlation of &lt;span class=&#34;math inline&#34;&gt;\(\rho_{AB} = 0.4\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;The objective is to find the expected return and volatility of the minimum variance portfolio such that;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\sigma^2 = \sigma_{A}^2 (W_{A})^2 + \sigma_{B}^2(W_{B})^2 + 2\sigma_{A}\sigma_{B}W_{A}W_{B}\rho_{AB}\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Where;
-&lt;span class=&#34;math display&#34;&gt;\[\sum w_{A} + w_{B} = 1\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \sigma^2 = (0.1)^2w_{A}^2 + (0.2)^2(1-W_{A})^2 + 2(0.1)(0.2)w_{A}(1-w_{A}(0.4)\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \sigma^2 = 0.034w_{A}^2 - 0.064W_{A} + 0.04\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial \sigma^2} {\partial w_{A}} = 0.068w_{A} - 0.064 = 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[w_{A} = 0.94\]&lt;/span&gt;
-&lt;span class=&#34;math display&#34;&gt;\[w_{B} = 1 - 0.94 = 0.06\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;We check if the variance is the minimum by taking the second derivative.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\dfrac{\partial^2 \sigma^2} {\partial^2 w_{A}^2} = 0.068 &amp;gt; 0\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Therefore expected returns is cmputed as:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[E(R) = E(R_{A})w_{A} + E(R_{B})w_{B}\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[E(R) = (0.2)(0.94) + (0.3)(0.06) = 0.206\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;The variance is computed as:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[\sigma^2 = 0.034(0.94)^2 - 0.064(0.94) + 0.04 = 0.00988\]&lt;/span&gt;
-To estimate the volatility we can take the square root of the variance.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \textrm{volatility} = \sqrt{\sigma^2} = 0.0994\]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Therefore the portfolio has a &lt;span class=&#34;math inline&#34;&gt;\(9.94\%\)&lt;/span&gt; volatility and an expected return of &lt;span class=&#34;math inline&#34;&gt;\(20.6\%\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;We can solve this in R using:&lt;/p&gt;
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-19
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.19
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.45
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.54
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.76
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+14682300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+57.77356
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.82222
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.18217
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.54211
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0347239
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-20
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.72
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.85
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.30
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.21
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11973600
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+58.15165
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.78472
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.16833
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.55195
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1211618
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-21
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.00
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.47
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.72
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.26
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+20413100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.03389
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.86119
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.22117
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.58114
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5963869
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-22
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.22
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.54
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.89
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.40
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9165200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.15152
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+68.90249
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.24950
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.59651
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5100843
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.50
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.34
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.44
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.44
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+11817600
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.18514
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.00983
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.32100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.63217
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6597812
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-26
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.69
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.39
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.61
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.11
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+10557600
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.74808
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.14416
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.41200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.67984
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7463509
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-27
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.92
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.96
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.58
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.66
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8819000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+60.21020
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.20490
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.49383
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.78277
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8515172
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-02-28
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.59
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.88
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.78
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.78
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+18883600
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.47081
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.28076
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.56167
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.84258
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7283528
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-03-01
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.78
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.90
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.78
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.74
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+8902300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+60.27741
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.33128
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.63400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.93672
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.8221462
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-03-04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.52
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.26
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.51
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.26
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+10567200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+61.55456
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.27376
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.75150
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+72.22924
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.1513879
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-03-05
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.47
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+74.04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+72.99
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.72
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9142000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+61.94105
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.24347
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+70.95300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+72.66253
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.2693145
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-03-06
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.75
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+74.13
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.38
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+7149600
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+61.65540
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.17483
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.10567
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.03650
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.1424682
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2013-03-07
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.49
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.61
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.20
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.32
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+6680000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+61.60497
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+69.14018
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+71.22567
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+73.31116
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0157056
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;In row 4 of the below table, the &lt;strong&gt;close&lt;/strong&gt; is 68.76 which is less than the &lt;strong&gt;lower Bollinger Band&lt;/strong&gt; &lt;strong&gt;dn.BollingerBands_Label&lt;/strong&gt; column 68.822 and a &lt;code&gt;1&lt;/code&gt; is indicated in the &lt;strong&gt;Close.lt.LowerBBand&lt;/strong&gt; column. In row 13 of the same data, there is a &lt;code&gt;1&lt;/code&gt; in the column &lt;strong&gt;Close.gt.UpperBBand&lt;/strong&gt;. The &lt;strong&gt;close&lt;/strong&gt; is 73.26 and the &lt;strong&gt;up.BollingerBands_Label&lt;/strong&gt; is 72.23 so the &lt;strong&gt;close&lt;/strong&gt; is &lt;strong&gt;gt&lt;/strong&gt; then &lt;strong&gt;Upper Bollinger Band&lt;/strong&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;add-the-rules&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Add the rules&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;When the &lt;strong&gt;close&lt;/strong&gt; is greater than the &lt;strong&gt;upper Bollinger Band&lt;/strong&gt; we go short by a quantity of 100 at the market price&lt;/li&gt;
+&lt;li&gt;When the &lt;strong&gt;close&lt;/strong&gt; is lower than the &lt;strong&gt;lower Bollinger Band&lt;/strong&gt; we go long by a quantity of 100 at the market price.&lt;/li&gt;
+&lt;li&gt;When the &lt;strong&gt;Close&lt;/strong&gt; crosses the &lt;strong&gt;middle Bollinger Band&lt;/strong&gt; we exit all our positions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Add rules
+
+BBands_Strategy &amp;lt;- add.rule(
+  BBands_Strategy,
+  name = &amp;#39;ruleSignal&amp;#39;,
+  arguments = list(
+    sigcol = &amp;quot;Close.gt.UpperBBand&amp;quot;, 
+    sigval = TRUE, 
+    orderqty = -100, 
+    ordertype = &amp;#39;market&amp;#39;,
+    orderside = NULL,
+    threshold = NULL),
+  type = &amp;#39;enter&amp;#39;)
+
+BBands_Strategy &amp;lt;- add.rule(
+  BBands_Strategy, 
+  name = &amp;#39;ruleSignal&amp;#39;,
+  arguments = list(
+    sigcol = &amp;quot;Close.lt.LowerBBand&amp;quot;,
+    sigval = TRUE,
+    orderqty = 100,
+    ordertype = &amp;#39;market&amp;#39;,
+    orderside = NULL,
+    threshold = NULL),
+  type = &amp;#39;enter&amp;#39;)
+
+BBands_Strategy &amp;lt;- add.rule(
+  BBands_Strategy,
+  name = &amp;#39;ruleSignal&amp;#39;,
+  arguments = list(
+    sigcol = &amp;quot;Cross.MiddleBBand&amp;quot;,
+    sigval = TRUE,
+    orderqty = &amp;#39;all&amp;#39;,
+    ordertype = &amp;#39;market&amp;#39;,
+    orderside = NULL,
+    threshold = NULL),
+  type = &amp;#39;exit&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Apply the strategy and update the portfolio&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;out &amp;lt;- applyStrategy(
+  strategy = BBands_Strategy,
+  portfolios = &amp;#39;BollingerBandsStrat&amp;#39;,
+  parameters = list( 
+    sd = 1.6, # number of standard deviations
+    n = 20) # MA periods
+  )
+
+updatePortf(Portfolio = &amp;#39;BollingerBandsStrat&amp;#39;, Dates = paste(&amp;#39;::&amp;#39;,as.Date(Sys.time()),sep=&amp;#39;&amp;#39;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Find the best performance stocks:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tradeStats(portfolio.st) %&amp;gt;% 
+  tibble::rownames_to_column(&amp;quot;ticker&amp;quot;) %&amp;gt;%
+  t() %&amp;gt;% 
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ticker
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AAPL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ABBV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ADI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AMD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AMZN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+APD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CF
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HOG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NVDA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+WMT
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Portfolio
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+BollingerBandsStrat
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Symbol
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+A
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AAPL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ABBV
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+ADI
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AMD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+AMZN
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+APD
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+CF
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+HOG
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+NVDA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+WMT
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Num.Txns
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+181
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+188
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+163
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+182
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+172
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+165
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+176
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+171
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+175
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+182
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+201
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+184
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Num.Trades
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+70
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+68
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+57
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+63
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+67
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+64
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+62
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+71
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+71
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+68
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+73
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+66
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Net.Trading.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3302.7855
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-663.6981
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-5547.4283
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-288.0025
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1756.0009
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+966.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+34942.0472
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+8510.1655
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+7601.2010
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+4524.0020
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-2515.9992
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3987.0002
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Avg.Trade.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+48.525511
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-6.774974
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-97.323304
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-2.285762
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+26.208969
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+16.046875
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+529.436174
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+119.861486
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+107.059169
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+66.529441
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-34.465742
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+60.545452
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Med.Trade.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+66.88130
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+76.89585
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+159.99990
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+77.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+84.99980
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+18.50000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1180.00030
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+148.01180
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+129.00010
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+122.99995
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+35.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+42.00020
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Largest.Winner
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+711.7301
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+995.0003
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+965.1434
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+920.9999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1265.0001
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+152.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+9117.9932
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1882.5164
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+939.4002
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1174.0003
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1655.0003
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1356.0006
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Largest.Loser
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-528.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-3104.6764
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-11317.0036
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1817.0016
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-2617.0005
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-414.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-13718.9819
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1626.9989
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-903.9999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1227.0002
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-4844.0012
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1395.0009
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Gross.Profits
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+6415.110
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+8216.008
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+15231.716
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+8640.999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+9168.000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2080.000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+96296.006
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+16046.256
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+11782.200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+11733.502
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+11577.998
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+9388.999
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Gross.Losses
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-3018.324
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-8676.707
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-20779.144
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-8785.002
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-7411.999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1053.000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-63470.963
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-7536.091
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-4180.999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-7209.500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-14093.998
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-5392.999
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Std.Dev.Trade.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+175.69143
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+525.90402
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1607.09458
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+413.50580
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+444.63931
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+80.12096
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3565.68276
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+463.03163
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+276.80923
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+404.27517
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+794.13687
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+370.13593
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Std.Err.Trade.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+20.99914
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+63.77523
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+212.86488
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+52.09683
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+54.32134
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+10.01512
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+452.84216
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+54.95174
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+32.85121
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+49.02557
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+92.94669
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+45.56058
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Percent.Positive
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+65.71429
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+72.05882
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+68.42105
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+66.66667
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+71.64179
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+78.12500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+67.74194
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+67.60563
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+76.05634
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+64.70588
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+61.64384
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+72.72727
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Percent.Negative
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+34.28571
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+27.94118
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+31.57895
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+33.33333
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+28.35821
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+20.31250
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+32.25806
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+32.39437
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+23.94366
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+35.29412
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+38.35616
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+25.75758
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Profit.Factor
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2.1253880
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.9469040
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.7330290
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.9836081
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.2369133
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.9753086
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.5171663
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2.1292547
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2.8180346
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.6275056
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.8214843
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.7409606
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Avg.Win.Trade
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+139.4589
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+167.6736
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+390.5568
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+205.7381
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+191.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+41.6000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2292.7620
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+334.2970
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+218.1889
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+266.6705
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+257.2889
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+195.6041
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Med.Win.Trade
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+111.23030
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+93.71700
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+410.00060
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+189.00015
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+132.49990
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+31.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1834.00115
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+223.84460
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+179.20000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+180.99995
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+91.99980
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+98.99985
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Avg.Losing.Trade
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-125.7635
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-456.6688
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1154.3969
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-418.3334
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-390.1052
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-81.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-3173.5481
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-327.6561
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-245.9411
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-300.3958
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-503.3571
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-317.2352
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Med.Losing.Trade
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-93.50035
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-129.76180
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-400.99975
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-288.99940
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-142.00030
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-33.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1961.00005
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-205.00030
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-166.99940
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-155.50005
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-138.99980
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-136.00040
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Avg.Daily.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+48.525511
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-6.774974
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-97.323304
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-2.285762
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+26.208969
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+16.046875
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+529.436174
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+119.861486
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+107.059169
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+66.529441
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-34.465742
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+60.545452
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Med.Daily.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+66.88130
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+76.89585
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+159.99990
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+77.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+84.99980
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+18.50000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1180.00030
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+148.01180
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+129.00010
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+122.99995
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+35.00000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+42.00020
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Std.Dev.Daily.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+175.69143
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+525.90402
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1607.09458
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+413.50580
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+444.63931
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+80.12096
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3565.68276
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+463.03163
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+276.80923
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+404.27517
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+794.13687
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+370.13593
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Std.Err.Daily.PL
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+20.99914
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+63.77523
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+212.86488
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+52.09683
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+54.32134
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+10.01512
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+452.84216
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+54.95174
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+32.85121
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+49.02557
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+92.94669
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+45.56058
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Ann.Sharpe
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+4.38449749
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-0.20450380
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-0.96133704
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-0.08775051
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.93571231
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3.17939560
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2.35706295
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+4.10931348
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+6.13964943
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2.61238437
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-0.68895769
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2.59669262
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Max.Drawdown
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1221.745
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-4652.209
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-12870.005
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-4976.003
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-3965.999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-669.000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-48292.017
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-2705.000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1757.999
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-3237.000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-14917.000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-3010.999
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Profit.To.Max.Draw
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2.70333546
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-0.14266301
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-0.43103544
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-0.05787828
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.44276383
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.44394619
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.72355742
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3.14608694
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+4.32378029
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.39759098
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-0.16866657
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.32414540
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Avg.WinLoss.Ratio
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.1088981
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.3671669
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.3383211
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.4918040
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.4896115
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.5135802
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.7224601
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.0202679
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.8871590
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.8877303
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.5111458
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.6165902
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Med.WinLoss.Ratio
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.1896244
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.7222233
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.0224460
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.6539811
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.9330959
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.9393939
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.9352377
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.0919233
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.0730577
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1.1639864
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.6618700
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+0.7279379
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Max.Equity
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3659.7860
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1090.9615
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+6834.5749
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+607.9984
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2919.9995
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1058.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+37225.0306
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+9494.1666
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+7601.2010
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+6193.0030
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2511.9993
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+4036.9994
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+Min.Equity
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-555.0795
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-3561.2473
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-6035.4303
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-4687.0026
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1045.9995
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-101.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-11066.9863
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-848.2877
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-1744.5987
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-847.9955
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-12405.0003
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-2489.9988
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+End.Equity
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3302.7855
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-663.6981
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-5547.4283
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-288.0025
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+1756.0009
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+966.0000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+34942.0472
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+8510.1655
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+7601.2010
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+4524.0020
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+-2515.9992
+&lt;/td&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+3987.0002
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Performance plots and trade statistics&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;for(sym in symbols){
+  chart.Posn(Portfolio = &amp;#39;BollingerBandsStrat&amp;#39;, Symbol = sym)
+  plot(add_BBands(on = 1, sd = 1.6, n = 20))
+  
+  perf &amp;lt;- tradeStats(portfolio.st) %&amp;gt;% 
+    tibble::rownames_to_column(&amp;quot;ticker&amp;quot;) %&amp;gt;% 
+    filter(ticker == sym) %&amp;gt;% 
+    t() %&amp;gt;% 
+    kable() %&amp;gt;%
+    kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-2.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-3.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-4.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-5.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-6.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-7.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-8.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-9.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-10.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-11.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-12.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-13.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-14.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-15.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-16.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-17.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-18.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-19.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-20.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-21.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-22.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-23.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-12-24.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Zooming in one some of the charts, it’s possible to see when we entered and exited each trade.&lt;/p&gt;
+&lt;div id=&#34;here---everything-works.-chart.posn-plots-each-plot-in-sequence-find-a-way-to-plot-it-in-one-instance.&#34; class=&#34;section level9&#34;&gt;
+&lt;p&gt;Here - everything works. chart.posn plots each plot in sequence find a way to plot it in one instance.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chart.Posn(Portfolio = &amp;#39;BollingerBandsStrat&amp;#39;, Symbol = &amp;quot;AMD&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(add_BBands(on = 1, sd = 1.6, n = 20))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;zoom_Chart(&amp;#39;2017-01::2017-03&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chart.Posn(Portfolio = &amp;#39;BollingerBandsStrat&amp;#39;, Symbol = &amp;quot;WMT&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-4.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(add_BBands(on = 1, sd = 1.6, n = 20))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-5.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;zoom_Chart(&amp;#39;2017-01::2017-03&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-6.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chart.Posn(Portfolio = &amp;#39;BollingerBandsStrat&amp;#39;, Symbol = &amp;quot;AMZN&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-7.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(add_BBands(on = 1, sd = 1.6, n = 20))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-8.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;zoom_Chart(&amp;#39;2017-01::2017-03&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/understanding-ttr-package/technical-trading-rules_files/figure-html/unnamed-chunk-13-9.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;adx-directional-movement-index&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;ADX: Directional Movement Index&lt;/h2&gt;
+&lt;p&gt;The Directional Movement Index (DMI) &lt;span class=&#34;citation&#34;&gt;Wilder (&lt;a href=&#34;#ref-wilder1978new&#34; role=&#34;doc-biblioref&#34;&gt;1978&lt;/a&gt;)&lt;/span&gt; tries to identify the direction an asset is moving towards through comparing previous highs and lows. It trys to determine if an asset is trending and to measure the strength of that trend. It has four components:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Positive Direction Indicator (+DI): Computes the difference between todays high and the previous days high. - Helps identify the presence of an uptrend.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Negative Direction Indicator (-DI): Computes the difference between todays low and the previous days low. - Helps identify the presence of a downtrend.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Average Directional Index (ADX): A smoothed average of the difference of the +DI and -DI.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Average Directional Rating (ADXR): Simple average of todays ADX and the ADX from 14 or n periods previously.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The ADX is relative to its own asset price. An ADX of 60 for &lt;span class=&#34;math inline&#34;&gt;\(Asset_{i}\)&lt;/span&gt; is different to an ADX for &lt;span class=&#34;math inline&#34;&gt;\(Asset_{j}\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;Using the &lt;code&gt;TTR&lt;/code&gt; package along with the &lt;code&gt;tidyquant&lt;/code&gt; package in R we can calculate the &lt;code&gt;ADX&lt;/code&gt; using:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# adx_calc &amp;lt;- asset_prices %&amp;gt;% 
+#   group_by(symbol) %&amp;gt;% 
+#   tq_mutate(
+#     select = c(&amp;quot;high&amp;quot;, &amp;quot;low&amp;quot;, &amp;quot;close&amp;quot;),
+#     mutate_fun = ADX,
+#     n = 14,
+#     maType = &amp;quot;SMA&amp;quot;
+#     )
+
+# adx_calc %&amp;gt;% 
+#   group_by(symbol) %&amp;gt;% 
+#   drop_na() %&amp;gt;% 
+#   slice(1:5)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The first few observations of each of the assets looks like:&lt;/p&gt;
+&lt;p&gt;Where the newely created columns are defined as:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;DIp&lt;/code&gt;: Directional Index positive&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DIn&lt;/code&gt;: Directional Index negative&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DX&lt;/code&gt;: Directional Index&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ADX&lt;/code&gt;: Average Directional Index which takes on values between 0 and 100&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As defined previously.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;adx-trend-strength&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;ADX Trend Strength&lt;/h1&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th&gt;ADX Value&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Strength&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;0-25&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Weak Trend&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;26-50&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Strong Trend&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;51-75&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Very Strong&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;76-100&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;Strongestng&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We can plot the ADX using the following, where I first put the Directional Index columns to longer format using the &lt;code&gt;pivot_longer&lt;/code&gt; function and then take a random sample of the grouped data using a combination of &lt;code&gt;group_by&lt;/code&gt;, &lt;code&gt;nest&lt;/code&gt; and &lt;code&gt;sample_n&lt;/code&gt;. Finally I filter the data between a period of 3 months and use &lt;code&gt;ggplot&lt;/code&gt; to plot the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# adx_calc %&amp;gt;% 
+#   pivot_longer(
+#     cols = c(&amp;quot;DIp&amp;quot;, &amp;quot;DIn&amp;quot;, &amp;quot;ADX&amp;quot;),
+#     names_to = &amp;quot;Indicator&amp;quot;,
+#     values_to = &amp;quot;Indicator_value&amp;quot;
+#     ) %&amp;gt;%  
+#   group_by(symbol) %&amp;gt;%
+#   nest() %&amp;gt;%
+#   ungroup() %&amp;gt;% 
+#   sample_n(2) %&amp;gt;%
+#   unnest() %&amp;gt;% 
+#   filter(date &amp;gt; &amp;quot;2014-09-01&amp;quot; &amp;amp; date &amp;lt; &amp;quot;2015-01-01&amp;quot;) %&amp;gt;% 
+#   ggplot(aes(x = date, y = Indicator_value, color = Indicator)) +
+#   geom_line() +
+#   geom_dl(aes(label = Indicator), method = list(dl.combine(&amp;quot;first.points&amp;quot;, &amp;quot;last.points&amp;quot;))) +
+#   facet_wrap(~symbol, scales = &amp;quot;free&amp;quot;) +
+#   theme_tq()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can create a simple trading strategy based on the &lt;code&gt;ADX&lt;/code&gt; by:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Adding a buy signal when the &lt;code&gt;DIp&lt;/code&gt; is greater than the &lt;code&gt;DIn&lt;/code&gt; and also when the &lt;code&gt;ADX&lt;/code&gt; is greater than 30.&lt;/li&gt;
+&lt;li&gt;We will hold the asset until the &lt;code&gt;DIp&lt;/code&gt; is less than the &lt;code&gt;DIn&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;This creates multiple consecutive rows of &lt;code&gt;1&lt;/code&gt;’s followed by consecutive rows of &lt;code&gt;-1&lt;/code&gt;’s. Since we cannot “buy”, “buy” and “buy” and then followed by “sell”, “sell” and “sell” we will only take the first occurrence of the first “buy” and the first “sell”. I call this &lt;code&gt;buy_here&lt;/code&gt; and &lt;code&gt;sell_here&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# adx_signals &amp;lt;- adx_calc %&amp;gt;% 
+#   mutate(
+#     adx_signal_buy = case_when(
+#       DIp &amp;gt; DIn &amp;amp; ADX &amp;gt; 30 ~ 1,
+#       TRUE ~ 0
+#       ),
+#     adx_signal_buy_hold_until = case_when(
+#       DIp &amp;lt; DIn ~ -1,
+#       TRUE ~ 0
+#       )
+#     ) %&amp;gt;% 
+#   group_by(grp = rleid(adx_signal_buy)) %&amp;gt;% 
+#   mutate(buy_here = +(all(adx_signal_buy == 1) * row_number() == 1)) %&amp;gt;%
+#   ungroup %&amp;gt;%
+#   group_by(grp = rleid(adx_signal_buy_hold_until)) %&amp;gt;%
+#   mutate(sell_here = -1 *(all(adx_signal_buy_hold_until == -1) * row_number() == 1)) %&amp;gt;%
+#   ungroup %&amp;gt;%
+#   select(-grp)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;refs&#34; class=&#34;references&#34;&gt;
+&lt;div id=&#34;ref-wilder1978new&#34;&gt;
+&lt;p&gt;Wilder, J Welles. 1978. &lt;em&gt;New Concepts in Technical Trading Systems&lt;/em&gt;. Trend Research.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>
