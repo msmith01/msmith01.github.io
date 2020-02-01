@@ -5,7 +5,7 @@
     <link>/categories/</link>
       <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 27 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
       <title>Categories</title>
@@ -13,9 +13,41 @@
     </image>
     
     <item>
+      <title>Algo Trading</title>
+      <link>/categories/algo-trading/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/algo-trading/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>/categories/machine-learning/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Quantitative Finance</title>
+      <link>/categories/quantitative-finance/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/quantitative-finance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Time Series</title>
+      <link>/categories/time-series/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/time-series/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Econometrics</title>
       <link>/categories/econometrics/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/categories/econometrics/</guid>
       <description></description>
     </item>
@@ -23,7 +55,7 @@
     <item>
       <title>Portfolio Optimisation</title>
       <link>/categories/portfolio-optimisation/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/categories/portfolio-optimisation/</guid>
       <description></description>
     </item>

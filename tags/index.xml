@@ -5,7 +5,7 @@
     <link>/tags/</link>
       <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 27 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/icon-192.png</url>
       <title>Tags</title>
@@ -13,9 +13,57 @@
     </image>
     
     <item>
+      <title>algo trading</title>
+      <link>/tags/algo-trading/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/algo-trading/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>financial markets</title>
+      <link>/tags/financial-markets/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/financial-markets/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>machine learning</title>
+      <link>/tags/machine-learning/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>quant analytics</title>
+      <link>/tags/quant-analytics/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/quant-analytics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>quant finance</title>
+      <link>/tags/quant-finance/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/quant-finance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>time-series</title>
+      <link>/tags/time-series/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/time-series/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>asset pricing</title>
       <link>/tags/asset-pricing/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/tags/asset-pricing/</guid>
       <description></description>
     </item>
@@ -23,7 +71,7 @@
     <item>
       <title>finance</title>
       <link>/tags/finance/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/tags/finance/</guid>
       <description></description>
     </item>
@@ -31,40 +79,24 @@
     <item>
       <title>portfolio optimisation</title>
       <link>/tags/portfolio-optimisation/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/tags/portfolio-optimisation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>quant finance</title>
-      <link>/tags/quant-finance/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/quant-finance/</guid>
       <description></description>
     </item>
     
     <item>
       <title>quantstrat</title>
       <link>/tags/quantstrat/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/tags/quantstrat/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>yahoo finance</title>
+      <title>yahoo-finance</title>
       <link>/tags/yahoo-finance/</link>
-      <pubDate>Mon, 27 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/tags/yahoo-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>algo trading</title>
-      <link>/tags/algo-trading/</link>
-      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/algo-trading/</guid>
       <description></description>
     </item>
     
@@ -81,14 +113,6 @@
       <link>/tags/technical-analysis/</link>
       <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/tags/technical-analysis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>time-series</title>
-      <link>/tags/time-series/</link>
-      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/time-series/</guid>
       <description></description>
     </item>
     
@@ -161,14 +185,6 @@
       <link>/tags/hackerrank/</link>
       <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
       <guid>/tags/hackerrank/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>machine learning</title>
-      <link>/tags/machine-learning/</link>
-      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/machine-learning/</guid>
       <description></description>
     </item>
     
