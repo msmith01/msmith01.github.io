@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Authors | Matthew Smith R Shenanigans</title>
+    <title>Authors on Matthew Smith R Shenanigans</title>
     <link>/authors/</link>
-      <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
-    <description>Authors</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>Authors</title>
-      <link>/authors/</link>
-    </image>
+    <description>Recent content in Authors on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 28 Feb 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title></title>
       <link>/authors/admin/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
       <guid>/authors/admin/</guid>
       <description>&lt;p&gt;My research focuses on machine learning applications applied to economics but in my spare time I generally enjoy playing around with different R packages and finding applications to finance and economics. I set up this blog as a way to highlight my research results, organise my code and publish it along with comments.&lt;/p&gt;
 

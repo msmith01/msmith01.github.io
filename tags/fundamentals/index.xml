@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>fundamentals | Matthew Smith R Shenanigans</title>
+    <title>fundamentals on Matthew Smith R Shenanigans</title>
     <link>/tags/fundamentals/</link>
-      <atom:link href="/tags/fundamentals/index.xml" rel="self" type="application/rss+xml" />
-    <description>fundamentals</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>fundamentals</title>
-      <link>/tags/fundamentals/</link>
-    </image>
+    <description>Recent content in fundamentals on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 21 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/fundamentals/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Tracking NVDA&#39;s share price</title>
       <link>/post/nvidia-share-price/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/nvidia-share-price/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;

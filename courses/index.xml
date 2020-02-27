@@ -1,45 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Courses | Matthew Smith R Shenanigans</title>
+    <title>Courses on Matthew Smith R Shenanigans</title>
     <link>/courses/</link>
-      <atom:link href="/courses/index.xml" rel="self" type="application/rss+xml" />
-    <description>Courses</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>Courses</title>
-      <link>/courses/</link>
-    </image>
+    <description>Recent content in Courses on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
     
-    <item>
-      <title>Overview</title>
-      <link>/courses/portfolio_theory/</link>
-      <pubDate>Sun, 09 Sep 2018 00:00:00 +0000</pubDate>
-      <guid>/courses/portfolio_theory/</guid>
-      <description>
-
-&lt;h2 id=&#34;flexibility&#34;&gt;Flexibility&lt;/h2&gt;
-
-&lt;p&gt;The parts of the course are:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Market Efficiency&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;The Capital Asset Pricing Model (CAPM)&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Applications of the CAPM (CAPM in Practise)&lt;/strong&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;credits&#34;&gt;Credits&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=Eu7qcQZdvKI&amp;amp;list=PLlIJjE1EmA8Y6egvj9yRgJbbxf_iEmPYv&amp;amp;index=1&#34; target=&#34;_blank&#34;&gt;https://www.youtube.com/watch?v=Eu7qcQZdvKI&amp;amp;list=PLlIJjE1EmA8Y6egvj9yRgJbbxf_iEmPYv&amp;amp;index=1&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Some credits&lt;/p&gt;
-
-&lt;h2 id=&#34;notes&#34;&gt;Notes&lt;/h2&gt;
-
-&lt;p&gt;Some notes&lt;/p&gt;
-</description>
-    </item>
+	<atom:link href="/courses/index.xml" rel="self" type="application/rss+xml" />
+    
     
   </channel>
 </rss>

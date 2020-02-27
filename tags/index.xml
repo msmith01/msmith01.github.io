@@ -1,278 +1,58 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags | Matthew Smith R Shenanigans</title>
+    <title>Tags on Matthew Smith R Shenanigans</title>
     <link>/tags/</link>
-      <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
-    <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>Tags</title>
-      <link>/tags/</link>
-    </image>
+    <description>Recent content in Tags on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 28 Feb 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
-      <title>algo trading</title>
-      <link>/tags/algo-trading/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/algo-trading/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>financial markets</title>
-      <link>/tags/financial-markets/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/financial-markets/</guid>
+      <title>iris</title>
+      <link>/tags/iris/</link>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/iris/</guid>
       <description></description>
     </item>
     
     <item>
       <title>machine learning</title>
       <link>/tags/machine-learning/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
       <guid>/tags/machine-learning/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>quant analytics</title>
-      <link>/tags/quant-analytics/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/quant-analytics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>quant finance</title>
-      <link>/tags/quant-finance/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/quant-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>time-series</title>
-      <link>/tags/time-series/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/time-series/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>asset pricing</title>
-      <link>/tags/asset-pricing/</link>
-      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/asset-pricing/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>finance</title>
-      <link>/tags/finance/</link>
-      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>portfolio optimisation</title>
-      <link>/tags/portfolio-optimisation/</link>
-      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/portfolio-optimisation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>quantstrat</title>
-      <link>/tags/quantstrat/</link>
-      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/quantstrat/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>yahoo-finance</title>
-      <link>/tags/yahoo-finance/</link>
-      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/yahoo-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>systematic trading</title>
-      <link>/tags/systematic-trading/</link>
-      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/systematic-trading/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>technical analysis</title>
-      <link>/tags/technical-analysis/</link>
-      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/technical-analysis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>factor models</title>
-      <link>/tags/factor-models/</link>
-      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/factor-models/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>synthetic data</title>
-      <link>/tags/synthetic-data/</link>
-      <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/synthetic-data/</guid>
+      <title>Misc</title>
+      <link>/tags/misc/</link>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/misc/</guid>
       <description></description>
     </item>
     
     <item>
       <title>xgboost</title>
       <link>/tags/xgboost/</link>
-      <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
       <guid>/tags/xgboost/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>backtesting</title>
-      <link>/tags/backtesting/</link>
-      <pubDate>Sun, 29 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/backtesting/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>trading</title>
-      <link>/tags/trading/</link>
-      <pubDate>Sun, 29 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/trading/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>corporate finance</title>
-      <link>/tags/corporate-finance/</link>
-      <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/corporate-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>dupont</title>
-      <link>/tags/dupont/</link>
-      <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/dupont/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>managerial finance</title>
-      <link>/tags/managerial-finance/</link>
-      <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/managerial-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>hackerrank</title>
-      <link>/tags/hackerrank/</link>
-      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/hackerrank/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>fundamental analysis</title>
-      <link>/tags/fundamental-analysis/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/fundamental-analysis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>missing value imputation</title>
-      <link>/tags/missing-value-imputation/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/missing-value-imputation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ratios</title>
-      <link>/tags/ratios/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/ratios/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>stock prices</title>
-      <link>/tags/stock-prices/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/stock-prices/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>AWS</title>
-      <link>/tags/aws/</link>
-      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/aws/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>fundamentals</title>
-      <link>/tags/fundamentals/</link>
-      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/fundamentals/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ipo</title>
-      <link>/tags/ipo/</link>
-      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/ipo/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>nohup</title>
-      <link>/tags/nohup/</link>
-      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/nohup/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>RStudio</title>
-      <link>/tags/rstudio/</link>
-      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/rstudio/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Deep Learning</title>
-      <link>/tags/deep-learning/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      <guid>/tags/deep-learning/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Demo</title>
-      <link>/tags/demo/</link>
-      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
-      <guid>/tags/demo/</guid>
+      <title>algo trading</title>
+      <link>/tags/algo-trading/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/algo-trading/</guid>
       <description></description>
     </item>
     

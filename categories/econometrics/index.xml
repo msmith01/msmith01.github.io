@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Econometrics | Matthew Smith R Shenanigans</title>
+    <title>Econometrics on Matthew Smith R Shenanigans</title>
     <link>/categories/econometrics/</link>
-      <atom:link href="/categories/econometrics/index.xml" rel="self" type="application/rss+xml" />
-    <description>Econometrics</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 31 Dec 2019 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>Econometrics</title>
-      <link>/categories/econometrics/</link>
-    </image>
+    <description>Recent content in Econometrics on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 31 Dec 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/econometrics/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Quantitative Analytics: Optimal Portfolio Allocation</title>
       <link>/post/portfolio-optimisation-model/portfolio-optimisation-r/</link>
       <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/portfolio-optimisation-model/portfolio-optimisation-r/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
@@ -2974,6 +2974,7 @@ ggplot() +
       <title>Factor Modeling in R</title>
       <link>/post/factor-modeling-for-portfolio-optimisation/factor-modeling-portfolio-optimisation/</link>
       <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/factor-modeling-for-portfolio-optimisation/factor-modeling-portfolio-optimisation/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;

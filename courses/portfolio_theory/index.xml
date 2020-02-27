@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Overview | Matthew Smith R Shenanigans</title>
+    <title>Overview on Matthew Smith R Shenanigans</title>
     <link>/courses/portfolio_theory/</link>
-      <atom:link href="/courses/portfolio_theory/index.xml" rel="self" type="application/rss+xml" />
-    <description>Overview</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 09 Sep 2018 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>Overview</title>
-      <link>/courses/portfolio_theory/</link>
-    </image>
+    <description>Recent content in Overview on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 09 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/courses/portfolio_theory/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Market Efficiency</title>
       <link>/courses/portfolio_theory/chap1/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
+      
       <guid>/courses/portfolio_theory/chap1/</guid>
       <description>
 

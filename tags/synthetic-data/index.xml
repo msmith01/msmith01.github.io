@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>synthetic data | Matthew Smith R Shenanigans</title>
+    <title>synthetic data on Matthew Smith R Shenanigans</title>
     <link>/tags/synthetic-data/</link>
-      <atom:link href="/tags/synthetic-data/index.xml" rel="self" type="application/rss+xml" />
-    <description>synthetic data</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 03 Nov 2019 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>synthetic data</title>
-      <link>/tags/synthetic-data/</link>
-    </image>
+    <description>Recent content in synthetic data on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 03 Nov 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/synthetic-data/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Time Series Classification Synthetic vs Real Financial Time Series</title>
       <link>/post/synth-real-time-series/financial-time-series/</link>
       <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/synth-real-time-series/financial-time-series/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;

@@ -1,30 +1,49 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories | Matthew Smith R Shenanigans</title>
+    <title>Categories on Matthew Smith R Shenanigans</title>
     <link>/categories/</link>
-      <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
-    <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>Categories</title>
-      <link>/categories/</link>
-    </image>
+    <description>Recent content in Categories on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 28 Feb 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
-      <title>Algo Trading</title>
-      <link>/categories/algo-trading/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/categories/algo-trading/</guid>
+      <title>Decision Boundary</title>
+      <link>/categories/decision-boundary/</link>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/decision-boundary/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Machine Learning</title>
       <link>/categories/machine-learning/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
       <guid>/categories/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Misc</title>
+      <link>/categories/misc/</link>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/misc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algo Trading</title>
+      <link>/categories/algo-trading/</link>
+      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/algo-trading/</guid>
       <description></description>
     </item>
     
@@ -32,119 +51,8 @@
       <title>Quantitative Finance</title>
       <link>/categories/quantitative-finance/</link>
       <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      
       <guid>/categories/quantitative-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Time Series</title>
-      <link>/categories/time-series/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/categories/time-series/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Econometrics</title>
-      <link>/categories/econometrics/</link>
-      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/econometrics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Portfolio Optimisation</title>
-      <link>/categories/portfolio-optimisation/</link>
-      <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/portfolio-optimisation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>algorithmic trading</title>
-      <link>/categories/algorithmic-trading/</link>
-      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/algorithmic-trading/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>systematic trading</title>
-      <link>/categories/systematic-trading/</link>
-      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/systematic-trading/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>technical trading</title>
-      <link>/categories/technical-trading/</link>
-      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/technical-trading/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Trading</title>
-      <link>/categories/trading/</link>
-      <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/trading/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Mathematical Finance</title>
-      <link>/categories/mathematical-finance/</link>
-      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/mathematical-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>financial time series</title>
-      <link>/categories/financial-time-series/</link>
-      <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/financial-time-series/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Finance</title>
-      <link>/categories/finance/</link>
-      <pubDate>Wed, 25 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hackerrank</title>
-      <link>/categories/hackerrank/</link>
-      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/hackerrank/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Statistics</title>
-      <link>/categories/statistics/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/statistics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Yahoo Finance</title>
-      <link>/categories/yahoo-finance/</link>
-      <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/yahoo-finance/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>AWS</title>
-      <link>/categories/aws/</link>
-      <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
-      <guid>/categories/aws/</guid>
       <description></description>
     </item>
     

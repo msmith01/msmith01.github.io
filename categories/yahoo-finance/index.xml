@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Yahoo Finance | Matthew Smith R Shenanigans</title>
+    <title>Yahoo Finance on Matthew Smith R Shenanigans</title>
     <link>/categories/yahoo-finance/</link>
-      <atom:link href="/categories/yahoo-finance/index.xml" rel="self" type="application/rss+xml" />
-    <description>Yahoo Finance</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>Yahoo Finance</title>
-      <link>/categories/yahoo-finance/</link>
-    </image>
+    <description>Recent content in Yahoo Finance on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/yahoo-finance/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Fundamental Financial Ratios in R</title>
       <link>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
@@ -13414,6 +13414,7 @@ Baidu, Inc. 
       <title>Scraping Yahoo Finance IPO Data</title>
       <link>/post/yahoo-finance-ipo/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/yahoo-finance-ipo/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
@@ -14370,6 +14371,7 @@ See Tim Loughran and Jay Ritter &lt;a href=&#34;https://site.warrington.ufl.edu/
       <title>Tracking NVDA&#39;s share price</title>
       <link>/post/nvidia-share-price/</link>
       <pubDate>Sat, 21 Sep 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/nvidia-share-price/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;

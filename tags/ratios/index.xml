@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ratios | Matthew Smith R Shenanigans</title>
+    <title>ratios on Matthew Smith R Shenanigans</title>
     <link>/tags/ratios/</link>
-      <atom:link href="/tags/ratios/index.xml" rel="self" type="application/rss+xml" />
-    <description>ratios</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>ratios</title>
-      <link>/tags/ratios/</link>
-    </image>
+    <description>Recent content in ratios on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 22 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/ratios/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Fundamental Financial Ratios in R</title>
       <link>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</link>
       <pubDate>Sun, 22 Sep 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/financial-ratios-in-r/fundamental-financial-ratios-in-r/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;

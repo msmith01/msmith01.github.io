@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Matthew Smith">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="I train a series of Machine Learning models using the iris dataset, construct synthetic data from the extreme points within the data and test a number of Machine Learning models in order to draw the decision boundaries from which the models make predictions in a 2D space, which is useful for illustrative purposes and understanding on how different Machine Learning models make predictions.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#3f51b5">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.5949897e171a43c4edc8bc03336e8676.css">
+
+  
+
+  
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-151949400-1', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="https://www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="twitter:site" content="@MatthewSmith786">
+  <meta property="twitter:creator" content="@MatthewSmith786">
+  
+  <meta property="og:site_name" content="Matthew Smith R Shenanigans">
+  <meta property="og:url" content="/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/">
+  <meta property="og:title" content="Boundary Conditions for a Series of Machine Learning Models | Matthew Smith R Shenanigans">
+  <meta property="og:description" content="I train a series of Machine Learning models using the iris dataset, construct synthetic data from the extreme points within the data and test a number of Machine Learning models in order to draw the decision boundaries from which the models make predictions in a 2D space, which is useful for illustrative purposes and understanding on how different Machine Learning models make predictions."><meta property="og:image" content="/img/icon-192.png">
+  <meta property="twitter:image" content="/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2020-02-28T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2020-02-28T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/"
+  },
+  "headline": "Boundary Conditions for a Series of Machine Learning Models",
+  
+  "datePublished": "2020-02-28T00:00:00Z",
+  "dateModified": "2020-02-28T00:00:00Z",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Matthew Smith"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Matthew Smith R Shenanigans",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/img/icon-512.png"
+    }
+  },
+  "description": "I train a series of Machine Learning models using the iris dataset, construct synthetic data from the extreme points within the data and test a number of Machine Learning models in order to draw the decision boundaries from which the models make predictions in a 2D space, which is useful for illustrative purposes and understanding on how different Machine Learning models make predictions."
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Boundary Conditions for a Series of Machine Learning Models | Matthew Smith R Shenanigans</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Matthew Smith R Shenanigans</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/courses/"><span>Courses</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
+        </li>
+
+        
+        
+
+        
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"><span>Blogroll</span><span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="https://www.linkedin.com/in/msmithsm14/"><span>LinkedIn</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="https://www.r-bloggers.com"><span>R-bloggers</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="https://quantocracy.com/"><span>Quantocracy</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="https://blog.feedspot.com/r_programming_blogs/"><span>Top 40 R Blogs</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="https://rweekly.org/"><span>R Weekly</span></a>
+            </li>
+            
+            <li class="dropdown-item my-0 py-0 mx-0 px-0">
+              <a href="https://quantpedia.com/blog/"><span>Quantpedia</span></a>
+            </li>
+            
+          </ul>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Boundary Conditions for a Series of Machine Learning Models</h1>
+
+  
+  <p class="page-subtitle">A synthetic method for undestanding how Machine Learning models make predictions at the boundary.</p>
+  
+
+  
+    
+
+
+
+<div class="article-metadata">
+
+  
+  
+  
+  
+  <div>
+    
+
+
+
+  <span><a href="/authors/admin/">Matthew Smith</a></span>
+
+  </div>
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Feb 28, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    20 min read
+  </span>
+  
+
+  
+  
+  
+  <span class="middot-divider"></span>
+  <a href="/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/#disqus_thread"></a>
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/machine-learning/">Machine Learning</a>, <a href="/categories/decision-boundary/">Decision Boundary</a>, <a href="/categories/misc/">Misc</a></span>
+  
+
+  
+    
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/&amp;text=Boundary%20Conditions%20for%20a%20Series%20of%20Machine%20Learning%20Models" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/&amp;t=Boundary%20Conditions%20for%20a%20Series%20of%20Machine%20Learning%20Models" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Boundary%20Conditions%20for%20a%20Series%20of%20Machine%20Learning%20Models&amp;body=/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/&amp;title=Boundary%20Conditions%20for%20a%20Series%20of%20Machine%20Learning%20Models" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=Boundary%20Conditions%20for%20a%20Series%20of%20Machine%20Learning%20Models%20/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/&amp;title=Boundary%20Conditions%20for%20a%20Series%20of%20Machine%20Learning%20Models" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="btn-links mb-3">
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  
+    
+  
+
+  
+    
+  
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<div id="machine-learning-at-the-boundary" class="section level1">
+<h1>Machine Learning at the Boundary:</h1>
+<p>There is nothing new in the fact that many machine learning models can outperform traditional econometric models but I want to show as part of my research why and how some models make given predictions or in this instance classifications.</p>
+<p>I wanted to show the decision boundary in which my binary classification model was making. That is, I wanted to show the partition space that splits my classification into each class. The problem and code can be split into a multi-classification problem with some tweeks.</p>
+<div id="initialisation" class="section level2">
+<h2>Initialisation:</h2>
+<p>I first load in a series of packages and initialise a logistic function to convert log-odds to a logistic probability function later on.</p>
+<pre class="r"><code>library(dplyr)
+library(patchwork)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(xgboost)
+library(lightgbm)
+library(keras)
+library(tidyquant)
+##################### Pre-define some functions ###################################
+###################################################################################
+
+logit2prob &lt;- function(logit){
+  odds &lt;- exp(logit)
+  prob &lt;- odds / (1 + odds)
+  return(prob)
+}</code></pre>
+</div>
+</div>
+<div id="the-data" class="section level1">
+<h1>The data:</h1>
+<p>I use the <code>iris</code> dataset which contains information on 3 different plant variables collected by British statistican Ronald Fisher in 1936. The dataset consists of <span class="math inline">\(4\)</span> different characteristics of plant species which should uniquely distinguish the <span class="math inline">\(3\)</span> different species (<em>Setosa</em>, <em>Virginica</em> and <em>Versicolor</em>). However, my problem required a binary classification problem and not a multi-classifciation problem. In the following code I import the <code>iris</code> data and remove a type of plant Species <code>virginica</code> to bring it from a multi-classification to a binary classification problem.</p>
+<pre class="r"><code>###################################################################################
+###################################################################################
+
+data(iris)
+df &lt;- iris %&gt;% 
+  filter(Species != &quot;virginica&quot;) %&gt;% 
+  mutate(Species = +(Species == &quot;versicolor&quot;))
+str(df)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    100 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : int  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+<pre class="r"><code>###################################################################################
+###################################################################################</code></pre>
+<p>I plot the data by first storing the <code>ggplot</code> objects changing only the <code>x</code> and <code>y</code> variables in each of the <code>plt</code>’s.</p>
+<pre class="r"><code>plt1 &lt;- df %&gt;% 
+  ggplot(aes(x = Sepal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &quot;none&quot;)
+
+plt2 &lt;- df %&gt;% 
+  ggplot(aes(x = Petal.Length, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &quot;none&quot;)
+
+plt3 &lt;- df %&gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &quot;none&quot;)
+
+plt3 &lt;- df %&gt;% 
+  ggplot(aes(x = Sepal.Length, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &quot;none&quot;)
+
+plt4 &lt;- df %&gt;% 
+  ggplot(aes(x = Petal.Length, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &quot;none&quot;)
+
+plt5 &lt;- df %&gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &quot;none&quot;)
+
+plt6 &lt;- df %&gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p>I also wanted to use the new <code>patchwork</code> package which makes displaying <code>ggplot</code> plots very easy. i.e the below code plots our graphics as its written (1 top plot stretching the length of the grid space, 2 middle plots, another single plot and a further 2 more plots at the bottom.)</p>
+<pre class="r"><code>      (plt1)    /
+  (plt2 + plt3) /
+      (plt4)    /
+  (plt5 + plt6)</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Alternatively, we can re-arrange the plots into any way we wish and plot them in the following way:</p>
+<pre class="r"><code>(plt1 + plt2 + plt3) /
+      (plt4)        / 
+   (plt5 + plt6)</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Which I think looks awesome.</p>
+<p><strong>Note</strong>: It looks like the <code>patchwork</code> package doesn’t work so well with <code>rmarkdown</code>. For those who are following along with the code, it looks awesome, for those who are just reading, not so much.</p>
+<div id="objective" class="section level2">
+<h2>Objective</h2>
+<p>The objective is to build a classification algorithm to distinguish between the two classes and then compute the decision boundaries in order to better see how the models made such predictions.</p>
+<p>In order to create the decision boundary plots for each variable combination we need the different combinatons of variables in the data.</p>
+<pre class="r"><code>###################################################################################
+###################################################################################
+
+var_combos &lt;- expand.grid(colnames(df[,1:4]), colnames(df[,1:4])) %&gt;% 
+  filter(!Var1 == Var2)
+
+###################################################################################
+###################################################################################</code></pre>
+<pre class="r"><code>var_combos %&gt;% 
+  head() %&gt;% 
+  kable(caption = &quot;Variable Combinations&quot;, escape = F, align = &quot;c&quot;, digits = 2) %&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;), font_size = 9, fixed_thead = T, full_width = F) %&gt;% 
+  scroll_box(width = &quot;100%&quot;, height = &quot;200px&quot;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:unnamed-chunk-7">Table 1: </span>Variable Combinations
+</caption>
+<thead>
+<tr>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;position: sticky; top:0; background-color: #FFFFFF;">
+Var1
+</th>
+<th style="text-align:center;position: sticky; top:0; background-color: #FFFFFF;position: sticky; top:0; background-color: #FFFFFF;">
+Var2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Sepal.Width
+</td>
+<td style="text-align:center;">
+Sepal.Length
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Petal.Length
+</td>
+<td style="text-align:center;">
+Sepal.Length
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Petal.Width
+</td>
+<td style="text-align:center;">
+Sepal.Length
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sepal.Length
+</td>
+<td style="text-align:center;">
+Sepal.Width
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Petal.Length
+</td>
+<td style="text-align:center;">
+Sepal.Width
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Petal.Width
+</td>
+<td style="text-align:center;">
+Sepal.Width
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Next, I want to use the different variable combinations previously and create lists (one for each variable combination) and populate these lists with synthetic data - or data from the minimum to maximum value of each variable combination. This will act as our synthetically created test data in which we make predictions on and build the decision boundary.</p>
+<p>It’s important to note that the plots will eventually be 2 dimensional for illustrative purposes, therefore we only train the Machine Learning models on two variables, but for each combination of the two variables, these variables are the first two variables in the <code>boundary_lists</code> data frames.</p>
+<pre class="r"><code>boundary_lists &lt;- map2(
+  .x = var_combos$Var1,
+  .y = var_combos$Var2,
+  ~select(df, .x, .y) %&gt;% 
+    summarise(
+      minX = min(.[[1]], na.rm = TRUE),
+      maxX = max(.[[1]], na.rm = TRUE),
+      minY = min(.[[2]], na.rm = TRUE),
+      maxY = max(.[[2]], na.rm = TRUE)
+    )
+) %&gt;% 
+  map(.,
+      ~tibble(
+        x = seq(.x$minX, .x$maxX, length.out = 200),
+        y = seq(.x$minY, .x$maxY, length.out = 200),
+      )
+  ) %&gt;% 
+  map(.,
+      ~tibble(
+        xx = rep(.x$x, each = 200),
+        yy = rep(.x$y, time = 200)
+      )
+  ) %&gt;% 
+  map2(.,
+       asplit(var_combos, 1), ~ .x %&gt;% 
+         set_names(.y))
+
+###################################################################################
+###################################################################################</code></pre>
+<p>We can see how the first 4 observations of the first and last two lists look like:</p>
+<pre class="r"><code>boundary_lists %&gt;% 
+  map(., ~head(., 4)) %&gt;%  
+  head(2)</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 4 x 2
+##   Sepal.Width Sepal.Length
+##         &lt;dbl&gt;        &lt;dbl&gt;
+## 1           2         4.3 
+## 2           2         4.31
+## 3           2         4.33
+## 4           2         4.34
+## 
+## [[2]]
+## # A tibble: 4 x 2
+##   Petal.Length Sepal.Length
+##          &lt;dbl&gt;        &lt;dbl&gt;
+## 1            1         4.3 
+## 2            1         4.31
+## 3            1         4.33
+## 4            1         4.34</code></pre>
+<pre class="r"><code>boundary_lists %&gt;% 
+  map(., ~head(., 4)) %&gt;%  
+  tail(2)</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 4 x 2
+##   Sepal.Width Petal.Width
+##         &lt;dbl&gt;       &lt;dbl&gt;
+## 1           2       0.1  
+## 2           2       0.109
+## 3           2       0.117
+## 4           2       0.126
+## 
+## [[2]]
+## # A tibble: 4 x 2
+##   Petal.Length Petal.Width
+##          &lt;dbl&gt;       &lt;dbl&gt;
+## 1            1       0.1  
+## 2            1       0.109
+## 3            1       0.117
+## 4            1       0.126</code></pre>
+</div>
+<div id="training-time" class="section level2">
+<h2>Training time:</h2>
+<p>Now that we have the synthetically created testing data set up, I want to train the models on the actual observed observations. I use each data point in the plots above as my training data. I apply the following models:</p>
+<ul>
+<li>Logistic Model</li>
+<li>Support Vector Machine with a linear kernel</li>
+<li>Support Vector Machine with a polynomial kernel</li>
+<li>Support Vector Machine with a radial kernel</li>
+<li>Support Vector Machine with a sigmoid kernel</li>
+<li>Random Forest</li>
+<li>Extreme Gradiant Boosting (XGBoost) model with default parameters</li>
+<li>Single layer Keras Neural Network (with linear components)</li>
+<li>Deeper layer Keras Neural Network (with linear components)</li>
+<li>Deeper’er layer Keras Neural Network (with linear components)</li>
+<li>Light Gradient Boosting model (LightGBM) with default parameters</li>
+</ul>
+<p>Side note: I am not an expert in Deep learning/Keras/Tensorflow, so I am sure better models will yield better decision boundaries but it was a fun task getting the different Machine Learning models to fit inside a <code>purrr</code>, <code>map</code> call.</p>
+<pre class="r"><code>###################################################################################
+###################################################################################
+# params_lightGBM &lt;- list(
+#   objective = &quot;binary&quot;,
+#   metric = &quot;auc&quot;,
+#   min_data = 1
+# )
+
+# To install Light GBM try the following in your RStudio terinal
+
+# git clone --recursive https://github.com/microsoft/LightGBM
+# cd LightGBM
+# Rscript build_r.R
+
+models_list &lt;- var_combos %&gt;%
+  mutate(modeln = str_c(&#39;mod&#39;, row_number()))  %&gt;%
+  pmap(~ 
+         {
+           
+           xname = ..1
+           yname = ..2
+           modelname = ..3
+           df %&gt;%
+             select(Species, xname, yname) %&gt;%
+             group_by(grp = &#39;grp&#39;) %&gt;%
+             nest() %&gt;%
+             mutate(models = map(data, ~{
+               
+               
+               list(
+                 # Logistic Model
+                 Model_GLM = {
+                   glm(Species ~ ., data = .x, family = binomial(link=&#39;logit&#39;))
+                 },
+                 # Support Vector Machine (linear)
+                 Model_SVM_Linear = {
+                   e1071::svm(Species ~ ., data = .x,  type = &#39;C-classification&#39;, kernel = &#39;linear&#39;)
+                 },
+                 # Support Vector Machine (polynomial)
+                 Model_SVM_Polynomial = {
+                   e1071::svm(Species ~ ., data = .x,  type = &#39;C-classification&#39;, kernel = &#39;polynomial&#39;)
+                 },
+                 # Support Vector Machine (sigmoid)
+                 Model_SVM_radial = {
+                   e1071::svm(Species ~ ., data = .x,  type = &#39;C-classification&#39;, kernel = &#39;sigmoid&#39;)
+                 },
+                 # Support Vector Machine (radial)
+                 Model_SVM_radial_Sigmoid = {
+                   e1071::svm(Species ~ ., data = .x,  type = &#39;C-classification&#39;, kernel = &#39;radial&#39;)
+                 },
+                 # Random Forest
+                 Model_RF = {
+                   randomForest::randomForest(formula = as.factor(Species) ~ ., data = .)
+                 },
+                 # Extreme Gradient Boosting
+                 Model_XGB = {
+                   xgboost(
+                     objective = &#39;binary:logistic&#39;,
+                     eval_metric = &#39;auc&#39;,
+                     data = as.matrix(.x[, 2:3]),
+                     label = as.matrix(.x$Species), # binary variable
+                     nrounds = 10)
+                 },
+                 # Kera Neural Network
+                 Model_Keras = {
+                   mod &lt;- keras_model_sequential() %&gt;% 
+                     layer_dense(units = 2, activation = &#39;relu&#39;, input_shape = 2) %&gt;% 
+                     layer_dense(units = 2, activation = &#39;sigmoid&#39;)
+                   
+                   mod %&gt;% compile(
+                     loss = &#39;binary_crossentropy&#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&#39;accuracy&#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 # Kera Neural Network
+                 Model_Keras_2 = {
+                   mod &lt;- keras_model_sequential() %&gt;% 
+                     layer_dense(units = 2, activation = &#39;relu&#39;, input_shape = 2) %&gt;%
+                     layer_dense(units = 2, activation = &#39;linear&#39;, input_shape = 2) %&gt;%
+                     layer_dense(units = 2, activation = &#39;sigmoid&#39;)
+                   
+                   mod %&gt;% compile(
+                     loss = &#39;binary_crossentropy&#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&#39;accuracy&#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 # Kera Neural Network                 
+                 Model_Keras_3 = {
+                   mod &lt;- keras_model_sequential() %&gt;% 
+                     layer_dense(units = 2, activation = &#39;relu&#39;, input_shape = 2) %&gt;% 
+                     layer_dense(units = 2, activation = &#39;relu&#39;, input_shape = 2) %&gt;%
+                     layer_dense(units = 2, activation = &#39;linear&#39;, input_shape = 2) %&gt;%
+                     layer_dense(units = 2, activation = &#39;sigmoid&#39;)
+                   
+                   mod %&gt;% compile(
+                     loss = &#39;binary_crossentropy&#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&#39;accuracy&#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 
+                 # LightGBM model
+                 Model_LightGBM = {
+                   lgb.train(
+                     data = lgb.Dataset(data = as.matrix(.x[, 2:3]), label = .x$Species),
+                     objective = &#39;binary&#39;,
+                     metric = &#39;auc&#39;,
+                     min_data = 1
+                     #params = params_lightGBM,
+                     #learning_rate = 0.1
+                   )
+                 }
+                 
+                 
+               )                      
+               
+             }                               
+             ))                 
+           
+         }) %&gt;% 
+  map(
+    ., ~unlist(., recursive = FALSE)
+  )</code></pre>
+</div>
+<div id="testing-time" class="section level2">
+<h2>Testing time:</h2>
+<p>Now that the models have been trained, we can begin makign the predictions on the synthetically created data we created in the <code>boundary_lists</code> data.</p>
+<pre class="r"><code>models_predict &lt;- map2(models_list, boundary_lists, ~{
+  mods &lt;- purrr::pluck(.x, &quot;models&quot;)
+  dat &lt;- .y
+  map(mods, function(x)
+    tryCatch({
+      if(attr(x, &quot;class&quot;)[1] == &quot;glm&quot;){   
+        # predict the logistic model
+        tibble(
+          modelname = attr(x, &quot;class&quot;)[1],
+          prediction = predict(x, newdata = dat)
+        ) %&gt;% 
+          mutate(
+            prediction = logit2prob(prediction),
+            prediction = case_when(
+              prediction &gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }    
+      else if(attr(x, &quot;class&quot;)[1] == &quot;svm.formula&quot;){ 
+        # predict the SVM model
+        tibble(
+          modelname = attr(x, &quot;class&quot;)[1],
+          prediction = as.numeric(as.character(predict(x, newdata = dat)))
+        )
+      }
+      else if(attr(x, &quot;class&quot;)[1] == &quot;randomForest.formula&quot;){  
+        # predict the RF model
+        tibble(
+          modelname = attr(x, &quot;class&quot;)[1],
+          prediction = as.numeric(as.character(predict(x, newdata = dat)))
+        )
+      }    
+      else if(attr(x, &quot;class&quot;)[1] == &quot;xgb.Booster&quot;){      
+        # predict the XGBoost model
+        tibble(
+          modelname = attr(x, &quot;class&quot;)[1], 
+          prediction = predict(x, newdata = as.matrix(dat), type = &#39;prob&#39;)
+        ) %&gt;% 
+          mutate(
+            prediction = case_when(
+              prediction &gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }
+      else if(attr(x, &quot;class&quot;)[1] == &quot;keras.engine.sequential.Sequential&quot;){
+        # Keras Single Layer Neural Network
+        tibble(
+          modelname = attr(x, &quot;class&quot;)[1],
+          prediction = predict_classes(object = x, x = as.matrix(dat))
+        )
+      }
+      else if(attr(x, &quot;class&quot;)[2] == &quot;keras.engine.training.Model&quot;){
+        # NOTE:::: This is a very crude hack to have multiple keras NN models
+        # Needs fixing such that the models are named better - (not like) - (..., &quot;class&quot;)[2], ..., &quot;class&quot;)[3]... and so on.  
+        # Keras Single Layer Neural Network
+        tibble(
+          modelname = attr(x, &quot;class&quot;)[2], # needs changing also.
+          prediction = predict_classes(object = x, x = as.matrix(dat))
+        )
+      }
+      else if(attr(x, &quot;class&quot;)[1] == &quot;lgb.Booster&quot;){
+        # Light GBM model
+        tibble(
+          modelname = attr(x, &quot;class&quot;)[1],
+          prediction = predict(object = x, data = as.matrix(dat), rawscore = FALSE)
+        ) %&gt;% 
+          mutate(
+            prediction = case_when(
+              prediction &gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }
+    }, error = function(e){
+      print(&#39;skipping\n&#39;)
+    }
+    )
+  )
+}
+) %&gt;% 
+  map(.,
+      ~setNames(.,
+                map(.,
+                    ~c(.x$modelname[1]
+                    )
+                )
+      )
+  ) %&gt;%
+  map(.,
+      ~map(.,
+           ~setNames(.,
+                     c(
+                       paste0(.x$modelname[1], &quot;_Model&quot;),
+                       paste0(.x$modelname[1], &quot;_Prediction&quot;)
+                     )
+           )
+      )
+  )</code></pre>
+</div>
+<div id="calibrating-the-data" class="section level2">
+<h2>Calibrating the data</h2>
+<p>Now we have our trained models, along with predictions we can <code>map</code> these predictions into data which we can plot using <code>ggplot</code> and then arrange using <code>patchwork</code>!.</p>
+<pre class="r"><code>plot_data &lt;- map2(
+  .x = boundary_lists,
+  .y = map(
+    models_predict,
+    ~map(.,
+         ~tibble(.)
+    )
+  ),
+  ~bind_cols(.x, .y)
+)
+
+names(plot_data) &lt;- map_chr(
+  plot_data, ~c(
+    paste(
+      colnames(.)[1],
+      &quot;and&quot;,
+      colnames(.)[2],
+      sep = &quot;_&quot;)
+  )
+)</code></pre>
+<p>Now that we have our predictions we can create the <code>ggplots</code>.</p>
+<pre class="r"><code>ggplot_lists &lt;- plot_data %&gt;%
+  map(
+    .,
+    ~select(
+      .,
+      -contains(&quot;Model&quot;)
+    ) %&gt;%
+      pivot_longer(cols = contains(&quot;Prediction&quot;), names_to = &quot;Model&quot;, values_to = &quot;Prediction&quot;)
+  ) %&gt;%
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) +
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 8, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 8, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      theme_bw(base_size = 25) +
+      theme(legend.position = &quot;none&quot;)
+  )</code></pre>
+<p>Plot all the different combinations of the decision boundaries. <strong>Note</strong>: The above code will work better in your console, when I ran the code to compile the blog post the plots were too small. Therefore, I provide individual plots for a sample of the models &amp; variable combinations.</p>
+<p>I first needed to select the first two columns which are the variables of interest (Petal.Width, Petal.Length, Sepal.Width and Sepal.Length). Then I wanted to take a random sample of the columns thereafter (which are the different Machine Learning Model predictions).</p>
+<pre class="r"><code>plot_data_sampled &lt;- plot_data %&gt;% 
+  map(
+    .,
+    ~select(
+      .,
+      -contains(&quot;Model&quot;)
+    ) %&gt;% 
+      select(.,
+             c(1:2), sample(colnames(.), 2)
+             ) %&gt;% 
+      pivot_longer(cols = contains(&quot;Prediction&quot;), names_to = &quot;Model&quot;, values_to = &quot;Prediction&quot;)
+    ) </code></pre>
+<p>Next I can make the plots by taking a random sample of the lists.</p>
+<pre class="r"><code>plot_data_sampled %&gt;% 
+  rlist::list.sample(1) %&gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &quot;serif&quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &quot;bottom&quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &quot;15&quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &#39;darkred&#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )</code></pre>
+<pre><code>## $Sepal.Length_and_Sepal.Width</code></pre>
+<pre><code>## Warning: Row indexes must be between 0 and the number of rows (0). Use `NA` as row index to obtain a row full of `NA` values.
+## This warning is displayed once per session.</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Some other random models:</p>
+<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
+<pre><code>## Warning: Not possible to generate contour data</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre><code>## $Sepal.Length_and_Sepal.Width</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre><code>## $Sepal.Length_and_Petal.Width</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
+<pre><code>## Warning: Not possible to generate contour data</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
+<pre><code>## Warning: Not possible to generate contour data</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre><code>## $Sepal.Length_and_Petal.Width</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre><code>## $Sepal.Width_and_Petal.Length</code></pre>
+<pre><code>## Warning in grDevices::contourLines(x = sort(unique(data$x)), y =
+## sort(unique(data$y)), : todos los valores de z son iguales</code></pre>
+<pre><code>## Warning: Not possible to generate contour data</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre><code>## $Petal.Width_and_Sepal.Length</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre><code>## $Sepal.Length_and_Petal.Length</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<pre class="r"><code>plot_data_sampled %&gt;% 
+  rlist::list.sample(1) %&gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &quot;serif&quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &quot;bottom&quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &quot;15&quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &#39;darkred&#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )</code></pre>
+<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
+<pre><code>## Warning: Not possible to generate contour data</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<pre class="r"><code>plot_data_sampled %&gt;% 
+  rlist::list.sample(1) %&gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &quot;serif&quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &quot;bottom&quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &quot;15&quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &#39;darkred&#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )</code></pre>
+<pre><code>## $Petal.Length_and_Sepal.Width</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre class="r"><code>plot_data_sampled %&gt;% 
+  rlist::list.sample(1) %&gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &quot;serif&quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &quot;bottom&quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &quot;15&quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &#39;darkred&#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )</code></pre>
+<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
+<pre><code>## Warning: Not possible to generate contour data</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<pre class="r"><code>plot_data_sampled %&gt;% 
+  rlist::list.sample(1) %&gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &quot;serif&quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &quot;bottom&quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &quot;15&quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &#39;darkred&#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )</code></pre>
+<pre><code>## $Petal.Width_and_Sepal.Length</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p>Natually the linear models made a linear decision boundary. It looks like the random forest model overfit a little the data, where as the XGBoost and LightGBM models were able to make better, more generalisable decision boundaries. The Keras Neural Networks performed poorly because they should be trained better.</p>
+<ul>
+<li><code>glm</code> = Logistic Model</li>
+<li><code>keras.engine.sequential.Sequential Prediction...18</code> = Single layer Neural Network</li>
+<li><code>keras.engine.sequential.Sequential Prediction...18</code> = Deeper layer Neural Network</li>
+<li><code>keras.engine.sequential.Sequential Prediction...22</code> = Deeper’er layer Neural Network</li>
+<li><code>lgb.Booster Prediction</code> = Light Gradient Boosted Model</li>
+<li><code>randomForest.formula Prediction</code> = Random Forest Model</li>
+<li><code>svm.formula Prediction...10</code> = Support Vector Machine with a Sigmoid Kernel</li>
+<li><code>svm.formula Prediction...12</code> = Support Vector Machine with a Radial Kernel</li>
+<li><code>svm.formula Prediction...6</code> = Support Vector Machine with a Linear Kernel</li>
+<li><code>svm.formula Prediction...8</code> = Support Vector Machine with a Polynomial Kernel</li>
+<li><code>xgb.Booster Prediction</code> = Extreme Gradient Boosting Model</li>
+</ul>
+<p>In many of the combinations the Keras Neural Network model just predicted all observations to be of a specific class (again by my poor tuning of the models and the fact that the Neural Networks only had 100 observations to learn from and 40,000 observation to predict on). That is, it coloured the whole background blue or red and made many mis-classifications. In some of the plots the Neural Networks managed to mae perfect classifications, in other it made strange decision boundaries. - Neural Networks are fun.</p>
+<p>As some brief analysis of the plots, it looks like the simple logistic model made near-perfect classifications. Which isn’t suprising given that each of the variable ralationships are linearly seperable. However, I have a preferece for XGBoost and LightGBM models since they can handle non-linear relationships through the incorporation of regularisation in its objective functions which allows them to make more robust decision boundaries. Random Forest models fail here which is why their decision boundary appears to do a good job but is also slightly erratic and sharpe in it’s decision boundaries.</p>
+<p>Of course it goes without saying that these decision boundaries can become significantly more complex and non-linear with the inclusion of more variables and higher dimensions.</p>
+<pre class="r"><code>for(i in 1:length(plot_data)){
+  print(ggplot_lists[[i]])
+  }</code></pre>
+</div>
+<div id="end-note" class="section level2">
+<h2>End note:</h2>
+<p>(Sometimes I have no idea what the Neural Network is thinking)</p>
+<p>It is a shame I couldn’t better build the Keras models to show their power.</p>
+<p>I wrote this model on an Amazon Ubuntu EC2 Instance however, when I went to compile the blog post in R on my Windows system I ran into some problems. These problems were mostly down to installing the <code>lightgbm</code> package and package versions. The code was working without error using the following package versions (i.e. using the most up-to-date package versions)</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17763)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=Spanish_Spain.1252  LC_CTYPE=Spanish_Spain.1252   
+## [3] LC_MONETARY=Spanish_Spain.1252 LC_NUMERIC=C                  
+## [5] LC_TIME=Spanish_Spain.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] tidyquant_0.5.7            quantmod_0.4-15           
+##  [3] TTR_0.23-6                 PerformanceAnalytics_1.5.3
+##  [5] xts_0.11-2                 zoo_1.8-6                 
+##  [7] lubridate_1.7.4            keras_2.2.5.0             
+##  [9] lightgbm_2.3.2             R6_2.4.1                  
+## [11] xgboost_0.90.0.1           tidyr_1.0.0               
+## [13] stringr_1.4.0              purrr_0.3.2               
+## [15] kableExtra_1.1.0.9000      knitr_1.25.4              
+## [17] ggplot2_3.2.1              patchwork_1.0.0           
+## [19] dplyr_0.8.99.9000         
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.3           lattice_0.20-38      class_7.3-15        
+##  [4] utf8_1.1.4           assertthat_0.2.1     zeallot_0.1.0       
+##  [7] digest_0.6.24        e1071_1.7-2          evaluate_0.14       
+## [10] httr_1.4.1           blogdown_0.15        pillar_1.4.3.9000   
+## [13] tfruns_1.4           rlang_0.4.4          lazyeval_0.2.2      
+## [16] curl_4.0             rstudioapi_0.10      data.table_1.12.8   
+## [19] whisker_0.3-2        Matrix_1.2-17        reticulate_1.14-9001
+## [22] rmarkdown_1.14       lobstr_1.1.1         labeling_0.3        
+## [25] webshot_0.5.1        readr_1.3.1          munsell_0.5.0       
+## [28] compiler_3.6.1       xfun_0.8             pkgconfig_2.0.3     
+## [31] base64enc_0.1-3      tensorflow_2.0.0     htmltools_0.3.6     
+## [34] tidyselect_1.0.0     tibble_2.99.99.9014  bookdown_0.13       
+## [37] quadprog_1.5-7       randomForest_4.6-14  fansi_0.4.1         
+## [40] viridisLite_0.3.0    crayon_1.3.4         withr_2.1.2         
+## [43] rappdirs_0.3.1       grid_3.6.1           Quandl_2.10.0       
+## [46] jsonlite_1.6.1       gtable_0.3.0         lifecycle_0.1.0     
+## [49] magrittr_1.5         scales_1.0.0         rlist_0.4.6.1       
+## [52] cli_2.0.1            stringi_1.4.3        xml2_1.2.2          
+## [55] ellipsis_0.3.0       generics_0.0.2       vctrs_0.2.99.9005   
+## [58] tools_3.6.1          glue_1.3.1           hms_0.5.1           
+## [61] yaml_2.2.0           colorspace_1.4-1     rvest_0.3.4</code></pre>
+</div>
+</div>
+
+    </div>
+
+    
+
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/machine-learning/">Machine Learning</a>
+  
+  <a class="badge badge-light" href="/tags/iris/">iris</a>
+  
+  <a class="badge badge-light" href="/tags/misc/">Misc</a>
+  
+  <a class="badge badge-light" href="/tags/xgboost/">xgboost</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  <div class="media author-card">
+    
+      
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu88685f9f250f5c15d78dab2d9552b11c_15179_250x250_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="/">Matthew Smith</a></h5>
+      <h6 class="card-subtitle">Researcher in Dept Finance</h6>
+      <p class="card-text">I am a researcher with a focus on Machine Learning methods applied to economics and finance.</p>
+      <ul class="network-icon" aria-hidden="true">
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="/#contact" >
+              <i class="fas fa-envelope"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://twitter.com/MatthewSmith786" target="_blank" rel="noopener">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://scholar.google.co.uk/" target="_blank" rel="noopener">
+              <i class="ai ai-google-scholar"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://github.com/msmith01" target="_blank" rel="noopener">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/post/synth-real-time-series/financial-time-series/">Time Series Classification Synthetic vs Real Financial Time Series</a></li>
+          
+          <li><a href="/post/hackerrank-competitions/hackerrank-compeitions/">Series of Hackerrank Competitions</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+<section id="comments">
+  
+    
+<div id="disqus_thread"></div>
+<script>
+  let disqus_config = function () {
+    
+    
+    
+  };
+  (function() {
+    if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+      document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+      return;
+    }
+    var d = document, s = d.createElement('script'); s.async = true;
+    s.src = 'https://' + "lf0-com" + '.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+  
+</section>
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+    <script id="dsq-count-scr" src="https://lf0-com.disqus.com/count.js" async></script>
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.130521ecfc6f534c52c158217bbff718.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+        
+  </p>
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

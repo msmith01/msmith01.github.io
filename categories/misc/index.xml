@@ -1,0 +1,1000 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Misc on Matthew Smith R Shenanigans</title>
+    <link>/categories/misc/</link>
+    <description>Recent content in Misc on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 28 Feb 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/misc/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Boundary Conditions for a Series of Machine Learning Models</title>
+      <link>/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/</link>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;machine-learning-at-the-boundary&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Machine Learning at the Boundary:&lt;/h1&gt;
+&lt;p&gt;There is nothing new in the fact that many machine learning models can outperform traditional econometric models but I want to show as part of my research why and how some models make given predictions or in this instance classifications.&lt;/p&gt;
+&lt;p&gt;I wanted to show the decision boundary in which my binary classification model was making. That is, I wanted to show the partition space that splits my classification into each class. The problem and code can be split into a multi-classification problem with some tweeks.&lt;/p&gt;
+&lt;div id=&#34;initialisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Initialisation:&lt;/h2&gt;
+&lt;p&gt;I first load in a series of packages and initialise a logistic function to convert log-odds to a logistic probability function later on.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(patchwork)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(purrr)
+library(stringr)
+library(tidyr)
+library(xgboost)
+library(lightgbm)
+library(keras)
+library(tidyquant)
+##################### Pre-define some functions ###################################
+###################################################################################
+
+logit2prob &amp;lt;- function(logit){
+  odds &amp;lt;- exp(logit)
+  prob &amp;lt;- odds / (1 + odds)
+  return(prob)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The data:&lt;/h1&gt;
+&lt;p&gt;I use the &lt;code&gt;iris&lt;/code&gt; dataset which contains information on 3 different plant variables collected by British statistican Ronald Fisher in 1936. The dataset consists of &lt;span class=&#34;math inline&#34;&gt;\(4\)&lt;/span&gt; different characteristics of plant species which should uniquely distinguish the &lt;span class=&#34;math inline&#34;&gt;\(3\)&lt;/span&gt; different species (&lt;em&gt;Setosa&lt;/em&gt;, &lt;em&gt;Virginica&lt;/em&gt; and &lt;em&gt;Versicolor&lt;/em&gt;). However, my problem required a binary classification problem and not a multi-classifciation problem. In the following code I import the &lt;code&gt;iris&lt;/code&gt; data and remove a type of plant Species &lt;code&gt;virginica&lt;/code&gt; to bring it from a multi-classification to a binary classification problem.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;###################################################################################
+###################################################################################
+
+data(iris)
+df &amp;lt;- iris %&amp;gt;% 
+  filter(Species != &amp;quot;virginica&amp;quot;) %&amp;gt;% 
+  mutate(Species = +(Species == &amp;quot;versicolor&amp;quot;))
+str(df)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    100 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : int  0 0 0 0 0 0 0 0 0 0 ...&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;###################################################################################
+###################################################################################&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I plot the data by first storing the &lt;code&gt;ggplot&lt;/code&gt; objects changing only the &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; variables in each of the &lt;code&gt;plt&lt;/code&gt;’s.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plt1 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Sepal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt2 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Length, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt3 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt3 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Sepal.Length, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt4 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Length, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt5 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt6 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 8) +
+  theme_bw(base_size = 25) +
+  theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I also wanted to use the new &lt;code&gt;patchwork&lt;/code&gt; package which makes displaying &lt;code&gt;ggplot&lt;/code&gt; plots very easy. i.e the below code plots our graphics as its written (1 top plot stretching the length of the grid space, 2 middle plots, another single plot and a further 2 more plots at the bottom.)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;      (plt1)    /
+  (plt2 + plt3) /
+      (plt4)    /
+  (plt5 + plt6)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Alternatively, we can re-arrange the plots into any way we wish and plot them in the following way:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;(plt1 + plt2 + plt3) /
+      (plt4)        / 
+   (plt5 + plt6)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Which I think looks awesome.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: It looks like the &lt;code&gt;patchwork&lt;/code&gt; package doesn’t work so well with &lt;code&gt;rmarkdown&lt;/code&gt;. For those who are following along with the code, it looks awesome, for those who are just reading, not so much.&lt;/p&gt;
+&lt;div id=&#34;objective&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Objective&lt;/h2&gt;
+&lt;p&gt;The objective is to build a classification algorithm to distinguish between the two classes and then compute the decision boundaries in order to better see how the models made such predictions.&lt;/p&gt;
+&lt;p&gt;In order to create the decision boundary plots for each variable combination we need the different combinatons of variables in the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;###################################################################################
+###################################################################################
+
+var_combos &amp;lt;- expand.grid(colnames(df[,1:4]), colnames(df[,1:4])) %&amp;gt;% 
+  filter(!Var1 == Var2)
+
+###################################################################################
+###################################################################################&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;var_combos %&amp;gt;% 
+  head() %&amp;gt;% 
+  kable(caption = &amp;quot;Variable Combinations&amp;quot;, escape = F, align = &amp;quot;c&amp;quot;, digits = 2) %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 9, fixed_thead = T, full_width = F) %&amp;gt;% 
+  scroll_box(width = &amp;quot;100%&amp;quot;, height = &amp;quot;200px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div style=&#34;border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:100%; &#34;&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-7&#34;&gt;Table 1: &lt;/span&gt;Variable Combinations
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:center;position: sticky; top:0; background-color: #FFFFFF;position: sticky; top:0; background-color: #FFFFFF;&#34;&gt;
+Var1
+&lt;/th&gt;
+&lt;th style=&#34;text-align:center;position: sticky; top:0; background-color: #FFFFFF;position: sticky; top:0; background-color: #FFFFFF;&#34;&gt;
+Var2
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Width
+&lt;/td&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Length
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Petal.Length
+&lt;/td&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Length
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Petal.Width
+&lt;/td&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Length
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Length
+&lt;/td&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Width
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Petal.Length
+&lt;/td&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Width
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Petal.Width
+&lt;/td&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Width
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;p&gt;Next, I want to use the different variable combinations previously and create lists (one for each variable combination) and populate these lists with synthetic data - or data from the minimum to maximum value of each variable combination. This will act as our synthetically created test data in which we make predictions on and build the decision boundary.&lt;/p&gt;
+&lt;p&gt;It’s important to note that the plots will eventually be 2 dimensional for illustrative purposes, therefore we only train the Machine Learning models on two variables, but for each combination of the two variables, these variables are the first two variables in the &lt;code&gt;boundary_lists&lt;/code&gt; data frames.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boundary_lists &amp;lt;- map2(
+  .x = var_combos$Var1,
+  .y = var_combos$Var2,
+  ~select(df, .x, .y) %&amp;gt;% 
+    summarise(
+      minX = min(.[[1]], na.rm = TRUE),
+      maxX = max(.[[1]], na.rm = TRUE),
+      minY = min(.[[2]], na.rm = TRUE),
+      maxY = max(.[[2]], na.rm = TRUE)
+    )
+) %&amp;gt;% 
+  map(.,
+      ~tibble(
+        x = seq(.x$minX, .x$maxX, length.out = 200),
+        y = seq(.x$minY, .x$maxY, length.out = 200),
+      )
+  ) %&amp;gt;% 
+  map(.,
+      ~tibble(
+        xx = rep(.x$x, each = 200),
+        yy = rep(.x$y, time = 200)
+      )
+  ) %&amp;gt;% 
+  map2(.,
+       asplit(var_combos, 1), ~ .x %&amp;gt;% 
+         set_names(.y))
+
+###################################################################################
+###################################################################################&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can see how the first 4 observations of the first and last two lists look like:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boundary_lists %&amp;gt;% 
+  map(., ~head(., 4)) %&amp;gt;%  
+  head(2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [[1]]
+## # A tibble: 4 x 2
+##   Sepal.Width Sepal.Length
+##         &amp;lt;dbl&amp;gt;        &amp;lt;dbl&amp;gt;
+## 1           2         4.3 
+## 2           2         4.31
+## 3           2         4.33
+## 4           2         4.34
+## 
+## [[2]]
+## # A tibble: 4 x 2
+##   Petal.Length Sepal.Length
+##          &amp;lt;dbl&amp;gt;        &amp;lt;dbl&amp;gt;
+## 1            1         4.3 
+## 2            1         4.31
+## 3            1         4.33
+## 4            1         4.34&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boundary_lists %&amp;gt;% 
+  map(., ~head(., 4)) %&amp;gt;%  
+  tail(2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [[1]]
+## # A tibble: 4 x 2
+##   Sepal.Width Petal.Width
+##         &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt;
+## 1           2       0.1  
+## 2           2       0.109
+## 3           2       0.117
+## 4           2       0.126
+## 
+## [[2]]
+## # A tibble: 4 x 2
+##   Petal.Length Petal.Width
+##          &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt;
+## 1            1       0.1  
+## 2            1       0.109
+## 3            1       0.117
+## 4            1       0.126&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;training-time&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Training time:&lt;/h2&gt;
+&lt;p&gt;Now that we have the synthetically created testing data set up, I want to train the models on the actual observed observations. I use each data point in the plots above as my training data. I apply the following models:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Logistic Model&lt;/li&gt;
+&lt;li&gt;Support Vector Machine with a linear kernel&lt;/li&gt;
+&lt;li&gt;Support Vector Machine with a polynomial kernel&lt;/li&gt;
+&lt;li&gt;Support Vector Machine with a radial kernel&lt;/li&gt;
+&lt;li&gt;Support Vector Machine with a sigmoid kernel&lt;/li&gt;
+&lt;li&gt;Random Forest&lt;/li&gt;
+&lt;li&gt;Extreme Gradiant Boosting (XGBoost) model with default parameters&lt;/li&gt;
+&lt;li&gt;Single layer Keras Neural Network (with linear components)&lt;/li&gt;
+&lt;li&gt;Deeper layer Keras Neural Network (with linear components)&lt;/li&gt;
+&lt;li&gt;Deeper’er layer Keras Neural Network (with linear components)&lt;/li&gt;
+&lt;li&gt;Light Gradient Boosting model (LightGBM) with default parameters&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Side note: I am not an expert in Deep learning/Keras/Tensorflow, so I am sure better models will yield better decision boundaries but it was a fun task getting the different Machine Learning models to fit inside a &lt;code&gt;purrr&lt;/code&gt;, &lt;code&gt;map&lt;/code&gt; call.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;###################################################################################
+###################################################################################
+# params_lightGBM &amp;lt;- list(
+#   objective = &amp;quot;binary&amp;quot;,
+#   metric = &amp;quot;auc&amp;quot;,
+#   min_data = 1
+# )
+
+# To install Light GBM try the following in your RStudio terinal
+
+# git clone --recursive https://github.com/microsoft/LightGBM
+# cd LightGBM
+# Rscript build_r.R
+
+models_list &amp;lt;- var_combos %&amp;gt;%
+  mutate(modeln = str_c(&amp;#39;mod&amp;#39;, row_number()))  %&amp;gt;%
+  pmap(~ 
+         {
+           
+           xname = ..1
+           yname = ..2
+           modelname = ..3
+           df %&amp;gt;%
+             select(Species, xname, yname) %&amp;gt;%
+             group_by(grp = &amp;#39;grp&amp;#39;) %&amp;gt;%
+             nest() %&amp;gt;%
+             mutate(models = map(data, ~{
+               
+               
+               list(
+                 # Logistic Model
+                 Model_GLM = {
+                   glm(Species ~ ., data = .x, family = binomial(link=&amp;#39;logit&amp;#39;))
+                 },
+                 # Support Vector Machine (linear)
+                 Model_SVM_Linear = {
+                   e1071::svm(Species ~ ., data = .x,  type = &amp;#39;C-classification&amp;#39;, kernel = &amp;#39;linear&amp;#39;)
+                 },
+                 # Support Vector Machine (polynomial)
+                 Model_SVM_Polynomial = {
+                   e1071::svm(Species ~ ., data = .x,  type = &amp;#39;C-classification&amp;#39;, kernel = &amp;#39;polynomial&amp;#39;)
+                 },
+                 # Support Vector Machine (sigmoid)
+                 Model_SVM_radial = {
+                   e1071::svm(Species ~ ., data = .x,  type = &amp;#39;C-classification&amp;#39;, kernel = &amp;#39;sigmoid&amp;#39;)
+                 },
+                 # Support Vector Machine (radial)
+                 Model_SVM_radial_Sigmoid = {
+                   e1071::svm(Species ~ ., data = .x,  type = &amp;#39;C-classification&amp;#39;, kernel = &amp;#39;radial&amp;#39;)
+                 },
+                 # Random Forest
+                 Model_RF = {
+                   randomForest::randomForest(formula = as.factor(Species) ~ ., data = .)
+                 },
+                 # Extreme Gradient Boosting
+                 Model_XGB = {
+                   xgboost(
+                     objective = &amp;#39;binary:logistic&amp;#39;,
+                     eval_metric = &amp;#39;auc&amp;#39;,
+                     data = as.matrix(.x[, 2:3]),
+                     label = as.matrix(.x$Species), # binary variable
+                     nrounds = 10)
+                 },
+                 # Kera Neural Network
+                 Model_Keras = {
+                   mod &amp;lt;- keras_model_sequential() %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;relu&amp;#39;, input_shape = 2) %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;sigmoid&amp;#39;)
+                   
+                   mod %&amp;gt;% compile(
+                     loss = &amp;#39;binary_crossentropy&amp;#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&amp;#39;accuracy&amp;#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 # Kera Neural Network
+                 Model_Keras_2 = {
+                   mod &amp;lt;- keras_model_sequential() %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;relu&amp;#39;, input_shape = 2) %&amp;gt;%
+                     layer_dense(units = 2, activation = &amp;#39;linear&amp;#39;, input_shape = 2) %&amp;gt;%
+                     layer_dense(units = 2, activation = &amp;#39;sigmoid&amp;#39;)
+                   
+                   mod %&amp;gt;% compile(
+                     loss = &amp;#39;binary_crossentropy&amp;#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&amp;#39;accuracy&amp;#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 # Kera Neural Network                 
+                 Model_Keras_3 = {
+                   mod &amp;lt;- keras_model_sequential() %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;relu&amp;#39;, input_shape = 2) %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;relu&amp;#39;, input_shape = 2) %&amp;gt;%
+                     layer_dense(units = 2, activation = &amp;#39;linear&amp;#39;, input_shape = 2) %&amp;gt;%
+                     layer_dense(units = 2, activation = &amp;#39;sigmoid&amp;#39;)
+                   
+                   mod %&amp;gt;% compile(
+                     loss = &amp;#39;binary_crossentropy&amp;#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&amp;#39;accuracy&amp;#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 
+                 # LightGBM model
+                 Model_LightGBM = {
+                   lgb.train(
+                     data = lgb.Dataset(data = as.matrix(.x[, 2:3]), label = .x$Species),
+                     objective = &amp;#39;binary&amp;#39;,
+                     metric = &amp;#39;auc&amp;#39;,
+                     min_data = 1
+                     #params = params_lightGBM,
+                     #learning_rate = 0.1
+                   )
+                 }
+                 
+                 
+               )                      
+               
+             }                               
+             ))                 
+           
+         }) %&amp;gt;% 
+  map(
+    ., ~unlist(., recursive = FALSE)
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;testing-time&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Testing time:&lt;/h2&gt;
+&lt;p&gt;Now that the models have been trained, we can begin makign the predictions on the synthetically created data we created in the &lt;code&gt;boundary_lists&lt;/code&gt; data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;models_predict &amp;lt;- map2(models_list, boundary_lists, ~{
+  mods &amp;lt;- purrr::pluck(.x, &amp;quot;models&amp;quot;)
+  dat &amp;lt;- .y
+  map(mods, function(x)
+    tryCatch({
+      if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;glm&amp;quot;){   
+        # predict the logistic model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = predict(x, newdata = dat)
+        ) %&amp;gt;% 
+          mutate(
+            prediction = logit2prob(prediction),
+            prediction = case_when(
+              prediction &amp;gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }    
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;svm.formula&amp;quot;){ 
+        # predict the SVM model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = as.numeric(as.character(predict(x, newdata = dat)))
+        )
+      }
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;randomForest.formula&amp;quot;){  
+        # predict the RF model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = as.numeric(as.character(predict(x, newdata = dat)))
+        )
+      }    
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;xgb.Booster&amp;quot;){      
+        # predict the XGBoost model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1], 
+          prediction = predict(x, newdata = as.matrix(dat), type = &amp;#39;prob&amp;#39;)
+        ) %&amp;gt;% 
+          mutate(
+            prediction = case_when(
+              prediction &amp;gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;keras.engine.sequential.Sequential&amp;quot;){
+        # Keras Single Layer Neural Network
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = predict_classes(object = x, x = as.matrix(dat))
+        )
+      }
+      else if(attr(x, &amp;quot;class&amp;quot;)[2] == &amp;quot;keras.engine.training.Model&amp;quot;){
+        # NOTE:::: This is a very crude hack to have multiple keras NN models
+        # Needs fixing such that the models are named better - (not like) - (..., &amp;quot;class&amp;quot;)[2], ..., &amp;quot;class&amp;quot;)[3]... and so on.  
+        # Keras Single Layer Neural Network
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[2], # needs changing also.
+          prediction = predict_classes(object = x, x = as.matrix(dat))
+        )
+      }
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;lgb.Booster&amp;quot;){
+        # Light GBM model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = predict(object = x, data = as.matrix(dat), rawscore = FALSE)
+        ) %&amp;gt;% 
+          mutate(
+            prediction = case_when(
+              prediction &amp;gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }
+    }, error = function(e){
+      print(&amp;#39;skipping\n&amp;#39;)
+    }
+    )
+  )
+}
+) %&amp;gt;% 
+  map(.,
+      ~setNames(.,
+                map(.,
+                    ~c(.x$modelname[1]
+                    )
+                )
+      )
+  ) %&amp;gt;%
+  map(.,
+      ~map(.,
+           ~setNames(.,
+                     c(
+                       paste0(.x$modelname[1], &amp;quot;_Model&amp;quot;),
+                       paste0(.x$modelname[1], &amp;quot;_Prediction&amp;quot;)
+                     )
+           )
+      )
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;calibrating-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Calibrating the data&lt;/h2&gt;
+&lt;p&gt;Now we have our trained models, along with predictions we can &lt;code&gt;map&lt;/code&gt; these predictions into data which we can plot using &lt;code&gt;ggplot&lt;/code&gt; and then arrange using &lt;code&gt;patchwork&lt;/code&gt;!.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data &amp;lt;- map2(
+  .x = boundary_lists,
+  .y = map(
+    models_predict,
+    ~map(.,
+         ~tibble(.)
+    )
+  ),
+  ~bind_cols(.x, .y)
+)
+
+names(plot_data) &amp;lt;- map_chr(
+  plot_data, ~c(
+    paste(
+      colnames(.)[1],
+      &amp;quot;and&amp;quot;,
+      colnames(.)[2],
+      sep = &amp;quot;_&amp;quot;)
+  )
+)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now that we have our predictions we can create the &lt;code&gt;ggplots&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot_lists &amp;lt;- plot_data %&amp;gt;%
+  map(
+    .,
+    ~select(
+      .,
+      -contains(&amp;quot;Model&amp;quot;)
+    ) %&amp;gt;%
+      pivot_longer(cols = contains(&amp;quot;Prediction&amp;quot;), names_to = &amp;quot;Model&amp;quot;, values_to = &amp;quot;Prediction&amp;quot;)
+  ) %&amp;gt;%
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) +
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 8, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 8, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      theme_bw(base_size = 25) +
+      theme(legend.position = &amp;quot;none&amp;quot;)
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Plot all the different combinations of the decision boundaries. &lt;strong&gt;Note&lt;/strong&gt;: The above code will work better in your console, when I ran the code to compile the blog post the plots were too small. Therefore, I provide individual plots for a sample of the models &amp;amp; variable combinations.&lt;/p&gt;
+&lt;p&gt;I first needed to select the first two columns which are the variables of interest (Petal.Width, Petal.Length, Sepal.Width and Sepal.Length). Then I wanted to take a random sample of the columns thereafter (which are the different Machine Learning Model predictions).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled &amp;lt;- plot_data %&amp;gt;% 
+  map(
+    .,
+    ~select(
+      .,
+      -contains(&amp;quot;Model&amp;quot;)
+    ) %&amp;gt;% 
+      select(.,
+             c(1:2), sample(colnames(.), 2)
+             ) %&amp;gt;% 
+      pivot_longer(cols = contains(&amp;quot;Prediction&amp;quot;), names_to = &amp;quot;Model&amp;quot;, values_to = &amp;quot;Prediction&amp;quot;)
+    ) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next I can make the plots by taking a random sample of the lists.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled %&amp;gt;% 
+  rlist::list.sample(1) %&amp;gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &amp;quot;serif&amp;quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &amp;quot;bottom&amp;quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &amp;quot;15&amp;quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &amp;#39;darkred&amp;#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Row indexes must be between 0 and the number of rows (0). Use `NA` as row index to obtain a row full of `NA` values.
+## This warning is displayed once per session.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Some other random models:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Petal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Petal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-21-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in grDevices::contourLines(x = sort(unique(data$x)), y =
+## sort(unique(data$y)), : todos los valores de z son iguales&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-22-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-23-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-24-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled %&amp;gt;% 
+  rlist::list.sample(1) %&amp;gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &amp;quot;serif&amp;quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &amp;quot;bottom&amp;quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &amp;quot;15&amp;quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &amp;#39;darkred&amp;#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-25-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled %&amp;gt;% 
+  rlist::list.sample(1) %&amp;gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &amp;quot;serif&amp;quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &amp;quot;bottom&amp;quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &amp;quot;15&amp;quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &amp;#39;darkred&amp;#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Length_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-26-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled %&amp;gt;% 
+  rlist::list.sample(1) %&amp;gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &amp;quot;serif&amp;quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &amp;quot;bottom&amp;quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &amp;quot;15&amp;quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &amp;#39;darkred&amp;#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-27-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled %&amp;gt;% 
+  rlist::list.sample(1) %&amp;gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &amp;quot;serif&amp;quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &amp;quot;bottom&amp;quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &amp;quot;15&amp;quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &amp;#39;darkred&amp;#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-28-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Natually the linear models made a linear decision boundary. It looks like the random forest model overfit a little the data, where as the XGBoost and LightGBM models were able to make better, more generalisable decision boundaries. The Keras Neural Networks performed poorly because they should be trained better.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;glm&lt;/code&gt; = Logistic Model&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;keras.engine.sequential.Sequential Prediction...18&lt;/code&gt; = Single layer Neural Network&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;keras.engine.sequential.Sequential Prediction...18&lt;/code&gt; = Deeper layer Neural Network&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;keras.engine.sequential.Sequential Prediction...22&lt;/code&gt; = Deeper’er layer Neural Network&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lgb.Booster Prediction&lt;/code&gt; = Light Gradient Boosted Model&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;randomForest.formula Prediction&lt;/code&gt; = Random Forest Model&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;svm.formula Prediction...10&lt;/code&gt; = Support Vector Machine with a Sigmoid Kernel&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;svm.formula Prediction...12&lt;/code&gt; = Support Vector Machine with a Radial Kernel&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;svm.formula Prediction...6&lt;/code&gt; = Support Vector Machine with a Linear Kernel&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;svm.formula Prediction...8&lt;/code&gt; = Support Vector Machine with a Polynomial Kernel&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;xgb.Booster Prediction&lt;/code&gt; = Extreme Gradient Boosting Model&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In many of the combinations the Keras Neural Network model just predicted all observations to be of a specific class (again by my poor tuning of the models and the fact that the Neural Networks only had 100 observations to learn from and 40,000 observation to predict on). That is, it coloured the whole background blue or red and made many mis-classifications. In some of the plots the Neural Networks managed to mae perfect classifications, in other it made strange decision boundaries. - Neural Networks are fun.&lt;/p&gt;
+&lt;p&gt;As some brief analysis of the plots, it looks like the simple logistic model made near-perfect classifications. Which isn’t suprising given that each of the variable ralationships are linearly seperable. However, I have a preferece for XGBoost and LightGBM models since they can handle non-linear relationships through the incorporation of regularisation in its objective functions which allows them to make more robust decision boundaries. Random Forest models fail here which is why their decision boundary appears to do a good job but is also slightly erratic and sharpe in it’s decision boundaries.&lt;/p&gt;
+&lt;p&gt;Of course it goes without saying that these decision boundaries can become significantly more complex and non-linear with the inclusion of more variables and higher dimensions.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;for(i in 1:length(plot_data)){
+  print(ggplot_lists[[i]])
+  }&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;end-note&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;End note:&lt;/h2&gt;
+&lt;p&gt;(Sometimes I have no idea what the Neural Network is thinking)&lt;/p&gt;
+&lt;p&gt;It is a shame I couldn’t better build the Keras models to show their power.&lt;/p&gt;
+&lt;p&gt;I wrote this model on an Amazon Ubuntu EC2 Instance however, when I went to compile the blog post in R on my Windows system I ran into some problems. These problems were mostly down to installing the &lt;code&gt;lightgbm&lt;/code&gt; package and package versions. The code was working without error using the following package versions (i.e. using the most up-to-date package versions)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sessionInfo()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17763)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=Spanish_Spain.1252  LC_CTYPE=Spanish_Spain.1252   
+## [3] LC_MONETARY=Spanish_Spain.1252 LC_NUMERIC=C                  
+## [5] LC_TIME=Spanish_Spain.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] tidyquant_0.5.7            quantmod_0.4-15           
+##  [3] TTR_0.23-6                 PerformanceAnalytics_1.5.3
+##  [5] xts_0.11-2                 zoo_1.8-6                 
+##  [7] lubridate_1.7.4            keras_2.2.5.0             
+##  [9] lightgbm_2.3.2             R6_2.4.1                  
+## [11] xgboost_0.90.0.1           tidyr_1.0.0               
+## [13] stringr_1.4.0              purrr_0.3.2               
+## [15] kableExtra_1.1.0.9000      knitr_1.25.4              
+## [17] ggplot2_3.2.1              patchwork_1.0.0           
+## [19] dplyr_0.8.99.9000         
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.3           lattice_0.20-38      class_7.3-15        
+##  [4] utf8_1.1.4           assertthat_0.2.1     zeallot_0.1.0       
+##  [7] digest_0.6.24        e1071_1.7-2          evaluate_0.14       
+## [10] httr_1.4.1           blogdown_0.15        pillar_1.4.3.9000   
+## [13] tfruns_1.4           rlang_0.4.4          lazyeval_0.2.2      
+## [16] curl_4.0             rstudioapi_0.10      data.table_1.12.8   
+## [19] whisker_0.3-2        Matrix_1.2-17        reticulate_1.14-9001
+## [22] rmarkdown_1.14       lobstr_1.1.1         labeling_0.3        
+## [25] webshot_0.5.1        readr_1.3.1          munsell_0.5.0       
+## [28] compiler_3.6.1       xfun_0.8             pkgconfig_2.0.3     
+## [31] base64enc_0.1-3      tensorflow_2.0.0     htmltools_0.3.6     
+## [34] tidyselect_1.0.0     tibble_2.99.99.9014  bookdown_0.13       
+## [37] quadprog_1.5-7       randomForest_4.6-14  fansi_0.4.1         
+## [40] viridisLite_0.3.0    crayon_1.3.4         withr_2.1.2         
+## [43] rappdirs_0.3.1       grid_3.6.1           Quandl_2.10.0       
+## [46] jsonlite_1.6.1       gtable_0.3.0         lifecycle_0.1.0     
+## [49] magrittr_1.5         scales_1.0.0         rlist_0.4.6.1       
+## [52] cli_2.0.1            stringi_1.4.3        xml2_1.2.2          
+## [55] ellipsis_0.3.0       generics_0.0.2       vctrs_0.2.99.9005   
+## [58] tools_3.6.1          glue_1.3.1           hms_0.5.1           
+## [61] yaml_2.2.0           colorspace_1.4-1     rvest_0.3.4&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>quant finance | Matthew Smith R Shenanigans</title>
+    <title>quant finance on Matthew Smith R Shenanigans</title>
     <link>/tags/quant-finance/</link>
-      <atom:link href="/tags/quant-finance/index.xml" rel="self" type="application/rss+xml" />
-    <description>quant finance</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>quant finance</title>
-      <link>/tags/quant-finance/</link>
-    </image>
+    <description>Recent content in quant finance on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/quant-finance/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Machine Learning (XGBoost) Time-Series Classification Trading Strategy</title>
       <link>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</link>
       <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      
       <guid>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
@@ -1597,6 +1597,7 @@ ret_Rb
       <title>Quantitative Analytics: Optimal Portfolio Allocation</title>
       <link>/post/portfolio-optimisation-model/portfolio-optimisation-r/</link>
       <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/portfolio-optimisation-model/portfolio-optimisation-r/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
@@ -4555,6 +4556,7 @@ ggplot() +
       <title>Quantitative Trading Strategies using quantmod</title>
       <link>/post/understanding-ttr-package/technical-trading-rules/</link>
       <pubDate>Sun, 29 Dec 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/understanding-ttr-package/technical-trading-rules/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
@@ -7165,6 +7167,7 @@ End.Equity
       <title>Factor Modeling in R</title>
       <link>/post/factor-modeling-for-portfolio-optimisation/factor-modeling-portfolio-optimisation/</link>
       <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/factor-modeling-for-portfolio-optimisation/factor-modeling-portfolio-optimisation/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;

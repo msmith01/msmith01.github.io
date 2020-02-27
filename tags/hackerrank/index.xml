@@ -1,21 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>hackerrank | Matthew Smith R Shenanigans</title>
+    <title>hackerrank on Matthew Smith R Shenanigans</title>
     <link>/tags/hackerrank/</link>
-      <atom:link href="/tags/hackerrank/index.xml" rel="self" type="application/rss+xml" />
-    <description>hackerrank</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 24 Sep 2019 00:00:00 +0000</lastBuildDate>
-    <image>
-      <url>/img/icon-192.png</url>
-      <title>hackerrank</title>
-      <link>/tags/hackerrank/</link>
-    </image>
+    <description>Recent content in hackerrank on Matthew Smith R Shenanigans</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 24 Sep 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/hackerrank/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Series of Hackerrank Competitions</title>
       <link>/post/hackerrank-competitions/hackerrank-compeitions/</link>
       <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
+      
       <guid>/post/hackerrank-competitions/hackerrank-compeitions/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
