@@ -58,12 +58,12 @@
   </url>
   
   <url>
-    <loc>/tags/machine-learning/</loc>
+    <loc>/categories/machine-learning/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/machine-learning/</loc>
+    <loc>/tags/machine-learning/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
@@ -188,12 +188,12 @@
   </url>
   
   <url>
-    <loc>/tags/systematic-trading/</loc>
+    <loc>/categories/systematic-trading/</loc>
     <lastmod>2019-12-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/systematic-trading/</loc>
+    <loc>/tags/systematic-trading/</loc>
     <lastmod>2019-12-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -338,12 +338,12 @@
   </url>
   
   <url>
-    <loc>/tags/aws/</loc>
+    <loc>/categories/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/aws/</loc>
+    <loc>/tags/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
@@ -442,6 +442,10 @@
   
   <url>
     <loc>/publication/</loc>
+  </url>
+  
+  <url>
+    <loc>/true/</loc>
   </url>
   
 </urlset>
