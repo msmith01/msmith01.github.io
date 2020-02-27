@@ -463,7 +463,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    20 min read
+    16 min read
   </span>
   
 
@@ -1300,240 +1300,42 @@ names(plot_data) &lt;- map_chr(
         legend.text = element_text(size = 20)
       )
   )</code></pre>
-<pre><code>## $Sepal.Length_and_Sepal.Width</code></pre>
+<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
 <pre><code>## Warning: Row indexes must be between 0 and the number of rows (0). Use `NA` as row index to obtain a row full of `NA` values.
 ## This warning is displayed once per session.</code></pre>
 <p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <p>Some other random models:</p>
-<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
-<pre><code>## Warning: Not possible to generate contour data</code></pre>
-<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <pre><code>## $Sepal.Length_and_Sepal.Width</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre><code>## $Sepal.Length_and_Petal.Width</code></pre>
 <p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<pre><code>## $Sepal.Length_and_Petal.Width</code></pre>
+<pre><code>## $Petal.Length_and_Sepal.Width</code></pre>
 <p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
-<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
-<pre><code>## Warning: Not possible to generate contour data</code></pre>
-<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
-<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
-<pre><code>## Warning: Not possible to generate contour data</code></pre>
-<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<pre><code>## $Sepal.Length_and_Petal.Width</code></pre>
-<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 <pre><code>## $Sepal.Width_and_Petal.Length</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre><code>## $Sepal.Width_and_Petal.Width</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre><code>## $Sepal.Width_and_Petal.Length</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre><code>## $Sepal.Width_and_Sepal.Length</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre><code>## $Sepal.Length_and_Petal.Length</code></pre>
 <pre><code>## Warning in grDevices::contourLines(x = sort(unique(data$x)), y =
 ## sort(unique(data$y)), : todos los valores de z son iguales</code></pre>
 <pre><code>## Warning: Not possible to generate contour data</code></pre>
-<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
-<pre><code>## $Petal.Width_and_Sepal.Length</code></pre>
 <p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
-<pre><code>## $Sepal.Length_and_Petal.Length</code></pre>
-<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
-<pre class="r"><code>plot_data_sampled %&gt;% 
-  rlist::list.sample(1) %&gt;% 
-  map(
-    .x = .,
-    ~ggplot() +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        color = factor(!!rlang::sym(colnames(.x)[4]))
-      ), data = .x) + 
-      geom_contour(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        z = !!rlang::sym(colnames(.x)[4])
-      ), data = .x) +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
-      ), size = 3, data = df) +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2])
-      ), size = 3, shape = 1, data = df) +
-      facet_wrap(~Model) +
-      #coord_flip() +
-      theme_tq(base_family = &quot;serif&quot;) +
-      theme(
-        #aspect.ratio = 1,
-        axis.line.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        legend.position = &quot;bottom&quot;,
-        #legend.title = element_text(size = 20),
-        #legend.text = element_text(size = 10),
-        axis.title = element_text(size = 20),
-        axis.text = element_text(size = &quot;15&quot;),
-        strip.text.x = element_text(size = 15),
-        plot.title = element_text(size = 30, hjust = 0.5),
-        strip.background = element_rect(fill = &#39;darkred&#39;),
-        panel.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        #axis.text.x = element_text(angle = 90),
-        axis.text.y = element_text(angle = 90, hjust = 0.5),
-        #axis.title.x = element_blank()
-        legend.title = element_blank(),
-        legend.text = element_text(size = 20)
-      )
-  )</code></pre>
-<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
-<pre><code>## Warning: Not possible to generate contour data</code></pre>
-<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
-<pre class="r"><code>plot_data_sampled %&gt;% 
-  rlist::list.sample(1) %&gt;% 
-  map(
-    .x = .,
-    ~ggplot() +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        color = factor(!!rlang::sym(colnames(.x)[4]))
-      ), data = .x) + 
-      geom_contour(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        z = !!rlang::sym(colnames(.x)[4])
-      ), data = .x) +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
-      ), size = 3, data = df) +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2])
-      ), size = 3, shape = 1, data = df) +
-      facet_wrap(~Model) +
-      #coord_flip() +
-      theme_tq(base_family = &quot;serif&quot;) +
-      theme(
-        #aspect.ratio = 1,
-        axis.line.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        legend.position = &quot;bottom&quot;,
-        #legend.title = element_text(size = 20),
-        #legend.text = element_text(size = 10),
-        axis.title = element_text(size = 20),
-        axis.text = element_text(size = &quot;15&quot;),
-        strip.text.x = element_text(size = 15),
-        plot.title = element_text(size = 30, hjust = 0.5),
-        strip.background = element_rect(fill = &#39;darkred&#39;),
-        panel.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        #axis.text.x = element_text(angle = 90),
-        axis.text.y = element_text(angle = 90, hjust = 0.5),
-        #axis.title.x = element_blank()
-        legend.title = element_blank(),
-        legend.text = element_text(size = 20)
-      )
-  )</code></pre>
 <pre><code>## $Petal.Length_and_Sepal.Width</code></pre>
-<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
-<pre class="r"><code>plot_data_sampled %&gt;% 
-  rlist::list.sample(1) %&gt;% 
-  map(
-    .x = .,
-    ~ggplot() +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        color = factor(!!rlang::sym(colnames(.x)[4]))
-      ), data = .x) + 
-      geom_contour(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        z = !!rlang::sym(colnames(.x)[4])
-      ), data = .x) +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
-      ), size = 3, data = df) +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2])
-      ), size = 3, shape = 1, data = df) +
-      facet_wrap(~Model) +
-      #coord_flip() +
-      theme_tq(base_family = &quot;serif&quot;) +
-      theme(
-        #aspect.ratio = 1,
-        axis.line.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        legend.position = &quot;bottom&quot;,
-        #legend.title = element_text(size = 20),
-        #legend.text = element_text(size = 10),
-        axis.title = element_text(size = 20),
-        axis.text = element_text(size = &quot;15&quot;),
-        strip.text.x = element_text(size = 15),
-        plot.title = element_text(size = 30, hjust = 0.5),
-        strip.background = element_rect(fill = &#39;darkred&#39;),
-        panel.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        #axis.text.x = element_text(angle = 90),
-        axis.text.y = element_text(angle = 90, hjust = 0.5),
-        #axis.title.x = element_blank()
-        legend.title = element_blank(),
-        legend.text = element_text(size = 20)
-      )
-  )</code></pre>
-<pre><code>## $Petal.Width_and_Sepal.Width</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<pre><code>## $Sepal.Width_and_Sepal.Length</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<pre><code>## $Sepal.Length_and_Petal.Length</code></pre>
+<pre><code>## Warning in grDevices::contourLines(x = sort(unique(data$x)), y =
+## sort(unique(data$y)), : todos los valores de z son iguales</code></pre>
 <pre><code>## Warning: Not possible to generate contour data</code></pre>
+<p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre><code>## $Sepal.Length_and_Sepal.Width</code></pre>
 <p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
-<pre class="r"><code>plot_data_sampled %&gt;% 
-  rlist::list.sample(1) %&gt;% 
-  map(
-    .x = .,
-    ~ggplot() +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        color = factor(!!rlang::sym(colnames(.x)[4]))
-      ), data = .x) + 
-      geom_contour(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        z = !!rlang::sym(colnames(.x)[4])
-      ), data = .x) +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2]),
-        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
-      ), size = 3, data = df) +
-      geom_point(aes(
-        x = !!rlang::sym(colnames(.x)[1]),
-        y = !!rlang::sym(colnames(.x)[2])
-      ), size = 3, shape = 1, data = df) +
-      facet_wrap(~Model) +
-      #coord_flip() +
-      theme_tq(base_family = &quot;serif&quot;) +
-      theme(
-        #aspect.ratio = 1,
-        axis.line.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        legend.position = &quot;bottom&quot;,
-        #legend.title = element_text(size = 20),
-        #legend.text = element_text(size = 10),
-        axis.title = element_text(size = 20),
-        axis.text = element_text(size = &quot;15&quot;),
-        strip.text.x = element_text(size = 15),
-        plot.title = element_text(size = 30, hjust = 0.5),
-        strip.background = element_rect(fill = &#39;darkred&#39;),
-        panel.background = element_blank(),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        #axis.text.x = element_text(angle = 90),
-        axis.text.y = element_text(angle = 90, hjust = 0.5),
-        #axis.title.x = element_blank()
-        legend.title = element_blank(),
-        legend.text = element_text(size = 20)
-      )
-  )</code></pre>
-<pre><code>## $Petal.Width_and_Sepal.Length</code></pre>
+<pre><code>## $Sepal.Width_and_Petal.Length</code></pre>
 <p><img src="/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 <p>Natually the linear models made a linear decision boundary. It looks like the random forest model overfit a little the data, where as the XGBoost and LightGBM models were able to make better, more generalisable decision boundaries. The Keras Neural Networks performed poorly because they should be trained better.</p>
 <ul>
@@ -1558,8 +1360,6 @@ names(plot_data) &lt;- map_chr(
 </div>
 <div id="end-note" class="section level2">
 <h2>End note:</h2>
-<p>(Sometimes I have no idea what the Neural Network is thinking)</p>
-<p>It is a shame I couldn’t better build the Keras models to show their power.</p>
 <p>I wrote this model on an Amazon Ubuntu EC2 Instance however, when I went to compile the blog post in R on my Windows system I ran into some problems. These problems were mostly down to installing the <code>lightgbm</code> package and package versions. The code was working without error using the following package versions (i.e. using the most up-to-date package versions)</p>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.6.1 (2019-07-05)
