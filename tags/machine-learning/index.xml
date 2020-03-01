@@ -1,2666 +1,776 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>machine learning on Matthew Smith R Shenanigans</title>
-    <link>/tags/machine-learning/</link>
-    <description>Recent content in machine learning on Matthew Smith R Shenanigans</description>
+    <title>Machine Learning on Matthew Smith R Shenanigans</title>
+    <link>/tags/Machine-Learning/</link>
+    <description>Recent content in Machine Learning on Matthew Smith R Shenanigans</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 28 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/machine-learning/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/Machine-Learning/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Machine Learning (XGBoost) Time-Series Classification Trading Strategy</title>
-      <link>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</link>
-      <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
+      <title>Decision Boundary for a Series of Machine Learning Models</title>
+      <link>/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/</link>
+      <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</guid>
+      <guid>/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
-&lt;div id=&#34;introduction&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Introduction&lt;/h1&gt;
-&lt;p&gt;Using Machine Learning (ML) and past price data to predict the next periods price or direction in the stock market is not new, neither does it produce any meaningful predictions. In this post I &lt;em&gt;collapse&lt;/em&gt; down a series of asset time series data into a simple classification problem and see if a Machine Learning model can do a better job at predicting the next periods direction. I apply a similar method here &lt;a href=&#34;https://lf0.com/post/synth-real-time-series/financial-time-series/&#34;&gt;Time Series Classification Synthetic vs Real Financial Time Series&lt;/a&gt;. The &lt;strong&gt;objective&lt;/strong&gt; and &lt;strong&gt;strategy&lt;/strong&gt; is to invest in a single asset each day. The asset we invest in will be the asset which the Machine Learning model is most &lt;em&gt;confident&lt;/em&gt; will go up in share value in the next period &lt;span class=&#34;math inline&#34;&gt;\(t+1\)&lt;/span&gt;. Alternatively speaking, we invest in the asset in which the Machine Learning model gives the highest predicted probability that, a given asset will go up in value tomorrow. That is, if the model predicts on day &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; that asset GOOG was going to be higher than it’s previous close with a predicted probability of 0.78 and it also predicts that AMZN would go up with 0.53 probability then we would invest in GOOG today. -&lt;em&gt;we only invest in one asset each day&lt;/em&gt;- . The model can be expanded to short selling and multi-asset purchasing and multi-periods.&lt;/p&gt;
-&lt;div id=&#34;load-in-the-packages.&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Load in the packages.&lt;/h2&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;require(PerformanceAnalytics)
-library(data.table)
-library(dplyr)
-library(tibble)
-library(TTR)
-library(tidyr)
-library(tidyquant)
-library(tsfeatures)
-library(rsample)
+&lt;div id=&#34;machine-learning-at-the-boundary&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Machine Learning at the Boundary:&lt;/h1&gt;
+&lt;p&gt;There is nothing new in the fact that machine learning models can outperform traditional econometric models but I want to show as part of my research why and how some models make given predictions or in this instance classifications.&lt;/p&gt;
+&lt;p&gt;I wanted to show the decision boundary in which my binary classification model was making. That is, I wanted to show the partition space that splits my classification into each class. The problem and code can be split into a multi-classification problem with some tweeks.&lt;/p&gt;
+&lt;div id=&#34;initialisation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Initialisation:&lt;/h2&gt;
+&lt;p&gt;I first load in a series of packages and initialise a logistic function to convert log-odds to a logistic probability function later on.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(patchwork)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
 library(purrr)
 library(stringr)
-library(tibbletime) # tsibble clashes with the base R index() function
+library(tidyr)
 library(xgboost)
-library(rvest)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Pre-define a few intialisation objects and set the ticker symbols of the companies we want to download. For this task I am not really interested in which companies I apply the strategy to. For this reason, I scrape the Wikipedia page for the S&amp;amp;P 500 and take a random sample of 30 tickers.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;set.seed(1234)
-###################### Pre-define functions for later ##########################
-
-Scale_Me &amp;lt;- function(x){
-  (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
-}                                  # Note: I don&amp;#39;t actually use this function but I leave it in here.
-
-#################################################################################
-
-start_date &amp;lt;- &amp;quot;2017-01-01&amp;quot;
-end_date &amp;lt;- &amp;quot;2020-01-01&amp;quot;
-
-url &amp;lt;- &amp;quot;https://en.wikipedia.org/wiki/List_of_S%26P_500_companies&amp;quot;
-symbols &amp;lt;- url %&amp;gt;%
-  read_html() %&amp;gt;%
-  html_nodes(xpath = &amp;#39;//*[@id=&amp;quot;constituents&amp;quot;]&amp;#39;) %&amp;gt;% 
-  html_table() %&amp;gt;% 
-  .[[1]] %&amp;gt;% 
-  filter(!str_detect(Security, &amp;quot;Class A|Class B|Class C&amp;quot;)) %&amp;gt;%     # Removes firms with Class A, B &amp;amp; C shares
-  sample_n(30) %&amp;gt;% 
-  pull(Symbol)
-
-
-#symbols &amp;lt;- c(
-  #&amp;#39;GOOG&amp;#39;, &amp;#39;MSFT&amp;#39;, &amp;#39;HOG&amp;#39;, &amp;#39;AAPL&amp;#39;, &amp;#39;FB&amp;#39; 
-  #&amp;#39;AMZN&amp;#39;, &amp;#39;EBAY&amp;#39;, &amp;#39;IBM&amp;#39;, &amp;#39;NFLX&amp;#39;, &amp;#39;NVDA&amp;#39;,
-  #&amp;#39;TWTR&amp;#39;, &amp;#39;WMT&amp;#39;, &amp;#39;XRX&amp;#39;, &amp;#39;INTC&amp;#39;, &amp;#39;HPE&amp;#39;
-# )&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;the-data&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The data&lt;/h2&gt;
-&lt;p&gt;Download the data and store it into a new environment.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dataEnv &amp;lt;- new.env()
-getSymbols(symbols, 
-           from = start_date, 
-           to = end_date, 
-           #src = &amp;quot;yahoo&amp;quot;, 
-           #adjust = TRUE, 
-           env = dataEnv)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;LEG&amp;quot;  &amp;quot;NLSN&amp;quot; &amp;quot;SLB&amp;quot;  &amp;quot;CHTR&amp;quot; &amp;quot;C&amp;quot;    &amp;quot;REGN&amp;quot; &amp;quot;CCI&amp;quot;  &amp;quot;SYK&amp;quot;  &amp;quot;ROP&amp;quot;  &amp;quot;RL&amp;quot;  
-## [11] &amp;quot;CERN&amp;quot; &amp;quot;CMG&amp;quot;  &amp;quot;GS&amp;quot;   &amp;quot;CAT&amp;quot;  &amp;quot;MSI&amp;quot;  &amp;quot;BR&amp;quot;   &amp;quot;VRSK&amp;quot; &amp;quot;PNC&amp;quot;  &amp;quot;KEYS&amp;quot; &amp;quot;PHM&amp;quot; 
-## [21] &amp;quot;FB&amp;quot;   &amp;quot;BKR&amp;quot;  &amp;quot;ABMD&amp;quot; &amp;quot;WYNN&amp;quot; &amp;quot;DG&amp;quot;   &amp;quot;ADI&amp;quot;  &amp;quot;GL&amp;quot;   &amp;quot;TSCO&amp;quot; &amp;quot;FLS&amp;quot;  &amp;quot;CDW&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Once the data has been downloaded and stored into a new environment I clean the data up a little, put all the lists into a single data frame, compute the daily returns for each asset and create the &lt;em&gt;up&lt;/em&gt; or &lt;em&gt;down&lt;/em&gt; direction which will be what the classification model will try to predict.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;df &amp;lt;- eapply(dataEnv, function(x){
-  as.data.frame(x) %&amp;gt;% 
-    rename_all(function(n){
-      gsub(&amp;quot;^(\\w+)\\.&amp;quot;, &amp;quot;&amp;quot;, n, perl = TRUE)
-    }
-    ) %&amp;gt;%
-    rownames_to_column(&amp;quot;date&amp;quot;)  
-}) %&amp;gt;% 
-  rbindlist(idcol = TRUE) %&amp;gt;% 
-  mutate(date = as.Date(date)) %&amp;gt;% 
-  group_by(.id) %&amp;gt;% 
-  tq_mutate(
-    select = Adjusted,
-    mutate_fun = periodReturn,
-    period = &amp;quot;daily&amp;quot;,
-    type = &amp;quot;arithmetic&amp;quot;
-  ) %&amp;gt;% 
-  mutate(
-    Adj_lag = lag(Adjusted),
-    chng_Adj = ifelse(Adjusted &amp;gt; Adj_lag, 1, 0) # more simply we could have just done if ret were pos/neg
-  ) %&amp;gt;% 
-  select(&amp;quot;date&amp;quot;, &amp;quot;.id&amp;quot;, &amp;quot;Adjusted&amp;quot;, &amp;quot;daily.returns&amp;quot;, &amp;quot;chng_Adj&amp;quot;, &amp;quot;Open&amp;quot;, &amp;quot;High&amp;quot;, &amp;quot;Low&amp;quot;, &amp;quot;Close&amp;quot;) %&amp;gt;% 
-  as_tibble() %&amp;gt;% 
-  as_tbl_time(index = date) %&amp;gt;% 
-  setNames(c(&amp;quot;date&amp;quot;, &amp;quot;ID&amp;quot;, &amp;quot;prc&amp;quot;, &amp;quot;ret&amp;quot;, &amp;quot;chng&amp;quot;, &amp;quot;open&amp;quot;, &amp;quot;high&amp;quot;, &amp;quot;low&amp;quot;, &amp;quot;close&amp;quot;)) %&amp;gt;% 
-  drop_na(chng)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The first few observations of the data looks like:&lt;/p&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-date
-&lt;/th&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-ID
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-prc
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-ret
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-chng
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-open
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-high
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-low
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-close
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2017-01-04
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-50.63446
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0162981
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-51.79
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-52.60
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-51.79
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-52.38
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2017-01-05
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-50.14147
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0097364
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-52.10
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-52.66
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-51.84
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-51.87
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2017-01-06
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-49.96746
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0034704
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-51.89
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-51.95
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-51.46
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-51.69
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;We can use the &lt;code&gt;nest()&lt;/code&gt; function to put the data into convenient nested tibbles that we can simply &lt;code&gt;map()&lt;/code&gt; over and apply the &lt;code&gt;rolling_origin()&lt;/code&gt; function from the &lt;code&gt;rsample&lt;/code&gt; package such that, each of our assets will have their own &lt;code&gt;rolling_origin()&lt;/code&gt; function applied to it without any overlap or mixing of the asset classes, I do this in order to create the time series features for each period.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;nested_df &amp;lt;- df %&amp;gt;%
-  mutate(duplicate_ID = ID) %&amp;gt;% 
-  nest(-ID)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;I split the time series data into a number of lists such that the &lt;code&gt;analysis()&lt;/code&gt; list contains 100 observations in each list and has a corresponding &lt;code&gt;assessment()&lt;/code&gt; list which contains 1 observation. Usually the &lt;code&gt;analysis()&lt;/code&gt; will become our training data set and the &lt;code&gt;assessment()&lt;/code&gt; will become our testing data set, however, here I am using the &lt;code&gt;rolling_origin()&lt;/code&gt; function to help create the time series features.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# First we set the number of days we want to construct the ts features
-rolled_df &amp;lt;- map(nested_df$data, ~ rolling_origin(.,
-                                                  initial = 100,
-                                                  assess = 1,
-                                                  cumulative = FALSE,
-                                                  skip = 0))&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;time-series-functions&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Time-Series Functions&lt;/h2&gt;
-&lt;p&gt;In order to create the time series variables I use the &lt;code&gt;tsfeatures&lt;/code&gt; package but there is also the &lt;code&gt;feasts&lt;/code&gt; packages &lt;a href=&#34;http://feasts.tidyverts.org/&#34;&gt;here&lt;/a&gt;. For this model I simply select a few functions of interest from the &lt;code&gt;tsfeatures&lt;/code&gt; package.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;functions &amp;lt;- c(
-  &amp;quot;entropy&amp;quot;,                   # Measures the &amp;quot;forecastability&amp;quot; of a series - low values = high sig-to-noise, large vals = difficult to forecast
-  &amp;quot;stability&amp;quot;,                 # means/variances are computed for all tiled windows - stability is the variance of the means
-  &amp;quot;lumpiness&amp;quot;,                 # Lumpiness is the variance of the variances
-  &amp;quot;max_level_shift&amp;quot;,           # Finds the largest mean shift between two consecutive windows (returns two values, size of shift and time index of shift)
-  &amp;quot;max_var_shift&amp;quot;,             # Finds the max variance shift between two consecutive windows (returns two values, size of shift and time index of shift)
-  &amp;quot;max_kl_shift&amp;quot;,              # Finds the largest shift in the Kulback-Leibler divergence between two consecutive windows (returns two values, size of shift and time index of shift)
-  &amp;quot;crossing_points&amp;quot;            # Number of times a series crosses the mean line
-)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;I wrote this code a little while ago and at the time I wrapped the model into a function. I think it would be more fun to exclusively stick to using just &lt;code&gt;map()&lt;/code&gt; functions instead of &lt;code&gt;function(SYMB)&lt;/code&gt;. The function does the following for each asset in our data:&lt;/p&gt;
-&lt;p&gt;Using the out-of-sample &lt;code&gt;t+1&lt;/code&gt; (&lt;code&gt;assessment&lt;/code&gt;) data, bind these lists together into a single data frame. Next apply the &lt;code&gt;functions&lt;/code&gt; character string to call the functions from the &lt;code&gt;tsfeatures&lt;/code&gt; package, apply these functions to the in-sample (&lt;code&gt;analysis&lt;/code&gt;) data (which consists of 100 observations each), such that, we obtain a single &lt;em&gt;collapsed&lt;/em&gt; down observation that we can just bind together. Finally we bind the columns of these two data sets together using &lt;code&gt;bind_cols()&lt;/code&gt;. After this I rename the &lt;code&gt;chng&lt;/code&gt; variable and rename the time series feature variables to something more dynamic using &lt;code&gt;~str_c(&#34;X&#34;, seq_along(.))&lt;/code&gt; so we can just add functions to the &lt;code&gt;functions&lt;/code&gt; character string and not have to worry about renaming the variables individually in order for the model to work.&lt;/p&gt;
-&lt;p&gt;Once this is done, I create the Machine Learning data set again using the &lt;code&gt;rolling_origin()&lt;/code&gt; function. The first &lt;code&gt;rolling_origin()&lt;/code&gt; function was used to help &lt;em&gt;collapse&lt;/em&gt; the time series data down on a rolling basis by taking the previous 100 days of data and calculating the &lt;code&gt;tsfeatures&lt;/code&gt; function on it - &lt;em&gt;a similar method to calculating a rolling mean/sd using the &lt;code&gt;rollapply()&lt;/code&gt; function from the &lt;code&gt;zoo&lt;/code&gt; package&lt;/em&gt;.&lt;/p&gt;
-&lt;p&gt;I next split the data into &lt;code&gt;X&lt;/code&gt; variables with &lt;code&gt;X_train&lt;/code&gt; and &lt;code&gt;X_test&lt;/code&gt; and the corresponding &lt;code&gt;Y&lt;/code&gt; variable with &lt;code&gt;Y_train&lt;/code&gt; and &lt;code&gt;Y_test&lt;/code&gt;. The package &lt;code&gt;xgboost&lt;/code&gt; expects a certain type of &lt;code&gt;xgb.DMatrix()&lt;/code&gt; which is what &lt;code&gt;dtrain&lt;/code&gt; and &lt;code&gt;dtest&lt;/code&gt; are doing.&lt;/p&gt;
-&lt;p&gt;Then, I set the XGBoost parameters and apply the XGBoost model. - &lt;em&gt;Suitable cross validation should be performed at this point, however I will leave this for another post since time series cross validation is quite tricky and there is no function in R which helps with this type of cross validation (that I have found as of 2020-02-02)&lt;/em&gt; -&lt;/p&gt;
-&lt;p&gt;Once the model has been trained, I make the predictions.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;apply-the-model&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Apply the model&lt;/h2&gt;
-&lt;p&gt;The function to compute all this is the following:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Prediction_Model &amp;lt;- function(SYMB){
-  data &amp;lt;- bind_cols(
-    map(rolled_df[[SYMB]]$splits, ~ assessment(.x)) %&amp;gt;%
-      bind_rows(),
-    map(rolled_df[[SYMB]]$splits, ~ analysis(.x)) %&amp;gt;%
-      map(., ~tsfeatures(.x[[&amp;quot;ret&amp;quot;]], functions)) %&amp;gt;%          # Compute the TSFeatures
-      bind_rows()
-  ) %&amp;gt;%
-    rename(Y = chng) %&amp;gt;%
-    rename_at(vars(-c(1:9)), ~str_c(&amp;quot;X&amp;quot;, seq_along(.)))        
-  
-  ml_data &amp;lt;- data %&amp;gt;% 
-    as_tibble() %&amp;gt;% 
-    rolling_origin(
-      initial    = 200,
-      assess     = 1,
-      cumulative = FALSE,
-      skip       = 0)
-  
-  X_train &amp;lt;- map(
-    ml_data$splits, ~ analysis(.x) %&amp;gt;%
-      as_tibble(., .name_repair = &amp;quot;universal&amp;quot;) %&amp;gt;%
-      select(starts_with(&amp;quot;X&amp;quot;)) %&amp;gt;% 
-      as.matrix()
-  )
-  
-  Y_train &amp;lt;- map(
-    ml_data$splits, ~ analysis(.x) %&amp;gt;%
-      as_tibble(., .name_repair = &amp;quot;universal&amp;quot;) %&amp;gt;%
-      select(starts_with(&amp;quot;Y&amp;quot;)) %&amp;gt;% 
-      as.matrix()
-  )
-  
-  X_test &amp;lt;- map(
-    ml_data$splits, ~ assessment(.x) %&amp;gt;%
-      as_tibble(., .name_repair = &amp;quot;universal&amp;quot;) %&amp;gt;%
-      select(starts_with(&amp;quot;X&amp;quot;)) %&amp;gt;% 
-      as.matrix()
-  )
-  
-  Y_test &amp;lt;- map(
-    ml_data$splits, ~ assessment(.x) %&amp;gt;%
-      as_tibble(., .name_repair = &amp;quot;universal&amp;quot;) %&amp;gt;%
-      select(starts_with(&amp;quot;Y&amp;quot;)) %&amp;gt;% 
-      as.matrix()
-  )
-  
-  #############################################################
-  
-  dtrain &amp;lt;- map2(
-    X_train, Y_train, ~ xgb.DMatrix(data = .x, label = .y, missing = &amp;quot;NaN&amp;quot;)
-  )
-  
-  dtest &amp;lt;- map(
-    X_test, ~ xgb.DMatrix(data = .x, missing = &amp;quot;NaN&amp;quot;)
-  )
-  
-  # Parameters:
-  watchlist &amp;lt;- list(&amp;quot;train&amp;quot; = dtrain)
-  params &amp;lt;- list(&amp;quot;eta&amp;quot; = 0.1, &amp;quot;max_depth&amp;quot; = 5, &amp;quot;colsample_bytree&amp;quot; = 1, &amp;quot;min_child_weight&amp;quot; = 1, &amp;quot;subsample&amp;quot;= 1,
-                 &amp;quot;objective&amp;quot;=&amp;quot;binary:logistic&amp;quot;, &amp;quot;gamma&amp;quot; = 1, &amp;quot;lambda&amp;quot; = 1, &amp;quot;alpha&amp;quot; = 0, &amp;quot;max_delta_step&amp;quot; = 0,
-                 &amp;quot;colsample_bylevel&amp;quot; = 1, &amp;quot;eval_metric&amp;quot;= &amp;quot;auc&amp;quot;,
-                 &amp;quot;set.seed&amp;quot; = 176)
-  
-  # Train the XGBoost model
-  xgb.model &amp;lt;- map(
-    dtrain, ~ xgboost(params = params, data = .x, nrounds = 10, watchlist)
-  )
-  
-  xgb.pred &amp;lt;- map2(
-    .x = xgb.model, 
-    .y = dtest, 
-    .f = ~ predict(.x, newdata = .y, type = &amp;#39;prob&amp;#39;)
-  )
-  
-  preds &amp;lt;- cbind(plyr::ldply(xgb.pred, data.frame),
-                 plyr::ldply(Y_test, data.frame)) %&amp;gt;% 
-    setNames(c(&amp;quot;pred_probs&amp;quot;, &amp;quot;actual&amp;quot;)) %&amp;gt;% 
-    bind_cols(plyr::ldply(map(ml_data$splits, ~assessment(.x)))) %&amp;gt;% 
-    rename(ID = duplicate_ID) %&amp;gt;% 
-    #select(pred_probs, actual, date, ID, prc, ret) %&amp;gt;% 
-    as_tibble()
-  return(preds)
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;We can apply the above model to create the time series features, train and test on each of our assets by running the following.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Sys_t_start &amp;lt;- Sys.time()
-Resultados &amp;lt;- lapply(seq(1:length(rolled_df)), Prediction_Model)
-Sys_t_end &amp;lt;- Sys.time()
-round(Sys_t_end - Sys_t_start, 2)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The &lt;code&gt;Resultados&lt;/code&gt; output will give us a list the length of the number of assets we have in our data. The first few observations of the first asset in the list looks like:&lt;/p&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-pred_probs
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-actual
-&lt;/th&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-date
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-prc
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-ret
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Y
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-open
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-high
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-low
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-close
-&lt;/th&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-ID
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X1
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X2
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X3
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X4
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X5
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X6
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X7
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X8
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X9
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X10
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7304490
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-15
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-73.17622
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0106061
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75.36
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75.51
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-74.18
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-74.63
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9870653
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1149955
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7047308
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.277064
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-71
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.161538
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-63
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.245055
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-76
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-56
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.5149571
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-16
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-74.35286
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0160795
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-74.78
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75.99
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-73.04
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75.83
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9886519
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0745409
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.8408280
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.273320
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-70
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.143027
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-62
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.227452
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-55
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.6207952
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-19
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-72.53889
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0243967
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75.35
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75.35
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-73.45
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-73.98
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9902178
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0901013
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7192391
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.275344
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-69
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.153024
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-61
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.227452
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-74
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-55
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;Which consist of the XGBoost predicted probabilities, the actual observed result, the date of the result (of the out-of-sample testing data), the observed share price, the calculated daily returns, (a duplicate of the observed result), the OHLC data we collected from Yahoo and finally the time series features we constructed and then reneamed to &lt;span class=&#34;math inline&#34;&gt;\(X_{n}\)&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;The &lt;strong&gt;objective&lt;/strong&gt; of this strategy was to invest every day in the asset which obtained the highest predicted probability that the market was going to go up. That is, if the model predicts on day &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; that asset &lt;code&gt;GOOG&lt;/code&gt; was going to be higher than it’s previous close with a predicted probability of 0.78 and it also predicts that &lt;code&gt;AMZN&lt;/code&gt; would go up with 0.53 probability then we would invest in &lt;code&gt;GOOG&lt;/code&gt; today. That is, we only invest in the asset with the highest predicted probability that the market is going to go up.&lt;/p&gt;
-&lt;p&gt;Therefore, I create a new data frame called &lt;code&gt;top_assets&lt;/code&gt; which basically gives me the highest predicted probability across all assets each day.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;top_assets &amp;lt;- plyr::ldply(Resultados) %&amp;gt;% 
-  #select(pred_probs, actual, date, open, high, low, close, prc, ret) %&amp;gt;% 
-  group_by(date) %&amp;gt;%
-  arrange(desc(pred_probs)) %&amp;gt;%
-  dplyr::slice(1) %&amp;gt;% 
-  ungroup() %&amp;gt;% 
-  select(date, everything()) %&amp;gt;% 
-  rename(score = pred_probs) %&amp;gt;% 
-  select(-actual)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;strategy-assessment&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Strategy Assessment&lt;/h2&gt;
-&lt;p&gt;The first 10 days of the strategy investments look like:&lt;/p&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-date
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-score
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-prc
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-ret
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Y
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-open
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-high
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-low
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-close
-&lt;/th&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-ID
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X1
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X2
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X3
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X4
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X5
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X6
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X7
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X8
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X9
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-X10
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-15
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7304490
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-73.17622
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0106061
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75.36
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-75.51
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-74.18
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-74.63
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9870653
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1149955
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7047308
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.2770644
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-71
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.161538
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-63
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.245055
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-76
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-56
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-16
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.6899720
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-293.04999
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0051601
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-295.13
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-297.61
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-289.27
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-293.05
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-ABMD
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9918187
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0769474
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.4417643
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.0584676
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-69
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.917599
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-62
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.861935
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-80
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-39
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-19
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7299674
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-101.46883
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0081591
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-108.98
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-109.06
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-107.40
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-108.19
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CCI
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9894902
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0705445
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.3788407
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9924987
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-68
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.786445
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.402126
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-89
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-46
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-20
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7370850
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-60.44966
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0132920
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-65.13
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-66.10
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-65.13
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-65.56
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-SLB
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9830999
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1717591
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1725298
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.1379607
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-53
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.853699
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.739650
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-10
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-47
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-21
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7003193
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-334.51999
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0448199
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-320.94
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-339.20
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-320.32
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-334.52
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CMG
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9532525
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0669860
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.4899030
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.6249110
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-67
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.775679
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-73
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-12.454513
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-10
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-57
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-22
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7438304
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-87.40306
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0243534
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-91.53
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-92.43
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-90.48
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-90.54
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-ADI
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9796797
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0855250
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.8606480
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.4206984
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-65
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.718067
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-64
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8.589078
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-72
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-49
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-23
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.6494384
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-237.70613
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0290578
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-253.63
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-253.99
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-244.93
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-245.26
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-GS
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9685330
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0615987
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7610257
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.1137175
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-63
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.588928
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-58
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.667287
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-71
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-50
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-26
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.6868502
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-70.18565
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0238877
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-70.74
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-71.71
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-69.71
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-71.58
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9885363
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1109430
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.5278402
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.1776141
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-64
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.688307
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-56
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.038961
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-69
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-56
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-27
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7274348
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-57.21453
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0020772
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-58.13
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-58.41
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-57.16
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-57.65
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CERN
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9787359
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1971365
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2600627
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.0608221
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-62
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.325379
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-56
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.115355
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-69
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-52
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-2018-03-28
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.7031060
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-68.56778
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0039882
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-70.36
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-70.39
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-69.26
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-69.93
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-CDW
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.9869206
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1328377
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.5033828
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.1567020
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-62
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.593677
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-54
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.010604
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-67
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-56
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;We can see that the column &lt;code&gt;score&lt;/code&gt; is the probability for the asset with the highest predicted probability that it’s price was going to be greater than it’s previous close. The &lt;code&gt;ID&lt;/code&gt; column gives us the asset ticker we invest in.&lt;/p&gt;
-&lt;p&gt;Next I want to analyse the strategy of picking the &lt;em&gt;best&lt;/em&gt; predicted winners against the S&amp;amp;P500 bench mark and therefore download the S&amp;amp;P 500 index.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;top_assets &amp;lt;- xts(top_assets[,c(2:ncol(top_assets))], order.by = top_assets$date) # put top_assets into xts format
-
-# Analyse strategy
-getSymbols(&amp;quot;SPY&amp;quot;, 
-           from = start_date, 
-           to = end_date, 
-           src = &amp;quot;yahoo&amp;quot;) &lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;SPY&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#detach(&amp;quot;package:tsibble&amp;quot;, unload = TRUE) # tsibble clashes with the base R index() function
-SPY$ret_Rb &amp;lt;- Delt(SPY$SPY.Adjusted)
-SPY &amp;lt;- SPY[index(SPY) &amp;gt;= min(index(top_assets))]
-
-RaRb &amp;lt;- cbind(top_assets, SPY)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;From here we can see how the strategy compares with the S&amp;amp;P 500. I show a number of statistics for analysing asset returns from the &lt;code&gt;PerformanceAnalytics&lt;/code&gt; package. I have not expanded the model to include short selling or construct multi-asset portfolios of the top &lt;span class=&#34;math inline&#34;&gt;\(N\)&lt;/span&gt; assets.&lt;/p&gt;
-&lt;p&gt;We can plot the performance of our strategy:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;charts.PerformanceSummary(RaRb[, c(&amp;quot;ret&amp;quot;, &amp;quot;ret_Rb&amp;quot;)], geometric = FALSE, wealth.index = FALSE, 
-                          main = &amp;quot;Strategy vs. Market&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Take a look at the drawdown and risk metrics.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;##                             ret ret_Rb
-## Sterling ratio           0.1870 0.3879
-## Calmar ratio             0.2551 0.5884
-## Burke ratio              0.2251 0.5344
-## Pain index               0.0955 0.0283
-## Ulcer index              0.1189 0.0455
-## Pain ratio               0.7337 4.0290
-## Martin ratio             0.5891 2.5027
-## daily downside risk      0.0111 0.0066
-## Annualised downside risk 0.1768 0.1044
-## Downside potential       0.0054 0.0029
-## Omega                    1.0722 1.1601
-## Sortino ratio            0.0351 0.0714
-## Upside potential         0.0058 0.0034
-## Upside potential ratio   0.7027 0.6124
-## Omega-sharpe ratio       0.0722 0.1601&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Take a closer look at the drawdown information.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $ret
-##         From     Trough         To   Depth Length To Trough Recovery
-## 1 2018-08-31 2019-01-03 2019-09-16 -0.2746    261        85      176
-## 2 2019-11-06 2019-12-03       &amp;lt;NA&amp;gt; -0.1300     39        19       NA
-## 3 2019-10-01 2019-10-18 2019-10-29 -0.0810     21        14        7
-## 4 2018-03-22 2018-04-20 2018-05-09 -0.0773     34        21       13
-## 5 2018-08-10 2018-08-15 2018-08-20 -0.0474      7         4        3
-## 
-## $ret_Rb
-##         From     Trough         To   Depth Length To Trough Recovery
-## 1 2018-09-21 2018-12-24 2019-04-12 -0.1935    140        65       75
-## 2 2019-05-06 2019-06-03 2019-06-20 -0.0662     33        20       13
-## 3 2018-03-15 2018-04-02 2018-06-04 -0.0610     56        12       44
-## 4 2019-07-29 2019-08-05 2019-10-25 -0.0602     64         6       58
-## 5 2018-06-13 2018-06-27 2018-07-09 -0.0300     18        11        7&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Compare the returns.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chart.Boxplot(RaRb[,c(&amp;quot;ret&amp;quot;, &amp;quot;ret_Rb&amp;quot;)],  main = &amp;quot;Returns&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Compare return statistics.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;table.Stats(RaRb[, c(&amp;quot;ret&amp;quot;, &amp;quot;ret_Rb&amp;quot;)]) %&amp;gt;% 
-  t() %&amp;gt;% 
-  kable() %&amp;gt;%
-  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Observations
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-NAs
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Minimum
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Quartile 1
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Median
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Arithmetic Mean
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Geometric Mean
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Quartile 3
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Maximum
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-SE Mean
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-LCL Mean (0.95)
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-UCL Mean (0.95)
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Variance
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Stdev
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Skewness
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Kurtosis
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-ret
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-453
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0669
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0068
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0006
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0004
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0003
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0087
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0642
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0007
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0011
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0018
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0002
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0156
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.2542
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.8842
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-ret_Rb
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-453
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0324
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0030
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0006
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0005
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0004
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0054
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0505
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0004
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0004
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0013
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0001
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0091
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.2949
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.6264
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;Compare Sharpe Information.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;lapply(RaRb[, c(&amp;quot;ret&amp;quot;, &amp;quot;ret_Rb&amp;quot;)], function(x){SharpeRatio(x)})&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## $ret
-##                                       ret
-## StdDev Sharpe (Rf=0%, p=95%): 0.025027498
-## VaR Sharpe (Rf=0%, p=95%):    0.015346462
-## ES Sharpe (Rf=0%, p=95%):     0.009618405
-## 
-## $ret_Rb
-##                                   ret_Rb
-## StdDev Sharpe (Rf=0%, p=95%): 0.05152014
-## VaR Sharpe (Rf=0%, p=95%):    0.03218952
-## ES Sharpe (Rf=0%, p=95%):     0.01913213&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Plot the Risk - Return scatter plot.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chart.RiskReturnScatter(RaRb[, c(&amp;quot;ret&amp;quot;, &amp;quot;ret_Rb&amp;quot;)],  # check this plot a little more
-                        Rf=.03/252, scale = 252, # for daily data
-                        main = &amp;quot;Risk - Return over the period&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy_files/figure-html/unnamed-chunk-21-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Plot the rolling return, risk and Sharpe performance.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;charts.RollingPerformance(RaRb[, c(&amp;quot;ret&amp;quot;, &amp;quot;ret_Rb&amp;quot;)],      
-                          Rf=.03/12, 
-                          colorset = c(&amp;quot;red&amp;quot;, rep(&amp;quot;darkgray&amp;quot;,5), &amp;quot;orange&amp;quot;, &amp;quot;green&amp;quot;), lwd = 2)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy_files/figure-html/unnamed-chunk-22-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Compute the yearly returns.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;lapply(RaRb[, c(&amp;quot;ret&amp;quot;)],function(x){periodReturn(
-  x, period = &amp;#39;yearly&amp;#39;, type = &amp;#39;arithmetic&amp;#39;)})        # change type to log for continuous&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## $ret
-##            yearly.returns
-## 2018-12-31      -1.855083
-## 2019-12-31      -1.475181&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;lapply(RaRb[, c(&amp;quot;ret_Rb&amp;quot;)],function(x){periodReturn(
-  x, period = &amp;#39;yearly&amp;#39;, type = &amp;#39;arithmetic&amp;#39;)})&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## $ret_Rb
-##            yearly.returns
-## 2018-12-31     -9.0376638
-## 2019-12-31     -0.7226497&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Series of Hackerrank Competitions</title>
-      <link>/post/hackerrank-competitions/hackerrank-compeitions/</link>
-      <pubDate>Tue, 24 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/post/hackerrank-competitions/hackerrank-compeitions/</guid>
-      <description>
-&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
-
-
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
-library(kableExtra)
-library(ggplot2)
+library(lightgbm)
+library(keras)
 library(tidyquant)
-library(dplyr)&lt;/code&gt;&lt;/pre&gt;
-&lt;div id=&#34;problem-1-battery-life-prediction-problem&#34; class=&#34;section level4&#34;&gt;
-&lt;h4&gt;Problem 1: Battery Life Prediction Problem&lt;/h4&gt;
-&lt;p&gt;The first problem was to predict how long a laptop would last given the number of hours it was charged. The problem is &lt;a href=&#34;https://www.hackerrank.com/challenges/battery/problem&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;We can read in the data directly from the hackerrank website using the following:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BatteryData &amp;lt;- read.table(file = url(&amp;quot;https://s3.amazonaws.com/hr-testcases/399/assets/trainingdata.txt&amp;quot;), strip.white = TRUE, sep = &amp;#39;,&amp;#39;, header = FALSE, skip = 0)&lt;/code&gt;&lt;/pre&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-3&#34;&gt;Table 1: &lt;/span&gt;Battery Life Data
-&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-V1
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-V2
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.81
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.62
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.14
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8.00
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.72
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.44
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.87
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.74
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.90
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.80
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.82
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8.00
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;At first thought I applied a simple time series model to the data and obtained poor predictions. I then took a closer look at the actual data by plotting it and it told a different story.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BatteryData %&amp;gt;%
-  ggplot(aes(x = V1, y = V2)) + 
-  geom_point() +
-  stat_smooth(method = &amp;quot;lm&amp;quot;, col = &amp;quot;red&amp;quot;) +
-  geom_vline(xintercept = 4) +
-  theme_tq()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/hackerrank-competitions/hackerrank-compeitions_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;I drew a horizontal line at 4 hours of battery life and plotted a linear regression line - quite clearly it performs badely and I needed to find a different model or better yet set a threshold and predict all observations whose battery had been charging for 4 or more hours to be fully charged.&lt;/p&gt;
-&lt;p&gt;The model:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;LinearPredictionModel &amp;lt;- function(TestData){
-  TrainData &amp;lt;- read.table(file = url(&amp;quot;https://s3.amazonaws.com/hr-testcases/399/assets/trainingdata.txt&amp;quot;), strip.white = TRUE, sep = &amp;#39;,&amp;#39;, header = FALSE, skip = 0)
-  
-  TrainData$LessThanFour &amp;lt;- ifelse(TrainData[, 2] &amp;lt; 4, 1, 0)
-  
-  LMData &amp;lt;- TrainData %&amp;gt;%
-    filter(LessThanFour == 1)
-  
-  LinearModel &amp;lt;- lm(V1 ~ V2, data = LMData) 
-  
-  TestData &amp;lt;- data.frame(V2 = TestData)
-  
-  STDOUT &amp;lt;- ifelse(TestData &amp;lt; 4, predict(LinearModel, newdata = TestData), 8)
-  
-  return(cat(STDOUT))
+##################### Pre-define some functions ###################################
+###################################################################################
+
+logit2prob &amp;lt;- function(logit){
+  odds &amp;lt;- exp(logit)
+  prob &amp;lt;- odds / (1 + odds)
+  return(prob)
 }&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The model basically tells us that if the data is less than 4, then fit a simple linear regression model if it is greater or equal to 4 then just apply an 8 prediction.&lt;/p&gt;
-&lt;p&gt;We can input some new data as follows:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;TestData &amp;lt;- c(5, 8, 1, 0.2, 3.5, 5.6, 4.32)
-LinearPredictionModel(TestData)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## 8 8 0.5 0.1 1.75 8 8&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-&lt;div id=&#34;problem-2-house-price-prediction-problem-using-xgboost&#34; class=&#34;section level4&#34;&gt;
-&lt;h4&gt;Problem 2: House Price Prediction Problem using XGBoost&lt;/h4&gt;
-&lt;p&gt;In this problem I want to train an XGBoost (Extreme Gradient Boosting) model to predict what a house is going to be based on some characteristics. There is a house price prediction problem on Hackerrank &lt;a href=&#34;https://www.hackerrank.com/challenges/predicting-house-prices/problem&#34;&gt;here&lt;/a&gt; but I used the pre-installed base R house prices data.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(AER)
-library(car)
-library(dplyr)
-library(xgboost)
-library(tidyquant)
-library(Metrics)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Load in the data and set factors to numeric for easier pre-processing.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data(&amp;quot;HousePrices&amp;quot;)
-
-data &amp;lt;- HousePrices %&amp;gt;%
-  mutate_if(is.factor, as.numeric)&lt;/code&gt;&lt;/pre&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-9&#34;&gt;Table 2: &lt;/span&gt;House Price Data
-&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-price
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-lotsize
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-bedrooms
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-bathrooms
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-stories
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-driveway
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-recreation
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-fullbase
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-gasheat
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-aircon
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-garage
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-prefer
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-42000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5850
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-38500
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-49500
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3060
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-60500
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6650
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-61000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6360
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-66000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4160
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;Split the data between 80% train and 20% testing.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
-# For this example split between train and test
-smp_size &amp;lt;- floor(nrow(data) * 0.80)
-
-train_ind &amp;lt;- sample(seq_len(nrow(data)), size = smp_size)
-
-train &amp;lt;- data[train_ind, ]
-test &amp;lt;- data[-train_ind, ]
-
-paste(&amp;quot;Train Dimensions&amp;quot;); dim(train)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Train Dimensions&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] 436  12&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;paste(&amp;quot;Test Dimensions&amp;quot;); dim(test)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Test Dimensions&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] 110  12&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;I create the function to take the training and testing data, train a model and output the predictions. I omit the cross-validation and hype-parameter tuning here but I will write a post detailing how I use a grid search to find the optimal parameters of an XGBoost model soon, (it takes some explaining of the functions I create).&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
-predictHouseSales &amp;lt;- function(train_data, test_data){
-  x_train &amp;lt;- subset(train_data, select = c(-price))
-  y_train &amp;lt;- subset(train_data, select = c(price)) %&amp;gt;% pull(price)
-  
-  x_test &amp;lt;- subset(test_data, select = c(-price))
-  y_test &amp;lt;- subset(test_data, select = c(price)) %&amp;gt;% pull(price)
-  
-  dtrain &amp;lt;- xgb.DMatrix(data = as.matrix(x_train), label = y_train, missing = &amp;quot;NaN&amp;quot;)
-  dtest &amp;lt;- xgb.DMatrix(data = as.matrix(x_test), missing = &amp;quot;NaN&amp;quot;)
-  
-  params &amp;lt;- list(
-    &amp;quot;eta&amp;quot; = 0.1, 
-    &amp;quot;max_depth&amp;quot; = 5, 
-    &amp;quot;objective&amp;quot; = &amp;quot;reg:linear&amp;quot;,
-    &amp;quot;eval_metric&amp;quot;= &amp;quot;rmse&amp;quot;
-    )
-  
-  xgb.model &amp;lt;- xgb.train(params, dtrain, nrounds = 100)
-  
-  return(predict(xgb.model, newdata = dtest))
-  
-}
-
-myPredictions &amp;lt;- predictHouseSales(train, test)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;We can inspect some of the predictions and compare them to the actual preditions below:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
-myPredictions %&amp;gt;%
-  data.frame() %&amp;gt;%
-  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
-  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
-  bind_cols(test) %&amp;gt;%
-  select(myPreds, price) %&amp;gt;%
-  sample_n(5) %&amp;gt;%
-  kable(caption = &amp;quot;Compare predictions to the observed&amp;quot;) %&amp;gt;%
-  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 12)&lt;/code&gt;&lt;/pre&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-12&#34;&gt;Table 3: &lt;/span&gt;Compare predictions to the observed
-&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-myPreds
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-price
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-49942
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-39000
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-117177
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-115442
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-65904
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-34000
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-65651
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-42000
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-48866
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-65000
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;Compute the Root Mean Square Error:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
-myPredictions %&amp;gt;%
-  data.frame() %&amp;gt;%
-  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
-  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
-  bind_cols(test) %&amp;gt;%
-  select(myPreds, price) %&amp;gt;%
-  summarise(rmse(myPreds, price)) %&amp;gt;%
-  kable(caption = &amp;quot;Compute the RMSE&amp;quot;) %&amp;gt;%
-  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 12)&lt;/code&gt;&lt;/pre&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-13&#34;&gt;Table 4: &lt;/span&gt;Compute the RMSE
-&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-rmse(myPreds, price)
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-16266.12
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;We can also plot the predictions against the observed using &lt;code&gt;ggplot2&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;####################################################################################
-myPredictions %&amp;gt;%
-  data.frame() %&amp;gt;%
-  setNames(c(&amp;quot;myPreds&amp;quot;)) %&amp;gt;%
-  mutate(myPreds = round(myPreds, 0)) %&amp;gt;%
-  bind_cols(test) %&amp;gt;%
-  select(myPreds, price) %&amp;gt;%
-  ggplot(aes(x = price, y = myPreds)) +
-  geom_point() +
-  geom_smooth(method = &amp;#39;lm&amp;#39;) +
-  ggtitle(&amp;quot;My predictions vs Actual Price&amp;quot;) +
-  theme_tq()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/hackerrank-competitions/hackerrank-compeitions_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;The model does &lt;em&gt;okay&lt;/em&gt; without any feature engineering or parameter optimisation using a grid search method.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;problem-3-imputing-missing-values---cross-section&#34; class=&#34;section level4&#34;&gt;
-&lt;h4&gt;Problem 3: Imputing missing values - cross section&lt;/h4&gt;
-&lt;p&gt;For simplicity I load in the &lt;code&gt;iris&lt;/code&gt; dataset and I create some random missing values since the &lt;code&gt;iris&lt;/code&gt; data doesn’t have any.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Load in the data
-library(missForest)
+&lt;div id=&#34;the-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The data:&lt;/h1&gt;
+&lt;p&gt;I use the &lt;code&gt;iris&lt;/code&gt; dataset which contains information on 3 different plant variables collected by British statistican Ronald Fisher in 1936. The dataset consists of &lt;span class=&#34;math inline&#34;&gt;\(4\)&lt;/span&gt; different characteristics of plant species which should uniquely distinguish the &lt;span class=&#34;math inline&#34;&gt;\(3\)&lt;/span&gt; different species (&lt;em&gt;Setosa&lt;/em&gt;, &lt;em&gt;Virginica&lt;/em&gt; and &lt;em&gt;Versicolor&lt;/em&gt;). However, my problem required a binary classification problem and not a multi-classifciation problem. In the following code I import the &lt;code&gt;iris&lt;/code&gt; data and remove a type of plant Species &lt;code&gt;virginica&lt;/code&gt; to bring it from a multi-classification to a binary classification problem.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;###################################################################################
+###################################################################################
+
 data(iris)
-data &amp;lt;- iris&lt;/code&gt;&lt;/pre&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+df &amp;lt;- iris %&amp;gt;% 
+  filter(Species != &amp;quot;virginica&amp;quot;) %&amp;gt;% 
+  mutate(Species = +(Species == &amp;quot;versicolor&amp;quot;))
+str(df)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    100 obs. of  5 variables:
+##  $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+##  $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+##  $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+##  $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+##  $ Species     : int  0 0 0 0 0 0 0 0 0 0 ...&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;###################################################################################
+###################################################################################&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I plot the data by first storing the &lt;code&gt;ggplot&lt;/code&gt; objects changing only the &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; variables in each of the &lt;code&gt;plt&lt;/code&gt;’s.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plt1 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Sepal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt2 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Length, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt3 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt3 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Sepal.Length, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt4 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Length, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt5 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Width, color = factor(Species))) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
+  theme(legend.position = &amp;quot;none&amp;quot;)
+
+plt6 &amp;lt;- df %&amp;gt;% 
+  ggplot(aes(x = Petal.Width, y = Sepal.Length, color = factor(Species))) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
+  theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I also wanted to use the new &lt;code&gt;patchwork&lt;/code&gt; package which makes displaying &lt;code&gt;ggplot&lt;/code&gt; plots very easy. i.e the below code plots our graphics as its written (1 top plot stretching the length of the grid space, 2 middle plots, another single plot and a further 2 more plots at the bottom.)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;      (plt1)    /
+  (plt2 + plt3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Alternatively, we can re-arrange the plots into any way we wish and plot them in the following way:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;  (plt1 + plt2) / 
+  (plt5 + plt6)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Which I think looks awesome.&lt;/p&gt;
+&lt;div id=&#34;objective&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Objective&lt;/h2&gt;
+&lt;p&gt;The objective is to build a classification algorithm to distinguish between the two classes and then compute the decision boundaries in order to better see how the models made such predictions.&lt;/p&gt;
+&lt;p&gt;In order to create the decision boundary plots for each variable combination we need the different combinatons of variables in the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;###################################################################################
+###################################################################################
+
+var_combos &amp;lt;- expand.grid(colnames(df[,1:4]), colnames(df[,1:4])) %&amp;gt;% 
+  filter(!Var1 == Var2)
+
+###################################################################################
+###################################################################################&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;var_combos %&amp;gt;% 
+  head() %&amp;gt;% 
+  kable(caption = &amp;quot;Variable Combinations&amp;quot;, escape = F, align = &amp;quot;c&amp;quot;, digits = 2) %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;), font_size = 9, fixed_thead = T, full_width = F) %&amp;gt;% 
+  scroll_box(width = &amp;quot;100%&amp;quot;, height = &amp;quot;200px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div style=&#34;border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:100%; &#34;&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 9px; width: auto !important; margin-left: auto; margin-right: auto;&#34;&gt;
 &lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-16&#34;&gt;Table 5: &lt;/span&gt;Iris dataset
+&lt;span id=&#34;tab:unnamed-chunk-7&#34;&gt;Table 1: &lt;/span&gt;Variable Combinations
 &lt;/caption&gt;
 &lt;thead&gt;
 &lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Sepal.Length
+&lt;th style=&#34;text-align:center;position: sticky; top:0; background-color: #FFFFFF;position: sticky; top:0; background-color: #FFFFFF;&#34;&gt;
+Var1
 &lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Sepal.Width
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Petal.Length
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Petal.Width
-&lt;/th&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-Species
+&lt;th style=&#34;text-align:center;position: sticky; top:0; background-color: #FFFFFF;position: sticky; top:0; background-color: #FFFFFF;&#34;&gt;
+Var2
 &lt;/th&gt;
 &lt;/tr&gt;
 &lt;/thead&gt;
 &lt;tbody&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.5
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.9
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.7
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.3
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.6
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.5
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.6
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.9
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.7
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;I generate some random missing data, i.e. 20% of the data is missing at random (MaR) or Missing Completely at Random (MCaR). This is an important issue for economists since much of the data we collect contains missing values, due to surveys not being filled correctly, or simply data not being very well colelcted. The below model allows us to &lt;em&gt;impute&lt;/em&gt; the missing values using machine learning, avoiding simple averaging or simply removing the values all together.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Create some random missing data&amp;quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-17&#34;&gt;Table 6: &lt;/span&gt;Iris dataset with random missing values
-&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Sepal.Length
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
 Sepal.Width
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Length
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
 Petal.Length
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
+&lt;/td&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Length
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:center;&#34;&gt;
 Petal.Width
-&lt;/th&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-Species
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.1
 &lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.5
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Length
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.9
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Length
 &lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-NA
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Width
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-NA
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Petal.Length
 &lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.3
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Width
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.6
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Petal.Width
 &lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-NA
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.6
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-NA
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.9
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-NA
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
+&lt;td style=&#34;text-align:center;&#34;&gt;
+Sepal.Width
 &lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;Okay now we can train a series of simple missing value imputation models on the data.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;model-1-randomforest-imputation&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Model 1: randomForest Imputation:&lt;/h1&gt;
-&lt;p&gt;I won’t discuss the models here but random forests uses a collection of decision trees and averages the results across all trees, which results it some powerful predictions.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;##   missForest iteration 1 in progress...done!
-##   missForest iteration 2 in progress...done!
-##   missForest iteration 3 in progress...done!
-##   missForest iteration 4 in progress...done!
-##   missForest iteration 5 in progress...done!
-##   missForest iteration 6 in progress...done!
-##   missForest iteration 7 in progress...done!&lt;/code&gt;&lt;/pre&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-19&#34;&gt;Table 7: &lt;/span&gt;Iris dataset
-&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Sepal.Length
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Sepal.Width
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Petal.Length
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Petal.Width
-&lt;/th&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-Species
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.100000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.5
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.400000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2000000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.900000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.400000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1415167
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.722635
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.300000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2000000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.600000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.197250
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2000000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.000000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.6
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.409930
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2000000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.400000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.9
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.419667
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.4000000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-setosa
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;Lets combine all the data together, filter it down to the actual data, the missing data and the predicted data.&lt;/p&gt;
-&lt;div id=&#34;for-the-sepal.length-data&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;For the Sepal.Length data&lt;/h3&gt;
-&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
-&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
-&lt;span id=&#34;tab:unnamed-chunk-20&#34;&gt;Table 8: &lt;/span&gt;Compare Sepal Observations
-&lt;/caption&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Predicted_Sepal
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-Actual_Sepal
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.3
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.9
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.0
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.3
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.7
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.6
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.1
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.5
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.7
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.8
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.8
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.9
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.6
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.8
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;Which isn’t bad! given that we only had 436 observations to train on and only 110 observations to test on. Using &lt;code&gt;randomForest&lt;/code&gt; models to impute the data is better than averaging the data on some datasets, of course we have errors the actual observations are somewhat close to the predicted data. I only analyse the &lt;code&gt;Sepal.Length&lt;/code&gt; data but substitute the values to find the missing values for the &lt;code&gt;Sepal.Width&lt;/code&gt;, &lt;code&gt;Petal.Length&lt;/code&gt;, &lt;code&gt;Petal.Width&lt;/code&gt; and &lt;code&gt;Species&lt;/code&gt; values since &lt;code&gt;missorest&lt;/code&gt; imputes categorical variables as well.&lt;/p&gt;
+&lt;p&gt;Next, I want to use the different variable combinations previously and create lists (one for each variable combination) and populate these lists with synthetic data - or data from the minimum to maximum value of each variable combination. This will act as our synthetically created test data in which we make predictions on and build the decision boundary.&lt;/p&gt;
+&lt;p&gt;It’s important to note that the plots will eventually be 2 dimensional for illustrative purposes, therefore we only train the Machine Learning models on two variables, but for each combination of the two variables, these variables are the first two variables in the &lt;code&gt;boundary_lists&lt;/code&gt; data frames.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boundary_lists &amp;lt;- map2(
+  .x = var_combos$Var1,
+  .y = var_combos$Var2,
+  ~select(df, .x, .y) %&amp;gt;% 
+    summarise(
+      minX = min(.[[1]], na.rm = TRUE),
+      maxX = max(.[[1]], na.rm = TRUE),
+      minY = min(.[[2]], na.rm = TRUE),
+      maxY = max(.[[2]], na.rm = TRUE)
+    )
+) %&amp;gt;% 
+  map(.,
+      ~tibble(
+        x = seq(.x$minX, .x$maxX, length.out = 200),
+        y = seq(.x$minY, .x$maxY, length.out = 200),
+      )
+  ) %&amp;gt;% 
+  map(.,
+      ~tibble(
+        xx = rep(.x$x, each = 200),
+        yy = rep(.x$y, time = 200)
+      )
+  ) %&amp;gt;% 
+  map2(.,
+       asplit(var_combos, 1), ~ .x %&amp;gt;% 
+         set_names(.y))
+
+###################################################################################
+###################################################################################&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can see how the first 4 observations of the first and last two lists look like:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boundary_lists %&amp;gt;% 
+  map(., ~head(., 4)) %&amp;gt;%  
+  head(2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [[1]]
+## # A tibble: 4 x 2
+##   Sepal.Width Sepal.Length
+##         &amp;lt;dbl&amp;gt;        &amp;lt;dbl&amp;gt;
+## 1           2         4.3 
+## 2           2         4.31
+## 3           2         4.33
+## 4           2         4.34
+## 
+## [[2]]
+## # A tibble: 4 x 2
+##   Petal.Length Sepal.Length
+##          &amp;lt;dbl&amp;gt;        &amp;lt;dbl&amp;gt;
+## 1            1         4.3 
+## 2            1         4.31
+## 3            1         4.33
+## 4            1         4.34&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boundary_lists %&amp;gt;% 
+  map(., ~head(., 4)) %&amp;gt;%  
+  tail(2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [[1]]
+## # A tibble: 4 x 2
+##   Sepal.Width Petal.Width
+##         &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt;
+## 1           2       0.1  
+## 2           2       0.109
+## 3           2       0.117
+## 4           2       0.126
+## 
+## [[2]]
+## # A tibble: 4 x 2
+##   Petal.Length Petal.Width
+##          &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt;
+## 1            1       0.1  
+## 2            1       0.109
+## 3            1       0.117
+## 4            1       0.126&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;training-time&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Training time:&lt;/h2&gt;
+&lt;p&gt;Now that we have the synthetically created testing data set up, I want to train the models on the actual observed observations. I use each data point in the plots above as my training data. I apply the following models:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Logistic Model&lt;/li&gt;
+&lt;li&gt;Support Vector Machine with a linear kernel&lt;/li&gt;
+&lt;li&gt;Support Vector Machine with a polynomial kernel&lt;/li&gt;
+&lt;li&gt;Support Vector Machine with a radial kernel&lt;/li&gt;
+&lt;li&gt;Support Vector Machine with a sigmoid kernel&lt;/li&gt;
+&lt;li&gt;Random Forest&lt;/li&gt;
+&lt;li&gt;Extreme Gradiant Boosting (XGBoost) model with default parameters&lt;/li&gt;
+&lt;li&gt;Single layer Keras Neural Network (with linear components)&lt;/li&gt;
+&lt;li&gt;Deeper layer Keras Neural Network (with linear components)&lt;/li&gt;
+&lt;li&gt;Deeper’er layer Keras Neural Network (with linear components)&lt;/li&gt;
+&lt;li&gt;Light Gradient Boosting model (LightGBM) with default parameters&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Side note: I am not an expert in Deep learning/Keras/Tensorflow, so I am sure better models will yield better decision boundaries but it was a fun task getting the different Machine Learning models to fit inside a &lt;code&gt;purrr&lt;/code&gt;, &lt;code&gt;map&lt;/code&gt; call.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;###################################################################################
+###################################################################################
+# params_lightGBM &amp;lt;- list(
+#   objective = &amp;quot;binary&amp;quot;,
+#   metric = &amp;quot;auc&amp;quot;,
+#   min_data = 1
+# )
+
+# To install Light GBM try the following in your RStudio terinal
+
+# git clone --recursive https://github.com/microsoft/LightGBM
+# cd LightGBM
+# Rscript build_r.R
+
+models_list &amp;lt;- var_combos %&amp;gt;%
+  mutate(modeln = str_c(&amp;#39;mod&amp;#39;, row_number()))  %&amp;gt;%
+  pmap(~ 
+         {
+           
+           xname = ..1
+           yname = ..2
+           modelname = ..3
+           df %&amp;gt;%
+             select(Species, xname, yname) %&amp;gt;%
+             group_by(grp = &amp;#39;grp&amp;#39;) %&amp;gt;%
+             nest() %&amp;gt;%
+             mutate(models = map(data, ~{
+               
+               
+               list(
+                 # Logistic Model
+                 Model_GLM = {
+                   glm(Species ~ ., data = .x, family = binomial(link=&amp;#39;logit&amp;#39;))
+                 },
+                 # Support Vector Machine (linear)
+                 Model_SVM_Linear = {
+                   e1071::svm(Species ~ ., data = .x,  type = &amp;#39;C-classification&amp;#39;, kernel = &amp;#39;linear&amp;#39;)
+                 },
+                 # Support Vector Machine (polynomial)
+                 Model_SVM_Polynomial = {
+                   e1071::svm(Species ~ ., data = .x,  type = &amp;#39;C-classification&amp;#39;, kernel = &amp;#39;polynomial&amp;#39;)
+                 },
+                 # Support Vector Machine (sigmoid)
+                 Model_SVM_radial = {
+                   e1071::svm(Species ~ ., data = .x,  type = &amp;#39;C-classification&amp;#39;, kernel = &amp;#39;sigmoid&amp;#39;)
+                 },
+                 # Support Vector Machine (radial)
+                 Model_SVM_radial_Sigmoid = {
+                   e1071::svm(Species ~ ., data = .x,  type = &amp;#39;C-classification&amp;#39;, kernel = &amp;#39;radial&amp;#39;)
+                 },
+                 # Random Forest
+                 Model_RF = {
+                   randomForest::randomForest(formula = as.factor(Species) ~ ., data = .)
+                 },
+                 # Extreme Gradient Boosting
+                 Model_XGB = {
+                   xgboost(
+                     objective = &amp;#39;binary:logistic&amp;#39;,
+                     eval_metric = &amp;#39;auc&amp;#39;,
+                     data = as.matrix(.x[, 2:3]),
+                     label = as.matrix(.x$Species), # binary variable
+                     nrounds = 10)
+                 },
+                 # Kera Neural Network
+                 Model_Keras = {
+                   mod &amp;lt;- keras_model_sequential() %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;relu&amp;#39;, input_shape = 2) %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;sigmoid&amp;#39;)
+                   
+                   mod %&amp;gt;% compile(
+                     loss = &amp;#39;binary_crossentropy&amp;#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&amp;#39;accuracy&amp;#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 # Kera Neural Network
+                 Model_Keras_2 = {
+                   mod &amp;lt;- keras_model_sequential() %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;relu&amp;#39;, input_shape = 2) %&amp;gt;%
+                     layer_dense(units = 2, activation = &amp;#39;linear&amp;#39;, input_shape = 2) %&amp;gt;%
+                     layer_dense(units = 2, activation = &amp;#39;sigmoid&amp;#39;)
+                   
+                   mod %&amp;gt;% compile(
+                     loss = &amp;#39;binary_crossentropy&amp;#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&amp;#39;accuracy&amp;#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 # Kera Neural Network                 
+                 Model_Keras_3 = {
+                   mod &amp;lt;- keras_model_sequential() %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;relu&amp;#39;, input_shape = 2) %&amp;gt;% 
+                     layer_dense(units = 2, activation = &amp;#39;relu&amp;#39;, input_shape = 2) %&amp;gt;%
+                     layer_dense(units = 2, activation = &amp;#39;linear&amp;#39;, input_shape = 2) %&amp;gt;%
+                     layer_dense(units = 2, activation = &amp;#39;sigmoid&amp;#39;)
+                   
+                   mod %&amp;gt;% compile(
+                     loss = &amp;#39;binary_crossentropy&amp;#39;,
+                     optimizer_sgd(lr = 0.01, momentum = 0.9),
+                     metrics = c(&amp;#39;accuracy&amp;#39;)
+                   )
+                   fit(mod, 
+                       x = as.matrix(.x[, 2:3]),
+                       y = to_categorical(.x$Species, 2),
+                       epochs = 5,
+                       batch_size = 5,
+                       validation_split = 0
+                   )
+                   print(modelname)        
+                   assign(modelname, mod)                      
+                   
+                 },
+                 
+                 # LightGBM model
+                 Model_LightGBM = {
+                   lgb.train(
+                     data = lgb.Dataset(data = as.matrix(.x[, 2:3]), label = .x$Species),
+                     objective = &amp;#39;binary&amp;#39;,
+                     metric = &amp;#39;auc&amp;#39;,
+                     min_data = 1
+                     #params = params_lightGBM,
+                     #learning_rate = 0.1
+                   )
+                 }
+                 
+                 
+               )                      
+               
+             }                               
+             ))                 
+           
+         }) %&amp;gt;% 
+  map(
+    ., ~unlist(., recursive = FALSE)
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;testing-time&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Testing time:&lt;/h2&gt;
+&lt;p&gt;Now that the models have been trained, we can begin makign the predictions on the synthetically created data we created in the &lt;code&gt;boundary_lists&lt;/code&gt; data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;models_predict &amp;lt;- map2(models_list, boundary_lists, ~{
+  mods &amp;lt;- purrr::pluck(.x, &amp;quot;models&amp;quot;)
+  dat &amp;lt;- .y
+  map(mods, function(x)
+    tryCatch({
+      if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;glm&amp;quot;){   
+        # predict the logistic model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = predict(x, newdata = dat)
+        ) %&amp;gt;% 
+          mutate(
+            prediction = logit2prob(prediction),
+            prediction = case_when(
+              prediction &amp;gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }    
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;svm.formula&amp;quot;){ 
+        # predict the SVM model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = as.numeric(as.character(predict(x, newdata = dat)))
+        )
+      }
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;randomForest.formula&amp;quot;){  
+        # predict the RF model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = as.numeric(as.character(predict(x, newdata = dat)))
+        )
+      }    
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;xgb.Booster&amp;quot;){      
+        # predict the XGBoost model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1], 
+          prediction = predict(x, newdata = as.matrix(dat), type = &amp;#39;prob&amp;#39;)
+        ) %&amp;gt;% 
+          mutate(
+            prediction = case_when(
+              prediction &amp;gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;keras.engine.sequential.Sequential&amp;quot;){
+        # Keras Single Layer Neural Network
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = predict_classes(object = x, x = as.matrix(dat))
+        )
+      }
+      else if(attr(x, &amp;quot;class&amp;quot;)[2] == &amp;quot;keras.engine.training.Model&amp;quot;){
+        # NOTE:::: This is a very crude hack to have multiple keras NN models
+        # Needs fixing such that the models are named better - (not like) - (..., &amp;quot;class&amp;quot;)[2], ..., &amp;quot;class&amp;quot;)[3]... and so on.  
+        # Keras Single Layer Neural Network
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[2], # needs changing also.
+          prediction = predict_classes(object = x, x = as.matrix(dat))
+        )
+      }
+      else if(attr(x, &amp;quot;class&amp;quot;)[1] == &amp;quot;lgb.Booster&amp;quot;){
+        # Light GBM model
+        tibble(
+          modelname = attr(x, &amp;quot;class&amp;quot;)[1],
+          prediction = predict(object = x, data = as.matrix(dat), rawscore = FALSE)
+        ) %&amp;gt;% 
+          mutate(
+            prediction = case_when(
+              prediction &amp;gt; 0.5 ~ 1,
+              TRUE ~ 0
+            )
+          )
+      }
+    }, error = function(e){
+      print(&amp;#39;skipping\n&amp;#39;)
+    }
+    )
+  )
+}
+) %&amp;gt;% 
+  map(.,
+      ~setNames(.,
+                map(.,
+                    ~c(.x$modelname[1]
+                    )
+                )
+      )
+  ) %&amp;gt;%
+  map(.,
+      ~map(.,
+           ~setNames(.,
+                     c(
+                       paste0(.x$modelname[1], &amp;quot;_Model&amp;quot;),
+                       paste0(.x$modelname[1], &amp;quot;_Prediction&amp;quot;)
+                     )
+           )
+      )
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;calibrating-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Calibrating the data&lt;/h2&gt;
+&lt;p&gt;Now we have our trained models, along with predictions we can &lt;code&gt;map&lt;/code&gt; these predictions into data which we can plot using &lt;code&gt;ggplot&lt;/code&gt; and then arrange using &lt;code&gt;patchwork&lt;/code&gt;!.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data &amp;lt;- map2(
+  .x = boundary_lists,
+  .y = map(
+    models_predict,
+    ~map(.,
+         ~tibble(.)
+    )
+  ),
+  ~bind_cols(.x, .y)
+)
+
+names(plot_data) &amp;lt;- map_chr(
+  plot_data, ~c(
+    paste(
+      colnames(.)[1],
+      &amp;quot;and&amp;quot;,
+      colnames(.)[2],
+      sep = &amp;quot;_&amp;quot;)
+  )
+)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now that we have our predictions we can create the &lt;code&gt;ggplots&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot_lists &amp;lt;- plot_data %&amp;gt;%
+  map(
+    .,
+    ~select(
+      .,
+      -contains(&amp;quot;Model&amp;quot;)
+    ) %&amp;gt;%
+      pivot_longer(cols = contains(&amp;quot;Prediction&amp;quot;), names_to = &amp;quot;Model&amp;quot;, values_to = &amp;quot;Prediction&amp;quot;)
+  ) %&amp;gt;%
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) +
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 8, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 8, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      theme_bw(base_size = 25) +
+      theme(legend.position = &amp;quot;none&amp;quot;)
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Plot all the different combinations of the decision boundaries. &lt;strong&gt;Note&lt;/strong&gt;: The above code will work better in your console, when I ran the code to compile the blog post the plots were too small. Therefore, I provide individual plots for a sample of the models &amp;amp; variable combinations.&lt;/p&gt;
+&lt;p&gt;I first needed to select the first two columns which are the variables of interest (Petal.Width, Petal.Length, Sepal.Width and Sepal.Length). Then I wanted to take a random sample of the columns thereafter (which are the different Machine Learning Model predictions).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled &amp;lt;- plot_data %&amp;gt;% 
+  map(
+    .,
+    ~select(
+      .,
+      -contains(&amp;quot;Model&amp;quot;)
+    ) %&amp;gt;% 
+      select(.,
+             c(1:2), sample(colnames(.), 2)
+             ) %&amp;gt;% 
+      pivot_longer(
+        cols = contains(&amp;quot;Prediction&amp;quot;),
+        names_to = &amp;quot;Model&amp;quot;,
+        values_to = &amp;quot;Prediction&amp;quot;)
+    ) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next I can make the plots by taking a random sample of the lists.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled %&amp;gt;% 
+  rlist::list.sample(1) %&amp;gt;% 
+  map(
+    .x = .,
+    ~ggplot() +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(.x)[4]))
+      ), data = .x) + 
+      geom_contour(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        z = !!rlang::sym(colnames(.x)[4])
+      ), data = .x) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2]),
+        color = factor(!!rlang::sym(colnames(df)[5]))  # this is the status variable
+      ), size = 3, data = df) +
+      geom_point(aes(
+        x = !!rlang::sym(colnames(.x)[1]),
+        y = !!rlang::sym(colnames(.x)[2])
+      ), size = 3, shape = 1, data = df) +
+      facet_wrap(~Model) +
+      #coord_flip() +
+      theme_tq(base_family = &amp;quot;serif&amp;quot;) +
+      theme(
+        #aspect.ratio = 1,
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = &amp;quot;bottom&amp;quot;,
+        #legend.title = element_text(size = 20),
+        #legend.text = element_text(size = 10),
+        axis.title = element_text(size = 20),
+        axis.text = element_text(size = &amp;quot;15&amp;quot;),
+        strip.text.x = element_text(size = 15),
+        plot.title = element_text(size = 30, hjust = 0.5),
+        strip.background = element_rect(fill = &amp;#39;darkred&amp;#39;),
+        panel.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #axis.text.x = element_text(angle = 90),
+        axis.text.y = element_text(angle = 90, hjust = 0.5),
+        #axis.title.x = element_blank()
+        legend.title = element_blank(),
+        legend.text = element_text(size = 20)
+      )
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Row indexes must be between 0 and the number of rows (0). Use `NA` as row index to obtain a row full of `NA` values.
+## This warning is displayed once per session.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Some other random models:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Length_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Length_and_Petal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in grDevices::contourLines(x = sort(unique(data$x)), y =
+## sort(unique(data$y)), : todos los valores de z son iguales&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Natually the linear models made a linear decision boundary. It looks like the random forest model overfit a little the data, where as the XGBoost and LightGBM models were able to make better, more generalisable decision boundaries. The Keras Neural Networks performed poorly because they should be trained better.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;glm&lt;/code&gt; = Logistic Model&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;keras.engine.sequential.Sequential Prediction...18&lt;/code&gt; = Single layer Neural Network&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;keras.engine.sequential.Sequential Prediction...18&lt;/code&gt; = Deeper layer Neural Network&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;keras.engine.sequential.Sequential Prediction...22&lt;/code&gt; = Deeper’er layer Neural Network&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lgb.Booster Prediction&lt;/code&gt; = Light Gradient Boosted Model&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;randomForest.formula Prediction&lt;/code&gt; = Random Forest Model&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;svm.formula Prediction...10&lt;/code&gt; = Support Vector Machine with a Sigmoid Kernel&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;svm.formula Prediction...12&lt;/code&gt; = Support Vector Machine with a Radial Kernel&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;svm.formula Prediction...6&lt;/code&gt; = Support Vector Machine with a Linear Kernel&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;svm.formula Prediction...8&lt;/code&gt; = Support Vector Machine with a Polynomial Kernel&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;xgb.Booster Prediction&lt;/code&gt; = Extreme Gradient Boosting Model&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In many of the combinations the Keras Neural Network model just predicted all observations to be of a specific class (again by my poor tuning of the models and the fact that the Neural Networks only had 100 observations to learn from and 40,000 observation to predict on). That is, it coloured the whole background blue or red and made many mis-classifications. In some of the plots the Neural Networks managed to mae perfect classifications, in other it made strange decision boundaries. - Neural Networks are fun.&lt;/p&gt;
+&lt;p&gt;As some brief analysis of the plots, it looks like the simple logistic model made near-perfect classifications. Which isn’t suprising given that each of the variable ralationships are linearly seperable. However, I have a preferece for XGBoost and LightGBM models since they can handle non-linear relationships through the incorporation of regularisation in its objective functions which allows them to make more robust decision boundaries. Random Forest models fail here which is why their decision boundary appears to do a good job but is also slightly erratic and sharpe in it’s decision boundaries.&lt;/p&gt;
+&lt;p&gt;Of course it goes without saying that these decision boundaries can become significantly more complex and non-linear with the inclusion of more variables and higher dimensions.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;for(i in 1:length(plot_data)){
+  print(ggplot_lists[[i]])
+  }&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;end-note&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;End note:&lt;/h2&gt;
+&lt;p&gt;I wrote this model on an Amazon Ubuntu EC2 Instance however, when I went to compile the blog post in R on my Windows system I ran into some problems. These problems were mostly down to installing the &lt;code&gt;lightgbm&lt;/code&gt; package and package versions. The code was working without error using the following package versions (i.e. using the most up-to-date package versions)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sessionInfo()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## R version 3.6.1 (2019-07-05)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 17763)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=Spanish_Spain.1252  LC_CTYPE=Spanish_Spain.1252   
+## [3] LC_MONETARY=Spanish_Spain.1252 LC_NUMERIC=C                  
+## [5] LC_TIME=Spanish_Spain.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] tidyquant_0.5.7            quantmod_0.4-15           
+##  [3] TTR_0.23-6                 PerformanceAnalytics_1.5.3
+##  [5] xts_0.11-2                 zoo_1.8-6                 
+##  [7] lubridate_1.7.4            keras_2.2.5.0             
+##  [9] lightgbm_2.3.2             R6_2.4.1                  
+## [11] xgboost_0.90.0.1           tidyr_1.0.0               
+## [13] stringr_1.4.0              purrr_0.3.2               
+## [15] kableExtra_1.1.0.9000      knitr_1.25.4              
+## [17] ggplot2_3.2.1              patchwork_1.0.0           
+## [19] dplyr_0.8.99.9000         
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.3           lattice_0.20-38      class_7.3-15        
+##  [4] utf8_1.1.4           assertthat_0.2.1     zeallot_0.1.0       
+##  [7] digest_0.6.24        e1071_1.7-2          evaluate_0.14       
+## [10] httr_1.4.1           blogdown_0.15        pillar_1.4.3.9000   
+## [13] tfruns_1.4           rlang_0.4.4          lazyeval_0.2.2      
+## [16] curl_4.0             rstudioapi_0.10      data.table_1.12.8   
+## [19] whisker_0.3-2        Matrix_1.2-17        reticulate_1.14-9001
+## [22] rmarkdown_1.14       lobstr_1.1.1         labeling_0.3        
+## [25] webshot_0.5.1        readr_1.3.1          munsell_0.5.0       
+## [28] compiler_3.6.1       xfun_0.8             pkgconfig_2.0.3     
+## [31] base64enc_0.1-3      tensorflow_2.0.0     htmltools_0.3.6     
+## [34] tidyselect_1.0.0     tibble_2.99.99.9014  bookdown_0.13       
+## [37] quadprog_1.5-7       randomForest_4.6-14  fansi_0.4.1         
+## [40] viridisLite_0.3.0    crayon_1.3.4         withr_2.1.2         
+## [43] rappdirs_0.3.1       grid_3.6.1           Quandl_2.10.0       
+## [46] jsonlite_1.6.1       gtable_0.3.0         lifecycle_0.1.0     
+## [49] magrittr_1.5         scales_1.0.0         rlist_0.4.6.1       
+## [52] cli_2.0.1            stringi_1.4.3        xml2_1.2.2          
+## [55] ellipsis_0.3.0       generics_0.0.2       vctrs_0.2.99.9005   
+## [58] tools_3.6.1          glue_1.3.1           hms_0.5.1           
+## [61] yaml_2.2.0           colorspace_1.4-1     rvest_0.3.4&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

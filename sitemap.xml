@@ -63,12 +63,17 @@
   </url>
   
   <url>
-    <loc>/tags/Misc/</loc>
+    <loc>/tags/Machine-Learning/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/Misc/</loc>
+    <lastmod>2020-02-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/Misc/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
@@ -99,11 +104,6 @@
   
   <url>
     <loc>/tags/financial-markets/</loc>
-    <lastmod>2020-02-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/machine-learning/</loc>
     <lastmod>2020-02-02T00:00:00+00:00</lastmod>
   </url>
   
@@ -188,12 +188,12 @@
   </url>
   
   <url>
-    <loc>/tags/systematic-trading/</loc>
+    <loc>/categories/systematic-trading/</loc>
     <lastmod>2019-12-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/systematic-trading/</loc>
+    <loc>/tags/systematic-trading/</loc>
     <lastmod>2019-12-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -338,12 +338,12 @@
   </url>
   
   <url>
-    <loc>/categories/AWS/</loc>
+    <loc>/tags/AWS/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/AWS/</loc>
+    <loc>/categories/AWS/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
