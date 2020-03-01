@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Time Series on Matthew Smith R Shenanigans</title>
-    <link>/categories/time-series/</link>
+    <link>/categories/Time-Series/</link>
     <description>Recent content in Time Series on Matthew Smith R Shenanigans</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 02 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/categories/time-series/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/Time-Series/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Machine Learning (XGBoost) Time-Series Classification Trading Strategy</title>
-      <link>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</link>
+      <link>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</link>
       <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</guid>
+      <guid>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 

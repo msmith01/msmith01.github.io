@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>Boundary Conditions for a Series of Machine Learning Models</title>
+      <title>Decision Boundary for a Series of Machine Learning Models</title>
       <link>/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions/</link>
       <pubDate>Fri, 28 Feb 2020 00:00:00 +0000</pubDate>
       
@@ -23,7 +23,7 @@
 
 &lt;div id=&#34;machine-learning-at-the-boundary&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Machine Learning at the Boundary:&lt;/h1&gt;
-&lt;p&gt;There is nothing new in the fact that many machine learning models can outperform traditional econometric models but I want to show as part of my research why and how some models make given predictions or in this instance classifications.&lt;/p&gt;
+&lt;p&gt;There is nothing new in the fact that machine learning models can outperform traditional econometric models but I want to show as part of my research why and how some models make given predictions or in this instance classifications.&lt;/p&gt;
 &lt;p&gt;I wanted to show the decision boundary in which my binary classification model was making. That is, I wanted to show the partition space that splits my classification into each class. The problem and code can be split into a multi-classification problem with some tweeks.&lt;/p&gt;
 &lt;div id=&#34;initialisation&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Initialisation:&lt;/h2&gt;
@@ -72,58 +72,54 @@ str(df)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;I plot the data by first storing the &lt;code&gt;ggplot&lt;/code&gt; objects changing only the &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; variables in each of the &lt;code&gt;plt&lt;/code&gt;’s.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plt1 &amp;lt;- df %&amp;gt;% 
   ggplot(aes(x = Sepal.Width, y = Sepal.Length, color = factor(Species))) +
-  geom_point(size = 8) +
-  theme_bw(base_size = 25) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
   theme(legend.position = &amp;quot;none&amp;quot;)
 
 plt2 &amp;lt;- df %&amp;gt;% 
   ggplot(aes(x = Petal.Length, y = Sepal.Length, color = factor(Species))) +
-  geom_point(size = 8) +
-  theme_bw(base_size = 25) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
   theme(legend.position = &amp;quot;none&amp;quot;)
 
 plt3 &amp;lt;- df %&amp;gt;% 
   ggplot(aes(x = Petal.Width, y = Sepal.Length, color = factor(Species))) +
-  geom_point(size = 8) +
-  theme_bw(base_size = 25) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
   theme(legend.position = &amp;quot;none&amp;quot;)
 
 plt3 &amp;lt;- df %&amp;gt;% 
   ggplot(aes(x = Sepal.Length, y = Sepal.Width, color = factor(Species))) +
-  geom_point(size = 8) +
-  theme_bw(base_size = 25) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
   theme(legend.position = &amp;quot;none&amp;quot;)
 
 plt4 &amp;lt;- df %&amp;gt;% 
   ggplot(aes(x = Petal.Length, y = Sepal.Width, color = factor(Species))) +
-  geom_point(size = 8) +
-  theme_bw(base_size = 25) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
   theme(legend.position = &amp;quot;none&amp;quot;)
 
 plt5 &amp;lt;- df %&amp;gt;% 
   ggplot(aes(x = Petal.Width, y = Sepal.Width, color = factor(Species))) +
-  geom_point(size = 8) +
-  theme_bw(base_size = 25) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
   theme(legend.position = &amp;quot;none&amp;quot;)
 
 plt6 &amp;lt;- df %&amp;gt;% 
   ggplot(aes(x = Petal.Width, y = Sepal.Length, color = factor(Species))) +
-  geom_point(size = 8) +
-  theme_bw(base_size = 25) +
+  geom_point(size = 4) +
+  theme_bw(base_size = 15) +
   theme(legend.position = &amp;quot;none&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;I also wanted to use the new &lt;code&gt;patchwork&lt;/code&gt; package which makes displaying &lt;code&gt;ggplot&lt;/code&gt; plots very easy. i.e the below code plots our graphics as its written (1 top plot stretching the length of the grid space, 2 middle plots, another single plot and a further 2 more plots at the bottom.)&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;      (plt1)    /
-  (plt2 + plt3) /
-      (plt4)    /
-  (plt5 + plt6)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+  (plt2 + plt3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Alternatively, we can re-arrange the plots into any way we wish and plot them in the following way:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;(plt1 + plt2 + plt3) /
-      (plt4)        / 
-   (plt5 + plt6)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;  (plt1 + plt2) / 
+  (plt5 + plt6)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Which I think looks awesome.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: It looks like the &lt;code&gt;patchwork&lt;/code&gt; package doesn’t work so well with &lt;code&gt;rmarkdown&lt;/code&gt;. For those who are following along with the code, it looks awesome, for those who are just reading, not so much.&lt;/p&gt;
 &lt;div id=&#34;objective&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Objective&lt;/h2&gt;
 &lt;p&gt;The objective is to build a classification algorithm to distinguish between the two classes and then compute the decision boundaries in order to better see how the models made such predictions.&lt;/p&gt;
@@ -629,7 +625,10 @@ names(plot_data) &amp;lt;- map_chr(
       select(.,
              c(1:2), sample(colnames(.), 2)
              ) %&amp;gt;% 
-      pivot_longer(cols = contains(&amp;quot;Prediction&amp;quot;), names_to = &amp;quot;Model&amp;quot;, values_to = &amp;quot;Prediction&amp;quot;)
+      pivot_longer(
+        cols = contains(&amp;quot;Prediction&amp;quot;),
+        names_to = &amp;quot;Model&amp;quot;,
+        values_to = &amp;quot;Prediction&amp;quot;)
     ) &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Next I can make the plots by taking a random sample of the lists.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot_data_sampled %&amp;gt;% 
@@ -681,43 +680,24 @@ names(plot_data) &amp;lt;- map_chr(
         legend.text = element_text(size = 20)
       )
   )&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: Row indexes must be between 0 and the number of rows (0). Use `NA` as row index to obtain a row full of `NA` values.
 ## This warning is displayed once per session.&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Some other random models:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Petal.Width&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Petal.Length_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Petal.Width&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-21-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-22-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Length_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Width_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Petal.Length_and_Petal.Width&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning in grDevices::contourLines(x = sort(unique(data$x)), y =
 ## sort(unique(data$y)), : todos los valores de z son iguales&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-23-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Petal.Length_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-24-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Sepal.Length&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-25-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning in grDevices::contourLines(x = sort(unique(data$x)), y =
-## sort(unique(data$y)), : todos los valores de z son iguales&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: Not possible to generate contour data&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-26-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Length_and_Sepal.Width&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-27-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## $Sepal.Width_and_Petal.Length&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/Machine-Learning-boundary-conditions/Machine-Learning-Boundary-Conditions_files/figure-html/unnamed-chunk-28-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/machine-learning-boundary-conditions/machine-learning-boundary-conditions_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Natually the linear models made a linear decision boundary. It looks like the random forest model overfit a little the data, where as the XGBoost and LightGBM models were able to make better, more generalisable decision boundaries. The Keras Neural Networks performed poorly because they should be trained better.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;glm&lt;/code&gt; = Logistic Model&lt;/li&gt;
@@ -798,10 +778,10 @@ names(plot_data) &amp;lt;- map_chr(
     
     <item>
       <title>Machine Learning (XGBoost) Time-Series Classification Trading Strategy</title>
-      <link>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</link>
+      <link>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</link>
       <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</guid>
+      <guid>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
@@ -2380,10 +2360,10 @@ ret_Rb
     
     <item>
       <title>Quantitative Analytics: Optimal Portfolio Allocation</title>
-      <link>/post/portfolio-optimisation-model/portfolio-optimisation-r/</link>
+      <link>/post/portfolio-optimisation-model/portfolio-optimisation-R/</link>
       <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/portfolio-optimisation-model/portfolio-optimisation-r/</guid>
+      <guid>/post/portfolio-optimisation-model/portfolio-optimisation-R/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
