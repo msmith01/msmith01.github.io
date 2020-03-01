@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>trading on Matthew Smith R Shenanigans</title>
+    <title>Trading on Matthew Smith R Shenanigans</title>
     <link>/categories/trading/</link>
-    <description>Recent content in trading on Matthew Smith R Shenanigans</description>
+    <description>Recent content in Trading on Matthew Smith R Shenanigans</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 29 Dec 2019 00:00:00 +0000</lastBuildDate>
@@ -2618,6 +2618,1332 @@ End.Equity
 &lt;p&gt;Wilder, J Welles. 1978. &lt;em&gt;New Concepts in Technical Trading Systems&lt;/em&gt;. Trend Research.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Learning the Quantstrat and Blotter packages</title>
+      <link>/post/quantstrat-rolling-logistic/quantstrat/</link>
+      <pubDate>Sun, 29 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/quantstrat-rolling-logistic/quantstrat/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;Load packages:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(knitr)
+library(kableExtra)
+library(dplyr)
+library(ggplot2)
+library(quantstrat)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;::: Note :::&lt;/strong&gt; This post is mostly for my future reference/documentation for learning the &lt;code&gt;quantstrat&lt;/code&gt; package. An example of a strategy I developed can be found below in which it uses a naive rolling logistic regression model trained on &lt;code&gt;t&lt;/code&gt; days to predict &lt;code&gt;t+1&lt;/code&gt; market movement. &lt;strong&gt;::: END Note :::&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;I have been playing around with backtesting trading models using the &lt;code&gt;quantstrat&lt;/code&gt; package for a while but the most difficult thing about it was understanding the syntax of &lt;code&gt;blotter&lt;/code&gt; and &lt;code&gt;quantstrat&lt;/code&gt;, it didn’t seem very intuitive to me at first and there does not seem to be &lt;em&gt;much&lt;/em&gt; detailed information online, despite the package being around since 2010. In this post I will give my comments and observations what certain functions do, I will update this post over time.&lt;/p&gt;
+&lt;div id=&#34;backgorund&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Backgorund&lt;/h3&gt;
+&lt;p&gt;The &lt;code&gt;quantstrat&lt;/code&gt; package is built on the &lt;code&gt;blotter&lt;/code&gt; package which was developed in 2008. It works best with time series &lt;code&gt;xts&lt;/code&gt; objects which can be easily collected using the &lt;code&gt;quantmod&lt;/code&gt; package. The &lt;code&gt;blotter&lt;/code&gt; package is the accounting package behind the &lt;code&gt;quantstrat&lt;/code&gt; system, it can support multiple accounts or multiple portfolios and computes the P&amp;amp;L of trading systems.&lt;/p&gt;
+&lt;p&gt;The main blotter functions are the following:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;initialisation&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Initialisation&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;initPortf&lt;/code&gt; - which initialises a portfolio&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;initAcct&lt;/code&gt; - which initialises an account&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;performance&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Performance&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;addTxn&lt;/code&gt; - which adds transactions to the portfolio&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;updatePortf&lt;/code&gt; - which computes the P&amp;amp;L for each symbol in a given period&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;updateAcct&lt;/code&gt; - which computes the equity from the assets&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;updateEndEq&lt;/code&gt; - which updates the final equity for an account&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;getEndEq&lt;/code&gt; - which provides us with the latest value of our account&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;getPosQty&lt;/code&gt; - which gets a position at a given date.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;chart.Posn&lt;/code&gt;- which plots a chart of the position size, and cumulative P&amp;amp;L&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PortfReturns&lt;/code&gt;- which calcualtes the portfolio returns&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;getAccount&lt;/code&gt; - which gets our account info!&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;getPortfolio&lt;/code&gt; - &#34;&#34;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;getTxns&lt;/code&gt; - &#34;&#34;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tradeStats&lt;/code&gt; - which collects trade statistics&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;perTradeStats&lt;/code&gt; - which calculates per trade statistics&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;code&gt;blotter&lt;/code&gt; package loads in a number of additional packages as we can see by running the below.&lt;/p&gt;
+&lt;p&gt;The packages are: &lt;code&gt;xts&lt;/code&gt; and &lt;code&gt;zoo&lt;/code&gt; for time series, &lt;code&gt;FinancialInstrument&lt;/code&gt;, &lt;code&gt;quantmod&lt;/code&gt;, &lt;code&gt;TTR&lt;/code&gt;, &lt;code&gt;PerformanceAnalytics&lt;/code&gt; for finance, where &lt;code&gt;TTR&lt;/code&gt; stands for Technical Trading Rules.&lt;/p&gt;
+&lt;p&gt;The blotter package creates a new environment &lt;code&gt;.blotter&lt;/code&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;download-financial-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Download Financial Data&lt;/h3&gt;
+&lt;p&gt;Lets first download some data for the S&amp;amp;P500 from 2018 to 2019 in order to gather some data. For the &lt;code&gt;quantstrat&lt;/code&gt; package its quite usual to find the initiation date, start date, end date set outside the parameters of the model. Therefore I first set these parameters as &lt;code&gt;initDate&lt;/code&gt;, &lt;code&gt;startDate&lt;/code&gt; and &lt;code&gt;endDate&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initDate &amp;lt;- &amp;#39;2010-01-01&amp;#39; # this is used for later but is must be before the startDate
+startDate &amp;lt;- &amp;#39;2018-01-01&amp;#39;
+endDate &amp;lt;- &amp;#39;2019-01-01&amp;#39;
+symbols &amp;lt;- c(&amp;#39;SPY&amp;#39;)
+getSymbols(symbols, from = startDate, to = endDate, src = &amp;quot;yahoo&amp;quot;, adjust=TRUE) &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;SPY&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;font-size: 12px; margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;caption style=&#34;font-size: initial !important;&#34;&gt;
+&lt;span id=&#34;tab:unnamed-chunk-3&#34;&gt;Table 1: &lt;/span&gt;SPY stocks
+&lt;/caption&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+SPY.Open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+SPY.High
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+SPY.Low
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+SPY.Close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+SPY.Volume
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+SPY.Adjusted
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-01-02
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+262.8473
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+263.7992
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+262.4155
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+263.7599
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+86655700
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+260.1310
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-01-03
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+263.9464
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+265.5951
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+263.9464
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+265.4283
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+90070400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+261.7763
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-01-04
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+266.1447
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+267.0868
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+265.4970
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+266.5470
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+80636400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+262.8796
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-01-05
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+267.4302
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+268.4606
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+266.8807
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+268.3233
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+83524000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+264.6314
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-01-08
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+268.2153
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+268.9906
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+267.8915
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+268.8140
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+57319200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+265.1154
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-01-09
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+269.2850
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+270.1191
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+268.9709
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+269.4224
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+57254000
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+265.7154
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;plot-the-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Plot the data&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chartSeries(SPY, name = &amp;quot;Daily time series for SPY&amp;quot;, type = &amp;quot;candlesticks&amp;quot;, theme = chartTheme(&amp;quot;white&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/quantstrat-rolling-logistic/quantstrat_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Once we have the data and after loading the &lt;code&gt;blotter&lt;/code&gt; package we must define a few initialisation parameters, namely the &lt;code&gt;currency()&lt;/code&gt; and &lt;code&gt;stocks&lt;/code&gt; parameter from the &lt;code&gt;FinancialInstrument&lt;/code&gt; package.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;currency(&amp;quot;USD&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;USD&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;stock(&amp;quot;SPY&amp;quot;, currency = &amp;quot;USD&amp;quot;, multiplier = 1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;SPY&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ls(all = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;.blotter&amp;quot;     &amp;quot;.getSymbols&amp;quot;  &amp;quot;.Random.seed&amp;quot; &amp;quot;.strategy&amp;quot;   
+## [5] &amp;quot;endDate&amp;quot;      &amp;quot;initDate&amp;quot;     &amp;quot;SPY&amp;quot;          &amp;quot;startDate&amp;quot;   
+## [9] &amp;quot;symbols&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ls(envir = FinancialInstrument:::.instrument)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;SPY&amp;quot; &amp;quot;USD&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can see that we have the SPY index and the USD currency set. We can convert the data from daily time series to monthly time series using the &lt;code&gt;to.period&lt;/code&gt; fucntion.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;SPY_monthly &amp;lt;- to.period(SPY, period = &amp;quot;months&amp;quot;)
+chartSeries(SPY_monthly, name = &amp;quot;Monthly time series for SPY&amp;quot;, type = &amp;quot;candlesticks&amp;quot;, theme = chartTheme(&amp;quot;white&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/quantstrat-rolling-logistic/quantstrat_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;head(SPY_monthly)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##            SPY.Open SPY.High  SPY.Low SPY.Close SPY.Volume SPY.Adjusted
+## 2018-01-31 262.8473 281.2870 262.4155  276.6452 1985506700     272.8389
+## 2018-02-28 275.8307 277.7836 248.2054  266.5862 2923722000     262.9184
+## 2018-03-29 266.3507 275.1830 254.0372  259.2790 2323561800     255.7117
+## 2018-04-30 258.6878 267.3091 250.9237  260.6190 1998466500     257.0332
+## 2018-05-31 259.9884 270.2157 255.2393  266.9544 1606397200     263.2814
+## 2018-06-29 268.4028 275.3688 265.7283  268.4896 1599001000     264.7955&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;portfolio-parameters&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Portfolio parameters&lt;/h3&gt;
+&lt;p&gt;Now that we have our data we should initialise the portfolio with &lt;code&gt;initPortf&lt;/code&gt;, which will consist of the transactions over the period of analysis.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;name&lt;/code&gt; - “MyFirstPortfolio” - the initial name of the portfolio&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;symbols&lt;/code&gt; - “SPY” - since we are using the SPY500&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;initPosQty&lt;/code&gt; - 100 - the initial quantity of our position&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;initDate&lt;/code&gt; - “initDate” - the initial account equity and position (prior to the closing price of our first position)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;currency&lt;/code&gt; the currency we are using&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initDate &amp;lt;- &amp;#39;2010-01-01&amp;#39; # NOTE: We already created this parameter --&amp;gt; which was quoted as &amp;quot;this is used for later but is must be before the startDate&amp;quot;
+initPortf(&amp;quot;MyFirstPortfolio&amp;quot;, &amp;quot;SPY&amp;quot;, initDate = initDate)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;MyFirstPortfolio&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;account-parameters&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Account parameters&lt;/h3&gt;
+&lt;p&gt;We also need to initialise the account using &lt;code&gt;initAcct&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;name&lt;/code&gt; - “MyFirstPortfolio” - the initial name of the portfolio&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;portfolios&lt;/code&gt; - the name of our previous portfolio created&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;initDate&lt;/code&gt; - “initDate” - the initial account equity and position (prior to the closing price of our first position)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;initEq&lt;/code&gt; - the initial equity we began with&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;currency&lt;/code&gt; the currency we are using&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initEq = 1000000
+initAcct(&amp;quot;MyFirstPortfolio&amp;quot;, portfolios = &amp;quot;MyFirstPortfolio&amp;quot;, initDate = initDate, initEQ = initEq)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;MyFirstPortfolio&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;first(SPY) # print the first observation in our data&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##            SPY.Open SPY.High  SPY.Low SPY.Close SPY.Volume SPY.Adjusted
+## 2018-01-02 262.8473 263.7992 262.4155  263.7599   86655700      260.131&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;last(SPY) # print the last observation in our data&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##            SPY.Open SPY.High SPY.Low SPY.Close SPY.Volume SPY.Adjusted
+## 2018-12-31   249.56   250.19  247.47    249.92  144299400     246.4814&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-simple-strategy&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;A simple Strategy&lt;/h1&gt;
+&lt;p&gt;A trading strategy can be broken down into the following blocks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Assets&lt;/em&gt; - which are the stocks we want to trade, &lt;code&gt;SPY&lt;/code&gt;, &lt;code&gt;MSFT&lt;/code&gt;, &lt;code&gt;AAPL&lt;/code&gt;, &lt;code&gt;MSFT&lt;/code&gt; etc.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Indicators&lt;/em&gt; - which are the variables, Open, High, Low, Close, SMA, EMA, RSI, Momentum etc.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Signals&lt;/em&gt; - we can create signals based on the interaction between the &lt;em&gt;indicators&lt;/em&gt; and the time-series data.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Rules&lt;/em&gt; - Create &lt;em&gt;buy&lt;/em&gt; and &lt;em&gt;sell&lt;/em&gt; rules based on the &lt;em&gt;signals&lt;/em&gt; created.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Orders&lt;/em&gt; - Once a &lt;em&gt;rule&lt;/em&gt; is activated, push an &lt;em&gt;order&lt;/em&gt; through.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Analysis&lt;/em&gt; - Analyse the performance of the strategy.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I wanted to test a basic backtesting concept. What happens if I trained a machine learning model each day on the last 100 days of data to predict the next days stock market direction but test this over many periods?. That is to continuously train a machine learning model at every step to predict the next price. One method is to use the &lt;code&gt;rolling_origin&lt;/code&gt; fucntion from the &lt;code&gt;rsample&lt;/code&gt; package but I write a more simple function for this.&lt;/p&gt;
+&lt;p&gt;I load in the parameters of the model and download data for MSFT.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(quantstrat)
+library(PerformanceAnalytics)
+library(e1071)
+
+initDate = &amp;quot;2010-01-01&amp;quot;
+from &amp;lt;- &amp;quot;2018-01-01&amp;quot;
+to &amp;lt;- &amp;quot;2019-09-20&amp;quot;
+
+init_equity &amp;lt;- 1000
+adjustment &amp;lt;- TRUE
+
+.orderqty &amp;lt;- 10                  # The profitability of the strategy depends heavily on this value
+.txnfees &amp;lt;- -10
+.stoploss &amp;lt;- 3e-3 # 0.003 or 0.3%
+
+currency(&amp;#39;USD&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;USD&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Sys.setenv(TZ=&amp;quot;UTC&amp;quot;)
+
+symbols &amp;lt;- c(&amp;#39;MSFT&amp;#39;)
+
+getSymbols(symbols, from = from, to = to, src = &amp;quot;yahoo&amp;quot;, adjust = TRUE) &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;MSFT&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I created a simple time series pre-processing function to clean up the data, create some features and set the data to &lt;code&gt;xts&lt;/code&gt;. Ignore the &lt;code&gt;Scale_Me&lt;/code&gt; function.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Scale_Me &amp;lt;- function(x){
+  (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+}
+
+
+TS_preprocess &amp;lt;- function(dat){
+  dat = data.frame(dat)
+  colnames(dat) = c(&amp;quot;open&amp;quot;, &amp;quot;high&amp;quot;, &amp;quot;low&amp;quot;, &amp;quot;close&amp;quot;, &amp;quot;volume&amp;quot;, &amp;quot;adjusted&amp;quot;)
+  dat$Y = with(dat, ifelse(close &amp;gt;= open, 1, 0))
+  dat$X1 = SMA(lag(dat$close), n = 10)
+  dat$X2 = RSI(lag(dat$close), nFast = 14, nSlow = 26, nSig = 9, maType = SMA)
+  dat$X3 = momentum(lag(dat$close), n = 12)
+  dat = dat[complete.cases(dat), ]
+  #dat = cbind(dat[, &amp;#39;Y&amp;#39;], apply(dat[, 8:ncol(dat)], 2, Scale_Me))
+  #colnames(dat)[1] = &amp;quot;Y&amp;quot; 
+  dat = dat[, c(&amp;quot;Y&amp;quot;, &amp;quot;X1&amp;quot;, &amp;quot;X2&amp;quot;, &amp;quot;X3&amp;quot;)]
+  dat = as.xts(dat)
+  return(dat)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I next set the training period &lt;code&gt;n_train&lt;/code&gt; = 100 periods and &lt;code&gt;n_test&lt;/code&gt; = 1 period, or train on &lt;code&gt;t&lt;/code&gt; days of data and test of &lt;code&gt;t+1&lt;/code&gt; days of data. This can be quite computationally expensive depending on the machine learning model you input but for a simple binary logistic regression classifier its relatively fast. I create the logistic function which returns the predicted probabilities.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;RollingBacktest&lt;/code&gt; function, runs the model on &lt;code&gt;n_train&lt;/code&gt; periods of data and makes a prediction on &lt;code&gt;n_test&lt;/code&gt;. That is, say we have 1000 days of data, the model will train on the first 100 days and predict on day 101, then retrain on days 2 to 101 days and predict on day 102 and so on, continuing until all 1000 days have passed.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;df &amp;lt;- TS_preprocess(MSFT)
+
+n_train &amp;lt;- 100
+n_test &amp;lt;- 1
+
+LogistFun &amp;lt;- function(frm, dat, trainIndex, testIndex){
+  LogitModel &amp;lt;- glm(frm, data = dat[trainIndex, ])
+  pred &amp;lt;- predict(LogitModel, newdata = dat[testIndex, ], type = &amp;#39;response&amp;#39;)
+  return(pred)
+}
+
+RollingBacktest &amp;lt;- function(dat, ntrain = n_train, ntest = n_test){
+  stopifnot(&amp;#39;Y&amp;#39; %in% names(dat))
+  frm_ &amp;lt;- formula(reformulate(paste0(&amp;quot;X&amp;quot;, seq(2:ncol(dat))), &amp;quot;Y&amp;quot;))
+  
+  stride &amp;lt;- ntrain + ntest
+  startPosn &amp;lt;- seq(1, dim(dat)[1] - stride)
+  
+  train_index_list &amp;lt;- lapply(startPosn, function(i) seq(i, i + ntrain))
+  test_index_list &amp;lt;- lapply(startPosn, function(i) seq((i + ntrain + 1), (i + ntrain + ntest))) 
+  
+  mapply(LogistFun, trainIndex = train_index_list, testIndex = test_index_list, MoreArgs = list(frm = frm_, dat = dat), SIMPLIFY = FALSE
+  )
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now that I have the &lt;em&gt;pre-process function&lt;/em&gt;, the &lt;em&gt;logistic function&lt;/em&gt; and the &lt;em&gt;backtest function&lt;/em&gt;, we can run the model through the &lt;code&gt;TS_postprocess&lt;/code&gt; function, which applies everything.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;TS_postprocess &amp;lt;- function(dat, ntrain){
+  results = tail(dat, -(ntrain + 1))
+  results$probs &amp;lt;- RollingBacktest(dat)
+  results$predictions &amp;lt;- ifelse(results$probs &amp;gt; 0.6, 1, 0)
+  print(paste0(&amp;quot;Model Accuracy at the 0.60 prob cut-off &amp;quot;, mean(results$Y == results$predictions)))
+  return(results)
+}
+
+out &amp;lt;- TS_postprocess(df, ntrain = n_train)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Model Accuracy at the 0.60 prob cut-off 0.518987341772152&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;out &amp;lt;- na.omit(cbind(MSFT, out))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The model is not very accurate…&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;na.omit&lt;/code&gt; removes the &lt;code&gt;NA&lt;/code&gt; values which were created from the &lt;code&gt;SMA&lt;/code&gt;, &lt;code&gt;RSI&lt;/code&gt; and &lt;code&gt;momentum&lt;/code&gt; calculations which are the first few observations of the time series data.&lt;/p&gt;
+&lt;p&gt;The data looks like:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;out %&amp;gt;%
+  head() %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.High
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Low
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Volume
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Adjusted
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Y
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X1
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X2
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X3
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+probs
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+predictions
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.73225
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.05627
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.58513
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.91896
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+28653100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.91896
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.33186
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+63.01370
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.98113024
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6709360
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.41915
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+100.54701
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.17396
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.90953
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+26180800
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.90952
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.20142
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.54048
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.06865286
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7426882
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+100.11548
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+100.48817
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.93857
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.19357
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+23198200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.19357
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.14061
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+63.88638
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.19615593
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7523711
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.47763
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.83069
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.71263
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.47763
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+38923100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.47763
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.16611
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+51.80598
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-1.02979581
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7586200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.07551
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.18340
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+95.42748
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.49649
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35433300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.49649
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.04646
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+43.39626
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2.03996476
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7851164
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.91822
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.15397
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.84957
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.17322
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+26897200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.17323
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.78558
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+32.78984
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2.44207828
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6282847
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We can see that the model outputs predicted probabilities, I simply set the &lt;code&gt;predictions&lt;/code&gt; column to give a &lt;code&gt;1&lt;/code&gt; if the models predicted probability is &lt;code&gt;&amp;gt; 0.5&lt;/code&gt; or a &lt;code&gt;0&lt;/code&gt; if it is &lt;code&gt;&amp;lt; 0.5&lt;/code&gt;. The &lt;code&gt;Y&lt;/code&gt; variable is the observed and the &lt;code&gt;X1&lt;/code&gt;, &lt;code&gt;X2&lt;/code&gt; and &lt;code&gt;X3&lt;/code&gt; variables are the &lt;code&gt;SMA&lt;/code&gt;, &lt;code&gt;RSI&lt;/code&gt; and &lt;code&gt;momentum&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;We can now use the &lt;code&gt;quantstrat&lt;/code&gt; package to backtest the model and see how the performance went.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MSFT &amp;lt;- out
+
+stock(&amp;quot;MSFT&amp;quot;, currency = &amp;quot;USD&amp;quot;, multiplier = 1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;MSFT&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;strategy.st &amp;lt;- portfolio.st &amp;lt;- account.st &amp;lt;- &amp;quot;RollingLogitStrategy&amp;quot;
+
+rm.strat(strategy.st)
+rm.strat(portfolio.st)
+rm.strat(account.st)
+
+
+initPortf(name = portfolio.st,
+          symbols = symbols,
+          initDate = initDate,
+          currency = &amp;#39;USD&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initAcct(name = account.st,
+         portfolios = portfolio.st,
+         initDate = initDate,
+         currency = &amp;#39;USD&amp;#39;,
+         initEq = init_equity)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;initOrders(portfolio.st,
+           symbols = symbols,
+           initDate = initDate)
+
+strategy(strategy.st, store = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I add the signals to the strategy and give it some rules.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1a)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The signal is that the first time the Logistic model produces a probability greater than &lt;code&gt;0.6&lt;/code&gt; then assign the signal. The &lt;code&gt;sigThreshold&lt;/code&gt; is a &lt;code&gt;quantstrat&lt;/code&gt; function, the others are &lt;code&gt;sigComparison&lt;/code&gt;, &lt;code&gt;sigCrossover&lt;/code&gt; and &lt;code&gt;sigFormula&lt;/code&gt;. It calls upon the &lt;code&gt;threshold&lt;/code&gt; value in the &lt;code&gt;list&lt;/code&gt; of &lt;code&gt;arguments&lt;/code&gt;, the column it looks for is the &lt;code&gt;probs&lt;/code&gt; column which the predicted probabilities are output to, &lt;code&gt;gt&lt;/code&gt; means greater than. It basically creates a new column called &lt;code&gt;logSig&lt;/code&gt; and it would be similar to &lt;code&gt;ifelse(df$probs &amp;gt; 0.6, 1, 0)&lt;/code&gt; as far as I understand.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1b)
+The rule for the strategy is to take &lt;code&gt;sigcol&lt;/code&gt; which is the &lt;code&gt;label&lt;/code&gt; we gave our signal in the previous lines which is called &lt;code&gt;longSig&lt;/code&gt;. If &lt;code&gt;longSig = 1&lt;/code&gt;, execute a market order going long, buying at the next days open price, the transaction fees were set at the start of the strategy. We call this &lt;code&gt;rule&lt;/code&gt;, &lt;code&gt;EnterLONG&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;nMult_orderqty &amp;lt;- 2
+addPosLimit(portfolio.st, symbol = &amp;quot;MSFT&amp;quot;, timestamp = initDate, maxpos = nMult_orderqty * .orderqty)
+
+# Objective: Buy when the probability is gt 0.60, using cross = TRUE
+
+# 1.a)
+add.signal(strategy = strategy.st,
+           name = &amp;quot;sigThreshold&amp;quot;,
+           arguments = list(threshold = 0.6,
+                            column = &amp;quot;probs&amp;quot;,
+                            relationship = &amp;quot;gt&amp;quot;,
+                            cross = TRUE),
+           label = &amp;quot;longSig&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 1.b)
+# # Adding the rules, enter at the open price when prob &amp;gt; 0.60 for the first time, taking transaction fees into account
+add.rule(strategy = strategy.st,
+         name = &amp;quot;ruleSignal&amp;quot;,
+         arguments = list(sigcol = &amp;quot;longSig&amp;quot;,   # check the ifelse predictions statement
+                          sigval = 1,
+                          orderqty = .orderqty,
+                          ordertype = &amp;quot;market&amp;quot;,
+                          orderside = &amp;quot;long&amp;quot;,
+                          osFUN = osMaxPos,
+                          prefer = &amp;quot;Open&amp;quot;,
+                          replace = TRUE,
+                          TxnFees = .txnfees),
+         type = &amp;quot;enter&amp;quot;,
+         label = &amp;quot;EnterLONG&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;From the Logistic model we have added our signal to buy when the probability of the next days price is greater than &lt;code&gt;0.60&lt;/code&gt;. So far we just keep buying when the probability of the logistic model passes over &lt;code&gt;0.60&lt;/code&gt; but we have no position to sell when the model predicts something different.&lt;/p&gt;
+&lt;p&gt;I thought it might be interesting to exit the strategy when the model is undecided or makes a very low predicted probability. I set this threshold to be less than 0.4 based on the probability density plot below. So we are making trades at the tail ends of the distribution, buying when the model is &lt;em&gt;confident&lt;/em&gt; and selling when it is &lt;em&gt;unsure&lt;/em&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(density(out$probs))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/quantstrat-rolling-logistic/quantstrat_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Add the signals and rules for exiting the strategy. Using a similar principle as before, I create a &lt;code&gt;signal&lt;/code&gt; when the probability is less than 0.4 and call it &lt;code&gt;exitlongSig&lt;/code&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Careful here when setting &lt;code&gt;type = &#34;exit&#34;&lt;/code&gt; and &lt;code&gt;orderside = &#34;long&#34;&lt;/code&gt;. Previously had it set to &lt;code&gt;type = exit&lt;/code&gt; and &lt;code&gt;orderside = short&lt;/code&gt;! which is completely wrong.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 2.a) # create the signal of when we should be looking to exit
+# #exit when prob drops below 0.4 for the first time
+add.signal(strategy = strategy.st,
+           name = &amp;quot;sigThreshold&amp;quot;,
+           arguments = list(threshold = 0.4,
+                            column = &amp;quot;probs&amp;quot;,
+                            relationship = &amp;quot;lt&amp;quot;,
+                            cross = TRUE),
+           label = &amp;quot;exitlongSig&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# 2.b) # Add that signal to the rule of exiting
+add.rule(strategy.st,
+         name = &amp;quot;ruleSignal&amp;quot;,
+         arguments = list(sigcol = &amp;quot;exitlongSig&amp;quot;,
+                          sigval = 1,
+                          orderqty = &amp;quot;all&amp;quot;,
+                          ordertype = &amp;quot;market&amp;quot;,
+                          orderside = &amp;quot;long&amp;quot;,
+                          osFUN = osMaxPos,
+                          prefer = &amp;quot;Open&amp;quot;,
+                          replace = TRUE,
+                          TxnFees = .txnfees),
+         type = &amp;quot;exit&amp;quot;,
+         label = &amp;quot;ExitLong&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can finally apply the strategy and see how it performs. It doesn’t make many transactions due to the backtesting being quite restrictive.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;applyStrategy(strategy.st, portfolios = portfolio.st)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;2018-07-05 00:00:00 MSFT 10 @ 97.5851340312762&amp;quot;
+## [1] &amp;quot;2018-07-11 00:00:00 MSFT 10 @ 99.2033819340086&amp;quot;
+## [1] &amp;quot;2018-12-06 00:00:00 MSFT -20 @ 104.632969498356&amp;quot;
+## [1] &amp;quot;2018-12-19 00:00:00 MSFT 10 @ 102.487313341245&amp;quot;
+## [1] &amp;quot;2019-01-09 00:00:00 MSFT 10 @ 102.694956688076&amp;quot;
+## [1] &amp;quot;2019-02-21 00:00:00 MSFT -20 @ 106.15227613615&amp;quot;
+## [1] &amp;quot;2019-04-11 00:00:00 MSFT 10 @ 119.69686840234&amp;quot;
+## [1] &amp;quot;2019-04-24 00:00:00 MSFT 10 @ 124.91014659961&amp;quot;
+## [1] &amp;quot;2019-06-13 00:00:00 MSFT -20 @ 131.541967172209&amp;quot;
+## [1] &amp;quot;2019-06-27 00:00:00 MSFT 10 @ 133.694801331394&amp;quot;
+## [1] &amp;quot;2019-07-09 00:00:00 MSFT 10 @ 135.548629168169&amp;quot;
+## [1] &amp;quot;2019-08-23 00:00:00 MSFT -20 @ 137.190002&amp;quot;
+## [1] &amp;quot;2019-08-28 00:00:00 MSFT 10 @ 134.880005&amp;quot;
+## [1] &amp;quot;2019-09-05 00:00:00 MSFT -10 @ 139.110001&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;updatePortf(portfolio.st)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;updateAcct(account.st)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;updateEndEq(account.st)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;RollingLogitStrategy&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;chart.Posn(portfolio.st, Symbol = &amp;quot;MSFT&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/quantstrat-rolling-logistic/quantstrat_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;           #TA=&amp;quot;add_SMA(n = 10, col = 2); add_SMA(n = 30, col = 4)&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Look at the &lt;code&gt;mktdata&lt;/code&gt; which is where our &lt;code&gt;signals&lt;/code&gt; and &lt;code&gt;predictions&lt;/code&gt; are stored.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mktdata %&amp;gt;%
+  data.frame() %&amp;gt;%
+  head(10) %&amp;gt;%
+  kable() %&amp;gt;%
+  kable_styling(bootstrap_options = c(&amp;quot;striped&amp;quot;, &amp;quot;hover&amp;quot;, &amp;quot;condensed&amp;quot;, &amp;quot;responsive&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table table-striped table-hover table-condensed table-responsive&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Open
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.High
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Low
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Close
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Volume
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+MSFT.Adjusted
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+Y
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X1
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X2
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+X3
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+probs
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+predictions
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+longSig
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+exitlongSig
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-19
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.73225
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.05627
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.58513
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.91896
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+28653100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.91896
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.33186
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+63.01370
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.9811302
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6709360
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+NA
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-20
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.41915
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+100.54701
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.17396
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.90953
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+26180800
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.90952
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.20142
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+59.54048
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.0686529
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7426882
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-21
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+100.11548
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+100.48817
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.93857
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.19357
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+23198200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.19357
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.14061
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+63.88638
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.1961559
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7523711
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-22
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.47763
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.83069
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.71263
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.47763
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+38923100
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.47763
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.16611
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+51.80598
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-1.0297958
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7586200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-25
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.07551
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.18340
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+95.42748
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.49649
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35433300
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.49649
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+99.04646
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+43.39626
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2.0399648
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7851164
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-26
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.91822
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.15397
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.84957
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.17322
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+26897200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.17323
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.78558
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+32.78984
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2.4420783
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6282847
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-27
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.66360
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.09512
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+95.52555
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+95.66285
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+31298400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+95.66285
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.56687
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.08314
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2.5009206
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.7361390
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-28
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+95.50593
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.20264
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+95.38824
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.73187
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+26650700
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.73187
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.24224
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+35.29932
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-3.4424524
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6387378
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-06-29
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.02610
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.98725
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.43765
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.71226
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+28053200
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.71226
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.96861
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+37.17949
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2.6284247
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6327528
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+2018-07-02
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.21207
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.13435
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+96.11400
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.08532
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19564500
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+98.08531
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+97.81954
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+39.04847
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+-2.1968885
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.5659825
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;So if we trained a simple logistic model on 100 days of data to give us the next days prediction everyday since June 2018 and only invest if the logistic models prediction is greater than 0.60 and only sell if the logistic models prediction is less than 0.40 then out cumulative P&amp;amp;L would be $334 with a max drawdown of $61.&lt;/p&gt;
+&lt;p&gt;I have probably (almost certainly) gone wrong at somepoint using the &lt;code&gt;quantstrat&lt;/code&gt; package so the results will probably not generalise well to other assets, especially using a logistic model with 3 regressors! But it was a fun exercise using the &lt;code&gt;quantstrat&lt;/code&gt; package.&lt;/p&gt;
+&lt;p&gt;I will revist and modify this markdown file.&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>
