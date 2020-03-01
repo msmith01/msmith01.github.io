@@ -2,13 +2,13 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Hackerrank on Matthew Smith R Shenanigans</title>
-    <link>/categories/Hackerrank/</link>
+    <link>/categories/hackerrank/</link>
     <description>Recent content in Hackerrank on Matthew Smith R Shenanigans</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 24 Sep 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/categories/Hackerrank/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/hackerrank/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>

@@ -43,7 +43,7 @@
   </url>
   
   <url>
-    <loc>/categories/Decision-Boundary/</loc>
+    <loc>/categories/decision-boundary/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
@@ -58,22 +58,22 @@
   </url>
   
   <url>
-    <loc>/categories/Machine-Learning/</loc>
+    <loc>/categories/machine-learning/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/Machine-Learning/</loc>
+    <loc>/tags/machine-learning/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/Misc/</loc>
+    <loc>/tags/misc/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/Misc/</loc>
+    <loc>/categories/misc/</loc>
     <lastmod>2020-02-28T00:00:00+00:00</lastmod>
   </url>
   
@@ -93,7 +93,7 @@
   </url>
   
   <url>
-    <loc>/categories/Algo-Trading/</loc>
+    <loc>/categories/algo-trading/</loc>
     <lastmod>2020-02-02T00:00:00+00:00</lastmod>
   </url>
   
@@ -108,7 +108,7 @@
   </url>
   
   <url>
-    <loc>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</loc>
+    <loc>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</loc>
     <lastmod>2020-02-02T00:00:00+00:00</lastmod>
   </url>
   
@@ -123,12 +123,12 @@
   </url>
   
   <url>
-    <loc>/categories/Quantitative-Finance/</loc>
+    <loc>/categories/quantitative-finance/</loc>
     <lastmod>2020-02-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/Time-Series/</loc>
+    <loc>/categories/time-series/</loc>
     <lastmod>2020-02-02T00:00:00+00:00</lastmod>
   </url>
   
@@ -143,7 +143,7 @@
   </url>
   
   <url>
-    <loc>/categories/Econometrics/</loc>
+    <loc>/categories/econometrics/</loc>
     <lastmod>2019-12-31T00:00:00+00:00</lastmod>
   </url>
   
@@ -153,7 +153,7 @@
   </url>
   
   <url>
-    <loc>/categories/Portfolio-Optimisation/</loc>
+    <loc>/categories/portfolio-optimisation/</loc>
     <lastmod>2019-12-31T00:00:00+00:00</lastmod>
   </url>
   
@@ -163,7 +163,7 @@
   </url>
   
   <url>
-    <loc>/post/portfolio-optimisation-model/portfolio-optimisation-R/</loc>
+    <loc>/post/portfolio-optimisation-model/portfolio-optimisation-r/</loc>
     <lastmod>2019-12-31T00:00:00+00:00</lastmod>
   </url>
   
@@ -188,12 +188,12 @@
   </url>
   
   <url>
-    <loc>/categories/systematic-trading/</loc>
+    <loc>/tags/systematic-trading/</loc>
     <lastmod>2019-12-29T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/systematic-trading/</loc>
+    <loc>/categories/systematic-trading/</loc>
     <lastmod>2019-12-29T00:00:00+00:00</lastmod>
   </url>
   
@@ -223,7 +223,7 @@
   </url>
   
   <url>
-    <loc>/categories/Mathematical-Finance/</loc>
+    <loc>/categories/mathematical-finance/</loc>
     <lastmod>2019-11-14T00:00:00+00:00</lastmod>
   </url>
   
@@ -268,7 +268,7 @@
   </url>
   
   <url>
-    <loc>/categories/Finance/</loc>
+    <loc>/categories/finance/</loc>
     <lastmod>2019-09-25T00:00:00+00:00</lastmod>
   </url>
   
@@ -283,7 +283,7 @@
   </url>
   
   <url>
-    <loc>/categories/Hackerrank/</loc>
+    <loc>/categories/hackerrank/</loc>
     <lastmod>2019-09-24T00:00:00+00:00</lastmod>
   </url>
   
@@ -323,7 +323,7 @@
   </url>
   
   <url>
-    <loc>/categories/Statistics/</loc>
+    <loc>/categories/statistics/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
@@ -333,17 +333,17 @@
   </url>
   
   <url>
-    <loc>/categories/Yahoo-Finance/</loc>
+    <loc>/categories/yahoo-finance/</loc>
     <lastmod>2019-09-22T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/AWS/</loc>
+    <loc>/tags/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/AWS/</loc>
+    <loc>/categories/aws/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
@@ -363,7 +363,7 @@
   </url>
   
   <url>
-    <loc>/tags/RStudio/</loc>
+    <loc>/tags/rstudio/</loc>
     <lastmod>2019-09-21T00:00:00+00:00</lastmod>
   </url>
   
@@ -408,12 +408,12 @@
   </url>
   
   <url>
-    <loc>/tags/Deep-Learning/</loc>
+    <loc>/tags/deep-learning/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/Demo/</loc>
+    <loc>/tags/demo/</loc>
     <lastmod>2016-04-27T00:00:00+00:00</lastmod>
   </url>
   
