@@ -2,13 +2,13 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Machine Learning on Matthew Smith R Shenanigans</title>
-    <link>/categories/Machine-Learning/</link>
+    <link>/categories/machine-learning/</link>
     <description>Recent content in Machine Learning on Matthew Smith R Shenanigans</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 28 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/categories/Machine-Learning/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/machine-learning/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -798,10 +798,10 @@ names(plot_data) &amp;lt;- map_chr(
     
     <item>
       <title>Machine Learning (XGBoost) Time-Series Classification Trading Strategy</title>
-      <link>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</link>
+      <link>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</link>
       <pubDate>Sun, 02 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/xgboost-time-series-classification-trading-strategy/XGBoost-time-series-quant-trading-strategy/</guid>
+      <guid>/post/xgboost-time-series-classification-trading-strategy/xgboost-time-series-quant-trading-strategy/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
