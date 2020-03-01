@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Portfolio Optimisation on Matthew Smith R Shenanigans</title>
-    <link>/categories/portfolio-optimisation/</link>
+    <link>/categories/Portfolio-Optimisation/</link>
     <description>Recent content in Portfolio Optimisation on Matthew Smith R Shenanigans</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 31 Dec 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/categories/portfolio-optimisation/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/categories/Portfolio-Optimisation/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Quantitative Analytics: Optimal Portfolio Allocation</title>
-      <link>/post/portfolio-optimisation-model/portfolio-optimisation-r/</link>
+      <link>/post/portfolio-optimisation-model/portfolio-optimisation-R/</link>
       <pubDate>Tue, 31 Dec 2019 00:00:00 +0000</pubDate>
       
-      <guid>/post/portfolio-optimisation-model/portfolio-optimisation-r/</guid>
+      <guid>/post/portfolio-optimisation-model/portfolio-optimisation-R/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
